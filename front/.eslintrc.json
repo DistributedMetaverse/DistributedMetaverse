@@ -1,0 +1,33 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.json"
+    },
+    "env": {
+        "node": true,
+        "browser": true,
+        "es2021": true
+    },
+    "plugins": [
+        "@typescript-eslint"    // <- Add
+    ],
+    "extends": [
+        //"prettier/@typescript-eslint", // Conflict -> eslint-config-prettier 8.0.0 -> Disabled
+        "eslint:recommended",
+        "plugin:react/recommended",     // Contarins -> "plugins": ["react"], "parserOptions": { "ecmaFeatures": { "jsx": true } }
+        "plugin:@typescript-eslint/recommended", 
+        "plugin:prettier/recommended"
+    ],
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "singleQuote": true,
+                "useTabs": true, // 스페이스 대신 Tab으로 들여쓰기
+                "printWidth": 80,
+                "endOfLine": "auto"   // 개행 문자 (auto / lf / crlf / cr)
+            }
+        ],
+        "@typescript-eslint/no-explicit-any": ["off"]
+    }
+}
