@@ -7,15 +7,15 @@ interface AuthState {
 
 interface DataState {
 	data: Array<object>;
+	size: number;
 }
 
 interface MenuInfo {
 	index: number;
 	name: string;
 	path: string;
-	items: Array<object>;
 	title: string;
-	icon: string;
+	position: number;
 	isActive: boolean;
 }
 
@@ -23,4 +23,4 @@ interface MenuState {
 	menus: Array<MenuInfo>;
 }
 
-export type { AuthState, DataState, MenuState };
+export type { AuthState, DataState, MenuInfo, MenuState };

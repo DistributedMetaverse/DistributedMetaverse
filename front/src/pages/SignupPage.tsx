@@ -17,7 +17,7 @@ const SignupPage: FC<SignupDispatchProps> = ({ actions }): JSX.Element => {
 			username: data.get('username'),
 			password: data.get('password'),
 		};
-		(actions as any).register(userData);
+		actions.register(userData);
 		event.preventDefault(); // 새로고침 방지
 	};
 	return <SignupForm onSubmit={submitForm} />;

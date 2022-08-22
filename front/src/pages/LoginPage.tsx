@@ -17,7 +17,7 @@ const LoginPage: FC<LoginDispatchProps> = ({ actions }): JSX.Element => {
 			username: data.get('email'),
 			password: data.get('password'),
 		};
-		(actions as any).login(userData);
+		actions.login(userData);
 		event.preventDefault(); // 새로고침 방지
 	};
 	return <LoginForm onSubmit={submitForm} />;

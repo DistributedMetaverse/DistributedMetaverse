@@ -1,6 +1,12 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { Dispatch } from '@reduxjs/toolkit';
-import { loginSuccess, loginFailure, logoutSuccess } from '../store/index';
+import {
+	loginSuccess,
+	loginFailure,
+	logoutSuccess,
+	dataSuccess,
+	dataProgress,
+} from '../store/index';
 import {
 	JWT_USERNAME,
 	JWT_ACCESS_TOKEN,
@@ -9,7 +15,7 @@ import {
 import toastMessage from '../utils/toast';
 import { setSessionStorage, clearSessionStorage } from '../utils/storage';
 import { setInterceptors } from './common/interceptors';
-import { LoginVO, SignUpVO, TokenVO } from './types';
+import { LoginData, SignUpData, TokenData, PageData } from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
@@ -23,7 +29,7 @@ const instance = createInstance();
 
 const auth = {
 	// 로그인 API : <baseURL>/auth/login
-	login: (userData: LoginVO) => (dispatch: Dispatch) =>
+	login: (userData: LoginData) => (dispatch: Dispatch) =>
 		instance
 			.post('auth/login', userData)
 			.then((response: AxiosResponse) => {
@@ -40,7 +46,7 @@ const auth = {
 				window.location.replace('/');
 			})
 			.catch((error: AxiosError) => {
-				const { status, data } = error.response as any;
+				const { status, data } = error.response as AxiosResponse;
 				if (status === 400) {
 					toastMessage('올바르지 않은 로그인 형식입니다', 'info');
 				} else if (status === 401) {
@@ -60,7 +66,7 @@ const auth = {
 		window.location.replace('/');
 	},
 	// 회원가입 API : <baseURL>/auth/signup
-	register: (userData: SignUpVO) => () =>
+	register: (userData: SignUpData) => () =>
 		instance
 			.post('auth/signup', userData)
 			.then((response: AxiosResponse) => {
@@ -68,7 +74,7 @@ const auth = {
 				window.location.replace('/');
 			})
 			.catch((error: AxiosError) => {
-				const { status, data } = error.response as any;
+				const { status, data } = error.response as AxiosResponse;
 				if (status === 400) {
 					toastMessage('올바르지 않은 회원가입 형식입니다', 'info');
 				} else if (status === 409) {
@@ -80,7 +86,7 @@ const auth = {
 				}
 			}),
 	// 토큰 재생성 API : <baseURL>/auth/refresh
-	refresh: (userData: TokenVO) => (dispatch: Dispatch) =>
+	refresh: (userData: TokenData) => (dispatch: Dispatch) =>
 		instance
 			.post('auth/refresh', userData)
 			.then((response: AxiosResponse) => {
@@ -93,8 +99,70 @@ const auth = {
 			}),
 };
 
+const data = {
+	// 데이터 다운로드 API : <baseURL>/data/download/{dataId}
+	download: (dataId: number) => (dispatch: Dispatch) =>
+		instance
+			.get(`data/download/${dataId}`)
+			.then((response: AxiosResponse) => {
+				dispatch(dataSuccess(response.data));
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 데이터 업로드 API : <baseURL>/data/upload
+	upload: (formData: HTMLFormElement) => (dispatch: Dispatch) =>
+		instance
+			.post('data/upload', formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data',
+				},
+				onUploadProgress: (progressEvent: ProgressEvent) => {
+					const { loaded, total } = progressEvent;
+					dispatch(dataProgress(Math.round((loaded / total) * 100)));
+				},
+			})
+			.then((response: AxiosResponse) => {
+				dispatch(dataSuccess(response.data));
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 데이터 리스트 API : <baseURL>/data/list/{page}?type={type}
+	list: (pageData: PageData) => (dispatch: Dispatch) =>
+		instance
+			.get(`data/list/${pageData.page}?type=${pageData.type}`)
+			.then((response: AxiosResponse) => {
+				dispatch(dataSuccess(response.data));
+				return response.data;
+			}),
+	// 데이터 세부정보 API : <baseURL>/data/info/{dataId}
+	info: (dataId: number) => (dispatch: Dispatch) =>
+		instance.get(`data/info/${dataId}`).then((response: AxiosResponse) => {
+			dispatch(dataSuccess(response.data));
+			return response.data;
+		}),
+	// 데이터 특정경로 파일 리스트 호출 API : <baseURL>/data/file?path={path}
+	path: (path: string) => (dispatch: Dispatch) =>
+		instance.get(`data/file?path=${path}`).then((response: AxiosResponse) => {
+			dispatch(dataSuccess(response.data));
+			return response.data;
+		}),
+	// 데이터 파일 검색 API : <baseURL>/data/file?search={keyword}
+	search: (keyword: string) => (dispatch: Dispatch) =>
+		instance
+			.get(`data/file?search=${keyword}`)
+			.then((response: AxiosResponse) => {
+				dispatch(dataSuccess(response.data));
+				return response.data;
+			}),
+};
+
 const api = {
 	auth,
+	data,
 };
 
 export default { ...api };

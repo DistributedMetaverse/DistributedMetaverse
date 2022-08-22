@@ -12,8 +12,6 @@ import {
 	Avatar,
 	Button,
 	CssBaseline,
-	FormControlLabel,
-	Checkbox,
 	Link,
 	Grid,
 	Box,
@@ -25,7 +23,26 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from './Copyright';
 import renderField from './validate/TextField';
 
-const theme = createTheme();
+const theme = createTheme({
+	palette: {
+		text: {
+			primary: '#fff', // Main Text
+			secondary: '#fff', // Validation Text
+		},
+		action: {
+			disabled: '#fff', // Button Disabled Text
+			disabledBackground: '#34343B', // Button Disabled Background Color
+		},
+		background: {
+			default: '#1D1B22',
+			paper: '#26262E',
+		},
+		secondary: {
+			main: '#86868A', // LockOut Icon Background Color
+		},
+	},
+	spacing: 6, // Spacing(간격) - Default : 8px
+});
 
 interface SignupProp {
 	onSubmit: FormEventHandler<HTMLFormElement>;
@@ -44,13 +61,15 @@ const SignupForm: FC<SignupProp> = ({
 				<CssBaseline />
 				<Box
 					sx={{
-						marginTop: 8,
+						mt: 10, // margin-top : 6 * 10 px
 						display: 'flex',
 						flexDirection: 'column',
-						alignItems: 'center',
+						alignItems: 'center', // 가로 중앙
+						bgcolor: 'background.paper',
+						borderRadius: '16px',
 					}}
 				>
-					<Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+					<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
 						<LockOutlinedIcon />
 					</Avatar>
 					<Typography component="h1" variant="h5">
@@ -81,10 +100,6 @@ const SignupForm: FC<SignupProp> = ({
 							name="repeat_password"
 							label="Repeat Password"
 						/>
-						<FormControlLabel
-							control={<Checkbox value="allowExtraEmails" color="primary" />}
-							label="I want to receive inspiration, marketing promotions and updates via email."
-						/>
 						<Button
 							type="submit"
 							fullWidth
@@ -99,7 +114,7 @@ const SignupForm: FC<SignupProp> = ({
 						</Button>
 						<Grid container justifyContent="flex-end">
 							<Grid item>
-								<Link href="/auth/login" variant="body2">
+								<Link href="/auth/login" variant="body2" sx={{ mr: 2 }}>
 									Already have an account? Sign in
 								</Link>
 							</Grid>
