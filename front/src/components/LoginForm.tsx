@@ -6,8 +6,6 @@ import {
 	Avatar,
 	Button,
 	CssBaseline,
-	FormControlLabel,
-	Checkbox,
 	Link,
 	Grid,
 	Box,
@@ -19,7 +17,26 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from './Copyright';
 import renderField from './validate/TextField';
 
-const theme = createTheme();
+const theme = createTheme({
+	palette: {
+		text: {
+			primary: '#fff', // Main Text
+			secondary: '#fff', // Validation Text
+		},
+		action: {
+			disabled: '#fff', // Button Disabled Text
+			disabledBackground: '#34343B', // Button Disabled Background Color
+		},
+		background: {
+			default: '#1D1B22',
+			paper: '#26262E',
+		},
+		secondary: {
+			main: '#86868A', // LockOut Icon Background Color
+		},
+	},
+	spacing: 6, // Spacing(간격) - Default : 8px
+});
 
 interface LoginProp {
 	onSubmit: FormEventHandler<HTMLFormElement>;
@@ -38,17 +55,19 @@ const LoginForm: FC<LoginProp> = ({
 				<CssBaseline />
 				<Box
 					sx={{
-						marginTop: 8,
+						mt: 12, // margin-top : 6 * 12 px
 						display: 'flex',
 						flexDirection: 'column',
-						alignItems: 'center',
+						alignItems: 'center', // 가로 중앙
+						bgcolor: 'background.paper',
+						borderRadius: '16px',
 					}}
 				>
-					<Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+					<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
 						<LockOutlinedIcon />
 					</Avatar>
 					<Typography component="h1" variant="h5">
-						Sign in
+						Log In
 					</Typography>
 					<Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
 						<Field
@@ -62,10 +81,6 @@ const LoginForm: FC<LoginProp> = ({
 							type="password"
 							name="password"
 							label="Password"
-						/>
-						<FormControlLabel
-							control={<Checkbox value="remember" color="primary" />}
-							label="Remember me"
 						/>
 						<Button
 							type="submit"
@@ -81,12 +96,10 @@ const LoginForm: FC<LoginProp> = ({
 						</Button>
 						<Grid container>
 							<Grid item xs>
-								<Link href="#" variant="body2">
-									Forgot password?
-								</Link>
+								<></>
 							</Grid>
 							<Grid item>
-								<Link href="/auth/signup" variant="body2">
+								<Link href="/auth/signup" variant="body2" sx={{ mr: 2 }}>
 									{"Don't have an account? Sign Up"}
 								</Link>
 							</Grid>

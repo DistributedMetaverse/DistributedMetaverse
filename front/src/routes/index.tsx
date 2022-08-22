@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import AppContent from '../components/common/AppContent';
-import { Main, Login, Signup, NotFound } from '../pages/index';
+import { Home, Login, Signup, NotFound } from '../pages/index';
 import PrivateRoute from './auth';
 
 const AuthRoutes: FC = (): JSX.Element => {
@@ -17,7 +17,7 @@ const MainRoutes: FC = (): JSX.Element => {
 	return (
 		<Routes>
 			<Route element={<AppContent />}>
-				<Route path="/" element={<Main />} />
+				<Route path="/" element={<Home />} />
 			</Route>
 			<Route path="/*" element={<NotFound />} />
 		</Routes>

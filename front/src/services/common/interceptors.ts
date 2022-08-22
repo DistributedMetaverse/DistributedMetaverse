@@ -1,6 +1,8 @@
 import axios, {
 	AxiosInstance,
 	AxiosRequestConfig,
+	AxiosRequestHeaders,
+	AxiosResponseHeaders,
 	AxiosError,
 	AxiosResponse,
 } from 'axios';
@@ -19,7 +21,8 @@ import {
 const setInterceptors = (instance: AxiosInstance) => {
 	instance.interceptors.request.use(
 		(config: AxiosRequestConfig) => {
-			const { url, headers } = config as any;
+			const url = config.url as string;
+			const headers = config.headers as AxiosRequestHeaders;
 			if (url.indexOf('auth/') === -1) {
 				headers.Authorization = ['Bearer', getAccessToken()].join(' ');
 			}
@@ -31,9 +34,11 @@ const setInterceptors = (instance: AxiosInstance) => {
 	instance.interceptors.response.use(
 		(response: AxiosResponse) => response,
 		async (error: AxiosError) => {
-			const { status, config } = error.response as any;
+			const { status, config } = error.response as AxiosResponse;
+			const url = config.url as string;
+			const headers = config.headers as AxiosResponseHeaders;
 			// -> Access Token 인증 실패 (UNAUTHORIZED : status === 401)
-			if (status === 401 && config.url.indexOf('auth/') === -1) {
+			if (status === 401 && url.indexOf('auth/') === -1) {
 				const tokenData = {
 					username: getSessionStorage(JWT_USERNAME),
 					accesstoken: getSessionStorage(JWT_ACCESS_TOKEN),
@@ -46,7 +51,7 @@ const setInterceptors = (instance: AxiosInstance) => {
 				); // O
 				if (status === 200) {
 					setSessionStorage(JWT_ACCESS_TOKEN, data.accesstoken);
-					config.headers.Authorization = ['Bearer', getAccessToken()].join(' ');
+					headers.Authorization = ['Bearer', getAccessToken()].join(' ');
 				} else {
 					clearSessionStorage(JWT_USERNAME);
 					clearSessionStorage(JWT_REFRESH_TOKEN);

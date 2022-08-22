@@ -37,29 +37,50 @@ const menuinitialState: MenuState = {
 	menus: [
 		{
 			index: 1,
-			name: 'Profile',
-			path: '/profile',
-			items: [],
-			title: '프로파일',
-			icon: 'icon-layers',
+			name: 'HOME',
+			path: '/',
+			title: '대시보드',
+			position: -0.8,
 			isActive: false,
 		},
 		{
 			index: 2,
-			name: 'Select',
-			path: '/select',
-			items: [],
-			title: '선택한 파일',
-			icon: 'icon-refresh',
+			name: 'ALL FILES',
+			path: '/file',
+			title: '모든 파일',
+			position: -2.1,
 			isActive: false,
 		},
 		{
 			index: 3,
-			name: 'Upload',
-			path: '/upload',
-			items: [],
-			title: '업로드한 파일',
-			icon: 'icon-anchor',
+			name: 'VIDEOS',
+			path: '/vedio',
+			title: '비디오 재생',
+			position: -1.2,
+			isActive: false,
+		},
+		{
+			index: 4,
+			name: 'PHOTOS',
+			path: '/photo',
+			title: '이미지 보기',
+			position: -1.6,
+			isActive: false,
+		},
+		{
+			index: 5,
+			name: 'RECENT',
+			path: '/recent',
+			title: '최신 파일',
+			position: -1.5,
+			isActive: false,
+		},
+		{
+			index: 6,
+			name: 'SETTINGS',
+			path: '/setting',
+			title: '설정 화면',
+			position: -2.3,
 			isActive: false,
 		},
 	],
@@ -78,25 +99,13 @@ const menuSlice = createSlice({
 					menu.isActive = false;
 				}
 			});
-			return {
-				...state,
-			};
-		},
-		changeDropdownMenu: (state: MenuState, action: PayloadAction<string>) => {
-			state.menus.forEach((menu) => {
-				if (action.payload === menu.path) {
-					menu.isActive = !menu.isActive;
-				}
-			});
-			return {
-				...state,
-			};
 		},
 	},
 });
 
 const datainitialState: DataState = {
 	data: [],
+	size: 0,
 };
 
 // dataSlice : action + reducer → slice
@@ -106,6 +115,9 @@ const dataSlice = createSlice({
 	reducers: {
 		dataSuccess: (state: DataState, action: PayloadAction<Array<object>>) => {
 			state.data = action.payload;
+		},
+		dataProgress: (state: DataState, action: PayloadAction<number>) => {
+			state.size = action.payload;
 		},
 	},
 });
@@ -118,16 +130,16 @@ const rootReducer = combineReducers({
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
-const { changeActiveMenu, changeDropdownMenu } = menuSlice.actions;
-const { dataSuccess } = dataSlice.actions;
+const { changeActiveMenu } = menuSlice.actions;
+const { dataSuccess, dataProgress } = dataSlice.actions;
 
 export {
 	loginSuccess,
 	loginFailure,
 	logoutSuccess,
 	changeActiveMenu,
-	changeDropdownMenu,
 	dataSuccess,
+	dataProgress,
 };
 
 export type RootState = ReturnType<typeof rootReducer>;

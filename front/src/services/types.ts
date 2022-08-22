@@ -1,18 +1,23 @@
-interface LoginVO {
+interface LoginData {
 	username: string;
 	password: string;
 }
 
-interface SignUpVO {
+interface SignUpData {
 	email: string;
 	username: string;
 	password: string;
 }
 
-interface TokenVO {
+interface TokenData {
 	username: string;
 	accesstoken: string;
 	refreshtoken: string;
 }
 
-export type { LoginVO, SignUpVO, TokenVO };
+interface PageData {
+	page: number;
+	type: string; // enum -> (all files / video / photo / current / download list)
+}
+
+export type { LoginData, SignUpData, TokenData, PageData };

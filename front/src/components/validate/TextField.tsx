@@ -23,7 +23,6 @@ const RenderField: FC<RenderFieldProps> = ({
 			margin="normal"
 			error={error ? true : false}
 			required
-			fullWidth
 			id={input.name}
 			label={label}
 			type={type}
@@ -32,6 +31,7 @@ const RenderField: FC<RenderFieldProps> = ({
 			onChange={input.onChange}
 			autoComplete={input.name}
 			helperText={error}
+			style={{ width: '80%' }}
 		/>
 	);
 };
