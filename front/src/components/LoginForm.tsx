@@ -10,6 +10,7 @@ import {
 	CssBaseline,
 	Grid,
 	Box,
+	Paper,
 	Typography,
 	Container,
 } from '@mui/material';
@@ -55,59 +56,68 @@ const LoginForm: FC<LoginProp> = ({
 		<ThemeProvider theme={theme}>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
-				<Box
+				<Paper
 					sx={{
 						mt: 12, // margin-top : 6 * 12 px
 						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center', // 가로 중앙
-						bgcolor: 'background.paper',
-						borderRadius: '16px',
+						justifyContent: 'center',
+						bgcolor: 'background.default',
 					}}
 				>
-					<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
-						<LockOutlinedIcon />
-					</Avatar>
-					<Typography component="h1" variant="h5">
-						Log In
-					</Typography>
-					<Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
-						<Field
-							component={renderField}
-							type="email"
-							name="email"
-							label="Email Address"
-						/>
-						<Field
-							component={renderField}
-							type="password"
-							name="password"
-							label="Password"
-						/>
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							disabled={
-								!submitting &&
-								Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
-							}
-							sx={{ mt: 3, mb: 2 }}
-						>
-							Sign In
-						</Button>
-						<Grid container justifyContent="center" sx={{ pb: 2 }}>
-							<Grid item xs={8}>
-								{"Don't have an account? Sign Up"}
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center', // 가로 중앙
+							bgcolor: 'background.paper',
+							borderRadius: '16px',
+							width: 350,
+						}}
+					>
+						<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
+							<LockOutlinedIcon />
+						</Avatar>
+						<Typography variant="h6">Log In</Typography>
+						<Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
+							<Field
+								component={renderField}
+								type="email"
+								name="email"
+								label="Email Address"
+							/>
+							<Field
+								component={renderField}
+								type="password"
+								name="password"
+								label="Password"
+							/>
+							<Button
+								type="submit"
+								fullWidth
+								variant="contained"
+								disabled={
+									!submitting &&
+									Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
+								}
+								sx={{ mt: 3, mb: 2 }}
+							>
+								Sign In
+							</Button>
+							<Grid container justifyContent="center" sx={{ pb: 2 }}>
+								<Grid item xs={8}>
+									<Typography variant="subtitle2" sx={{ mt: 0.2 }}>
+										{"Don't have an account? Sign Up"}
+									</Typography>
+								</Grid>
+								<Grid item>
+									<IconButton component={Link} to="/auth/signup" sx={{ p: 0 }}>
+										<ArrowCircleRightIcon color="primary" />
+									</IconButton>
+								</Grid>
 							</Grid>
-							<Grid item>
-								<IconButton component={Link} to="/auth/signup" sx={{ p: 0 }}>
-									<ArrowCircleRightIcon color="primary" />
-								</IconButton>
-							</Grid>
-						</Grid>
+						</Box>
 					</Box>
-				</Box>
+				</Paper>
 				<Copyright sx={{ mt: 8, mb: 4 }} />
 			</Container>
 		</ThemeProvider>

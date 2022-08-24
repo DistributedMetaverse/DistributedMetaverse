@@ -53,17 +53,18 @@ const FileTypeTabButton: FC<FileTypeTabButtonProps> = ({
 	setType,
 }): JSX.Element => {
 	const dispatch = useDispatch();
+	const [open, setOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
 	const showClick = (event: MouseEvent<HTMLButtonElement>) => {
-		setAnchorEl(event.currentTarget);
+		setAnchorEl(open ? null : event.currentTarget);
+		setOpen(!open);
 	};
 	const closeClick = (type: string) => {
 		dispatch(setType(type));
 		setAnchorEl(null);
+		setOpen(false);
 	};
-
-	const open = Boolean(anchorEl);
 
 	return (
 		<Box>
@@ -71,7 +72,14 @@ const FileTypeTabButton: FC<FileTypeTabButtonProps> = ({
 				variant="contained"
 				onClick={showClick}
 				endIcon={<KeyboardArrowDownIcon />}
-				sx={{ mt: -1, px: 2, pt: 0.5, pb: 0.5, fontSize: '0.7rem' }}
+				sx={{
+					mt: -1,
+					px: 2,
+					pt: 0.5,
+					pb: 0.5,
+					fontSize: '0.7rem',
+					fontWeight: 'bold',
+				}}
 				size="small"
 			>
 				Show {type}
@@ -83,24 +91,40 @@ const FileTypeTabButton: FC<FileTypeTabButtonProps> = ({
 				sx={{ zIndex: 1201 }}
 			>
 				<Paper elevation={3}>
-					<MenuList sx={{ px: 0, pt: 0.2, pb: 0.2 }}>
+					<MenuList sx={{ px: 0.5, pt: 0.2, pb: 0.2 }}>
 						{searchType.map((data: FileSearchTypeProps) => (
 							<MenuItem
 								key={data.type}
 								onClick={() => closeClick(data.type)}
 								dense
-								sx={{ pl: 1, pr: 2 }}
+								sx={{
+									px: 1,
+									pt: data.type !== type ? 0.5 : 0,
+									pb: data.type !== type ? 0.5 : 0,
+									minHeight: 20,
+								}}
 							>
 								<Grid container spacing={2}>
 									<Grid item xs={3}>
 										{data.type === type && (
 											<ListItemIcon>
-												<Check />
+												<Check
+													sx={{
+														ml: 0.5,
+														mt: 0.5,
+														color: 'text.primary',
+													}}
+												/>
 											</ListItemIcon>
 										)}
 									</Grid>
 									<Grid item xs={9} sx={{ mt: data.type === type ? 0.5 : 0 }}>
-										<ListItemText>{data.name}</ListItemText>
+										<ListItemText
+											primaryTypographyProps={{
+												style: { fontSize: 13, fontWeight: 'bold' },
+											}}
+											primary={data.name}
+										/>
 									</Grid>
 								</Grid>
 							</MenuItem>

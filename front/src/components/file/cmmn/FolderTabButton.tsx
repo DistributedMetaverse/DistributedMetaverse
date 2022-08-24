@@ -2,10 +2,10 @@ import React, { FC, useState, MouseEvent } from 'react';
 import { Dispatch, ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
-import { FolderInfo } from '../../store/types';
+import { FolderInfo } from '../../../store/types';
 import { useDispatch } from 'react-redux';
-import Api from '../../services/api';
-import useFolderTabList from '../../hooks/useFolderTabList';
+import Api from '../../../services/api';
+import useFolderTabList from '../../../hooks/useFolderTabList';
 import {
 	Box,
 	Grid,
@@ -33,19 +33,21 @@ const FolderButton: FC<FolderButtonProps> = ({
 	setPath,
 }): JSX.Element => {
 	const dispatch = useDispatch();
+	const [open, setOpen] = useState(false);
 	const [data, fetchData] = useFolderTabList({ actions });
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const datas = data.datas as Array<FolderInfo>;
 
 	const showClick = (event: MouseEvent<HTMLButtonElement>) => {
-		setAnchorEl(event.currentTarget);
+		fetchData(); // → Refresh
+		setAnchorEl(open ? null : event.currentTarget);
+		setOpen(!open);
 	};
 	const closeClick = (path: string) => {
 		dispatch(setPath(path));
 		setAnchorEl(null);
+		setOpen(false);
 	};
-
-	const open = Boolean(anchorEl);
 
 	return (
 		<Box>
@@ -72,19 +74,35 @@ const FolderButton: FC<FolderButtonProps> = ({
 									key={data.path}
 									onClick={() => closeClick(data.path)}
 									dense
-									disableRipple
+									sx={{ px: 2, pt: 0.5, pb: 0.5, minHeight: 22 }}
 								>
 									<Grid container spacing={2}>
 										<Grid item xs={8}>
-											<ListItemText>{data.path}</ListItemText>
+											<ListItemText
+												primaryTypographyProps={{
+													style: { fontSize: 13, fontWeight: 'bold' },
+												}}
+												primary={data.path}
+											/>
 										</Grid>
 										<Grid item xs={2}>
-											<ListItemText>{data.count}</ListItemText>
+											<ListItemText
+												primaryTypographyProps={{ style: { fontSize: 13 } }}
+												primary={data.count}
+											/>
 										</Grid>
-										<Grid item xs={2}>
+										<Grid
+											item
+											xs={2}
+											sx={{ mb: data.path === path ? -0.5 : 0 }}
+										>
 											{data.path === path && (
 												<ListItemIcon>
-													<Check />
+													<Check
+														sx={{
+															color: 'text.primary',
+														}}
+													/>
 												</ListItemIcon>
 											)}
 										</Grid>

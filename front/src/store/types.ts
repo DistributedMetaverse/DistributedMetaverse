@@ -62,7 +62,7 @@ interface DataInfo extends SearchInfo {
 	filename: string;
 	fileSize: number;
 	description?: string;
-	createdAt: Date;
+	createdAt: string;
 	isLike?: boolean;
 	shared?: Array<UserInfo>;
 }
@@ -86,6 +86,7 @@ export type {
 	PathState,
 	FolderInfo,
 	FolderInfoList,
+	UserInfo,
 	DataInfo,
 	DataInfoList,
 	DataState,

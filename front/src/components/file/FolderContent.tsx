@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, ChangeEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { FolderInfo } from '../../store/types';
 import useFolderPathPageList from '../../hooks/useFolderPathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
+import FolderIcon from '@mui/icons-material/Folder';
 
 interface FolderContentProps {
 	actions: ActionCreatorsMapObject;
@@ -15,13 +16,25 @@ const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
 		path: '/',
 		type: 'download',
 	});
+
+	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
+		const value = (event.target as HTMLButtonElement).textContent as any;
+		if (value && value === String(page)) setPage(page);
+	};
+
+	const endOfSplit = (path: string) => {
+		const name = path.split('/').pop();
+		if (name === '') return '.';
+		else return name;
+	};
+
 	const datas = data.datas as Array<FolderInfo>;
 	return (
 		<Box sx={{ mt: 2, mb: 2 }}>
 			<Grid container spacing={3}>
 				{datas &&
 					datas.map((data: FolderInfo) => (
-						<Grid item key={data.path} xs={4} md={3} lg={2}>
+						<Grid item key={data.path} xs={6} md={3} lg={2}>
 							<Paper
 								sx={{
 									p: 2,
@@ -29,8 +42,12 @@ const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
 									flexDirection: 'column',
 								}}
 							>
-								<Typography component="span" variant="h6">
-									{data.path}
+								<FolderIcon />
+								<Typography variant="subtitle2">
+									{endOfSplit(data.path)}
+								</Typography>
+								<Typography variant="subtitle2" sx={{ color: '#626274' }}>
+									{data.count} files
 								</Typography>
 							</Paper>
 						</Grid>
@@ -45,6 +62,7 @@ const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
 					boundaryCount={1}
 					showFirstButton
 					showLastButton
+					onChange={pageChange}
 					size="small"
 				/>
 			</Box>

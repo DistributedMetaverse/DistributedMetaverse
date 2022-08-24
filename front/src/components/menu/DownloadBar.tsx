@@ -7,8 +7,18 @@ import { useDispatch } from 'react-redux';
 import { previewInfo } from '../../store/index';
 import Api from '../../services/api';
 import useFilePathPageList from '../../hooks/useFilePathPageList';
-import { Box, Grow, Grid, Button, Typography } from '@mui/material';
+import {
+	Box,
+	Grow,
+	Grid,
+	Button,
+	IconButton,
+	Divider,
+	Typography,
+} from '@mui/material';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 
 interface DownloadProps {
 	branch: boolean;
@@ -17,15 +27,24 @@ interface DownloadProps {
 
 const DownloadBar: FC<DownloadProps> = ({ branch, actions }): JSX.Element => {
 	const dispatch = useDispatch();
+	const page = 1; // default
 	const [data, setPage] = useFilePathPageList({
 		actions,
 		path: '/',
 		type: 'download',
 	});
 	const datas = data.datas as Array<DataInfo>;
+
 	const previewClick = (dataId: string) => {
 		dispatch(previewInfo(dataId));
 	};
+	const prevClick = () => {
+		if (page > 1) setPage(page - 1);
+	};
+	const nextClick = () => {
+		setPage(page + 1);
+	};
+
 	return (
 		<Box
 			sx={{
@@ -76,6 +95,30 @@ const DownloadBar: FC<DownloadProps> = ({ branch, actions }): JSX.Element => {
 						</Grow>
 					))}
 			</Grid>
+			<Divider
+				variant="fullWidth"
+				sx={{ pt: 3, height: '2px', borderColor: 'primary.main' }}
+			/>
+			<Box sx={{ pt: 2, display: 'flex' }}>
+				<Grid container sx={{ justifyContent: 'space-between' }}>
+					<Grid item>
+						<IconButton
+							onClick={prevClick}
+							sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
+						>
+							<ArrowCircleLeftIcon />
+						</IconButton>
+					</Grid>
+					<Grid item>
+						<IconButton
+							onClick={nextClick}
+							sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
+						>
+							<ArrowCircleRightIcon />
+						</IconButton>
+					</Grid>
+				</Grid>
+			</Box>
 		</Box>
 	);
 };

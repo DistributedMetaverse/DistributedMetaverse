@@ -16,6 +16,7 @@ import {
 	CssBaseline,
 	Grid,
 	Box,
+	Paper,
 	Typography,
 	Container,
 } from '@mui/material';
@@ -61,71 +62,80 @@ const SignupForm: FC<SignupProp> = ({
 		<ThemeProvider theme={theme}>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
-				<Box
+				<Paper
 					sx={{
 						mt: 10, // margin-top : 6 * 10 px
 						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center', // 가로 중앙
-						bgcolor: 'background.paper',
-						borderRadius: '16px',
+						justifyContent: 'center',
+						bgcolor: 'background.default',
 					}}
 				>
-					<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
-						<LockOutlinedIcon />
-					</Avatar>
-					<Typography component="h1" variant="h5">
-						Sign up
-					</Typography>
-					<Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 3 }}>
-						<Field
-							component={renderField}
-							type="email"
-							name="email"
-							label="Email Address"
-						/>
-						<Field
-							component={renderField}
-							type="text"
-							name="username"
-							label="Username"
-						/>
-						<Field
-							component={renderField}
-							type="password"
-							name="password"
-							label="Password"
-						/>
-						<Field
-							component={renderField}
-							type="password"
-							name="repeat_password"
-							label="Repeat Password"
-						/>
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							disabled={
-								!submitting &&
-								Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
-							}
-							sx={{ mt: 3, mb: 2 }}
-						>
-							Sign Up
-						</Button>
-						<Grid container justifyContent="center" sx={{ pb: 2 }}>
-							<Grid item>
-								<IconButton component={Link} to="/auth/login" sx={{ p: 0 }}>
-									<ArrowCircleLeftIcon color="primary" />
-								</IconButton>
+					<Box
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							alignItems: 'center', // 가로 중앙
+							bgcolor: 'background.paper',
+							borderRadius: '16px',
+							width: 350,
+						}}
+					>
+						<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
+							<LockOutlinedIcon />
+						</Avatar>
+						<Typography variant="h6">Sign up</Typography>
+						<Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 0 }}>
+							<Field
+								component={renderField}
+								type="email"
+								name="email"
+								label="Email Address"
+							/>
+							<Field
+								component={renderField}
+								type="text"
+								name="username"
+								label="Username"
+							/>
+							<Field
+								component={renderField}
+								type="password"
+								name="password"
+								label="Password"
+							/>
+							<Field
+								component={renderField}
+								type="password"
+								name="repeat_password"
+								label="Repeat Password"
+							/>
+							<Button
+								type="submit"
+								fullWidth
+								variant="contained"
+								disabled={
+									!submitting &&
+									Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
+								}
+								sx={{ mt: 3, mb: 2 }}
+							>
+								Sign Up
+							</Button>
+							<Grid container justifyContent="center" sx={{ pb: 2 }}>
+								<Grid item>
+									<IconButton component={Link} to="/auth/login" sx={{ p: 0 }}>
+										<ArrowCircleLeftIcon color="primary" />
+									</IconButton>
+								</Grid>
+								<Grid item xs={8}>
+									<Typography variant="subtitle2" sx={{ mt: 0.2 }}>
+										Already have an account? Sign in
+									</Typography>
+								</Grid>
 							</Grid>
-							<Grid item xs={8}>
-								Already have an account? Sign in
-							</Grid>
-						</Grid>
+						</Box>
 					</Box>
-				</Box>
+				</Paper>
 				<Copyright sx={{ mt: 5 }} />
 			</Container>
 		</ThemeProvider>

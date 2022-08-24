@@ -16,7 +16,7 @@ const useDataInfoDetails = ({
 		dataId: '',
 		filename: '',
 		fileSize: 0,
-		createdAt: new Date(),
+		createdAt: '2022-01-23',
 		isLike: false,
 	});
 
