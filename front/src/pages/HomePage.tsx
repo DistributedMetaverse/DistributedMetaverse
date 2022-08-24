@@ -8,7 +8,7 @@ const HomePage: FC = (): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
 			{/* Chart */}
-			<Grid item xs={12} md={8} lg={9}>
+			<Grid item xs={12} md={8} lg={6}>
 				<Paper
 					sx={{
 						p: 2,

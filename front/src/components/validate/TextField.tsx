@@ -32,6 +32,8 @@ const RenderField: FC<RenderFieldProps> = ({
 			autoComplete={input.name}
 			helperText={error}
 			style={{ width: '80%' }}
+			inputProps={{ style: { fontSize: 13 } }} // font size of input text
+			InputLabelProps={{ style: { fontSize: 14 } }} // font size of input label
 		/>
 	);
 };

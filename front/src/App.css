@@ -1,3 +1,7 @@
 .App {
     text-align: center;
 }
+
+.MuiListItemIcon-root svg {
+    font-size: 1rem !important;
+}

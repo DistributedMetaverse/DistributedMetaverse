@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import { setFilePath, setFileType } from '../../store/index';
-import { Box, Grid, Divider, Typography } from '@mui/material';
-import FolderTabButton from './FolderTabButton';
-import FileTypeTabButton from './FileTypeTabButton';
+import { Box, Grid, Typography } from '@mui/material';
+import FolderTabButton from './cmmn/FolderTabButton';
+import FileTypeTabButton from './cmmn/FileTypeTabButton';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 interface FileHeaderProps {

@@ -6,7 +6,7 @@ const JWT_USERNAME = 'username';
 const JWT_ACCESS_TOKEN = 'access_token';
 const JWT_REFRESH_TOKEN = 'refresh_token';
 
-const isTokenExpired = (token: string) => {
+const isTokenExpired = (token: string): boolean => {
 	try {
 		const decoded: JwtPayload = jwtDecode(token);
 		if ((decoded?.exp as JwtPayload) < Date.now() / 1000) {
@@ -18,10 +18,11 @@ const isTokenExpired = (token: string) => {
 	}
 };
 
-const getAccessToken = () => getSessionStorage(JWT_ACCESS_TOKEN);
-const getRefreshToken = () => getSessionStorage(JWT_REFRESH_TOKEN);
+const getAccessToken = (): string | null => getSessionStorage(JWT_ACCESS_TOKEN);
+const getRefreshToken = (): string | null =>
+	getSessionStorage(JWT_REFRESH_TOKEN);
 
-const isAuthenticated = () => {
+const isAuthenticated = (): boolean => {
 	if (!!getAccessToken() && !isTokenExpired(getAccessToken() as string)) {
 		return true;
 	}
