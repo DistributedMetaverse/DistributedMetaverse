@@ -1,7 +1,15 @@
 import { createSlice, combineReducers, PayloadAction } from '@reduxjs/toolkit';
 import { reducer as formReducer } from 'redux-form';
-import { AuthState, DataState, MenuState } from './types';
+import {
+	AuthState,
+	TitleState,
+	MenuState,
+	PreviewState,
+	PathState,
+	DataState,
+} from './types';
 
+// 1.1. 인증 관련 State
 const authinitialState: AuthState = {
 	token: '',
 	isAuthenticated: false,
@@ -9,7 +17,7 @@ const authinitialState: AuthState = {
 	errorMessage: '',
 };
 
-// authSlice : action + reducer → slice
+// 1.2. authSlice : action + reducer → slice
 const authSlice = createSlice({
 	name: 'auth',
 	initialState: authinitialState,
@@ -33,29 +41,48 @@ const authSlice = createSlice({
 	},
 });
 
+// 2.1. 메뉴 관련 State
+const titleinitialState: TitleState = {
+	title: 'Dashboard',
+};
+
+// 2.2. titleSlice : action + reducer → slice
+const titleSlice = createSlice({
+	name: 'title',
+	initialState: titleinitialState,
+	reducers: {
+		changeTitle: (state: TitleState, action: PayloadAction<string>) => {
+			state.title = action.payload;
+		},
+	},
+});
+
 const menuinitialState: MenuState = {
 	menus: [
 		{
 			index: 1,
 			name: 'HOME',
 			path: '/',
-			title: '대시보드',
+			title: 'Dashboard',
+			description: '대시보드',
 			position: -0.8,
-			isActive: false,
+			isActive: true,
 		},
 		{
 			index: 2,
 			name: 'ALL FILES',
 			path: '/file',
-			title: '모든 파일',
+			title: 'All Files',
+			description: '모든 파일',
 			position: -2.1,
 			isActive: false,
 		},
 		{
 			index: 3,
 			name: 'VIDEOS',
-			path: '/vedio',
-			title: '비디오 재생',
+			path: '/video',
+			title: 'Video Play',
+			description: '비디오 재생',
 			position: -1.2,
 			isActive: false,
 		},
@@ -63,7 +90,8 @@ const menuinitialState: MenuState = {
 			index: 4,
 			name: 'PHOTOS',
 			path: '/photo',
-			title: '이미지 보기',
+			title: 'Photo View',
+			description: '이미지 보기',
 			position: -1.6,
 			isActive: false,
 		},
@@ -71,7 +99,8 @@ const menuinitialState: MenuState = {
 			index: 5,
 			name: 'RECENT',
 			path: '/recent',
-			title: '최신 파일',
+			title: 'Recent File',
+			description: '최신 파일',
 			position: -1.5,
 			isActive: false,
 		},
@@ -79,14 +108,15 @@ const menuinitialState: MenuState = {
 			index: 6,
 			name: 'SETTINGS',
 			path: '/setting',
-			title: '설정 화면',
+			title: 'Setting',
+			description: '설정 화면',
 			position: -2.3,
 			isActive: false,
 		},
 	],
 };
 
-// menuSlice : action + reducer → slice
+// 2.3. menuSlice : action + reducer → slice
 const menuSlice = createSlice({
 	name: 'menu',
 	initialState: menuinitialState,
@@ -103,12 +133,62 @@ const menuSlice = createSlice({
 	},
 });
 
+// 3.1. Preview 관련 State
+const previewinitialState: PreviewState = {
+	dataId: '',
+	isActive: false,
+};
+
+// 3.2. previewSlice : action + reducer → slice
+const previewSlice = createSlice({
+	name: 'preview',
+	initialState: previewinitialState,
+	reducers: {
+		previewInfo: (state: PreviewState, action: PayloadAction<string>) => {
+			state.dataId = action.payload;
+			state.isActive = true;
+		},
+		previewSwitch: (state: PreviewState, action: PayloadAction<boolean>) => {
+			state.isActive = action.payload;
+		},
+	},
+});
+
+// 4.1. Path 관련 State
+const pathinitialState: PathState = {
+	folderPath: '/',
+	filePath: '/',
+	folderType: 'all',
+	fileType: 'all',
+};
+
+// 4.2. pathSlice : action + reducer → slice
+const pathSlice = createSlice({
+	name: 'data',
+	initialState: pathinitialState,
+	reducers: {
+		setFolderPath: (state: PathState, action: PayloadAction<string>) => {
+			state.folderPath = action.payload;
+		},
+		setFilePath: (state: PathState, action: PayloadAction<string>) => {
+			state.filePath = action.payload;
+		},
+		setFolderType: (state: PathState, action: PayloadAction<string>) => {
+			state.folderType = action.payload;
+		},
+		setFileType: (state: PathState, action: PayloadAction<string>) => {
+			state.fileType = action.payload;
+		},
+	},
+});
+
+// 5.1. 데이터 검색 및 업로드 관련 State
 const datainitialState: DataState = {
 	data: [],
 	size: 0,
 };
 
-// dataSlice : action + reducer → slice
+// 5.2. dataSlice : action + reducer → slice
 const dataSlice = createSlice({
 	name: 'data',
 	initialState: datainitialState,
@@ -125,19 +205,33 @@ const dataSlice = createSlice({
 const rootReducer = combineReducers({
 	form: formReducer, // <- redux-form
 	auth: authSlice.reducer,
+	title: titleSlice.reducer,
 	menu: menuSlice.reducer,
+	preview: previewSlice.reducer,
+	path: pathSlice.reducer,
 	data: dataSlice.reducer,
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
+const { changeTitle } = titleSlice.actions;
 const { changeActiveMenu } = menuSlice.actions;
+const { previewInfo, previewSwitch } = previewSlice.actions;
+const { setFolderPath, setFilePath, setFolderType, setFileType } =
+	pathSlice.actions;
 const { dataSuccess, dataProgress } = dataSlice.actions;
 
 export {
 	loginSuccess,
 	loginFailure,
 	logoutSuccess,
+	changeTitle,
 	changeActiveMenu,
+	previewInfo,
+	previewSwitch,
+	setFolderPath,
+	setFilePath,
+	setFolderType,
+	setFileType,
 	dataSuccess,
 	dataProgress,
 };

@@ -9,12 +9,12 @@
         "es2021": true
     },
     "plugins": [
-        "@typescript-eslint"    // <- Add
+        "@typescript-eslint"    // ← Add
     ],
     "extends": [
-        //"prettier/@typescript-eslint", // Conflict -> eslint-config-prettier 8.0.0 -> Disabled
+        //"prettier/@typescript-eslint", // Conflict → eslint-config-prettier 8.0.0 → Disabled
         "eslint:recommended",
-        "plugin:react/recommended",     // Contarins -> "plugins": ["react"], "parserOptions": { "ecmaFeatures": { "jsx": true } }
+        "plugin:react/recommended",     // Contarins → "plugins": ["react"], "parserOptions": { "ecmaFeatures": { "jsx": true } }
         "plugin:@typescript-eslint/recommended", 
         "plugin:prettier/recommended"
     ],

@@ -2,9 +2,11 @@ import React, { FC, useState, ReactElement } from 'react';
 import { Outlet } from 'react-router';
 import AppHeader from './AppHeader';
 import AppMenu from './AppMenu';
+import AppSubHeader from './AppSubHeader';
 import AppPreview from './AppPreview';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box, Container } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Copyright from '../Copyright';
 
 const mdTheme = createTheme({
 	palette: {
@@ -35,7 +37,7 @@ const mdTheme = createTheme({
 
 const drawerWidth = 160;
 
-export interface LayoutDefaultProps {
+interface LayoutDefaultProps {
 	children?: ReactElement;
 }
 
@@ -47,7 +49,22 @@ const AppContent: FC<LayoutDefaultProps> = ({ children }): JSX.Element => {
 				<CssBaseline />
 				<AppHeader open={open} setOpen={setOpen} width={drawerWidth} />
 				<AppMenu open={open} setOpen={setOpen} width={drawerWidth} />
-				{children || <Outlet />}
+				<Box
+					component="main"
+					sx={{
+						flexGrow: 1,
+						height: '100vh',
+						overflow: 'auto',
+						bgcolor: 'background.default',
+						zIndex: 1201,
+					}}
+				>
+					<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+						<AppSubHeader />
+						{children || <Outlet />}
+						<Copyright sx={{ pt: 4 }} />
+					</Container>
+				</Box>
 				<AppPreview />
 			</Box>
 		</ThemeProvider>

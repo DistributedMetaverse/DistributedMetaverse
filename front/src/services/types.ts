@@ -17,7 +17,9 @@ interface TokenData {
 
 interface PageData {
 	page: number;
-	type: string; // enum -> (all files / video / photo / current / download list)
+	path: string;
+	type: string; // enum → (all / video / photo / pdf / doc & current / download)
+	identifier: 'file' | 'folder'; // ← enum
 }
 
 export type { LoginData, SignUpData, TokenData, PageData };

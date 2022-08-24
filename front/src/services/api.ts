@@ -15,7 +15,7 @@ import {
 import toastMessage from '../utils/toast';
 import { setSessionStorage, clearSessionStorage } from '../utils/storage';
 import { setInterceptors } from './common/interceptors';
-import { LoginData, SignUpData, TokenData, PageData } from './types';
+import { LoginData, SignUpData, PageData } from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
@@ -86,9 +86,9 @@ const auth = {
 				}
 			}),
 	// 토큰 재생성 API : <baseURL>/auth/refresh
-	refresh: (userData: TokenData) => (dispatch: Dispatch) =>
+	refresh: () => (dispatch: Dispatch) =>
 		instance
-			.post('auth/refresh', userData)
+			.get('auth/refresh')
 			.then((response: AxiosResponse) => {
 				dispatch(response.data);
 				return response;
@@ -100,7 +100,7 @@ const auth = {
 };
 
 const data = {
-	// 데이터 다운로드 API : <baseURL>/data/download/{dataId}
+	// 파일 다운로드 API : <baseURL>/data/download/{dataId}
 	download: (dataId: number) => (dispatch: Dispatch) =>
 		instance
 			.get(`data/download/${dataId}`)
@@ -111,7 +111,7 @@ const data = {
 				const { data } = error.response as AxiosResponse;
 				toastMessage(data.message, 'warn');
 			}),
-	// 데이터 업로드 API : <baseURL>/data/upload
+	// 파일 업로드 API : <baseURL>/data/upload
 	upload: (formData: HTMLFormElement) => (dispatch: Dispatch) =>
 		instance
 			.post('data/upload', formData, {
@@ -130,27 +130,23 @@ const data = {
 				const { data } = error.response as AxiosResponse;
 				toastMessage(data.message, 'warn');
 			}),
-	// 데이터 리스트 API : <baseURL>/data/list/{page}?type={type}
+	// 특정경로 파일 리스트 API : <baseURL>/data/list/{page}?type={type}
 	list: (pageData: PageData) => (dispatch: Dispatch) =>
 		instance
-			.get(`data/list/${pageData.page}?type=${pageData.type}`)
+			.get(
+				`data/list/${pageData.page}?${pageData.identifier}=${pageData.path}&type=${pageData.type}`
+			)
 			.then((response: AxiosResponse) => {
 				dispatch(dataSuccess(response.data));
 				return response.data;
 			}),
-	// 데이터 세부정보 API : <baseURL>/data/info/{dataId}
+	// 파일 세부정보 API : <baseURL>/data/info/{dataId}
 	info: (dataId: number) => (dispatch: Dispatch) =>
 		instance.get(`data/info/${dataId}`).then((response: AxiosResponse) => {
 			dispatch(dataSuccess(response.data));
 			return response.data;
 		}),
-	// 데이터 특정경로 파일 리스트 호출 API : <baseURL>/data/file?path={path}
-	path: (path: string) => (dispatch: Dispatch) =>
-		instance.get(`data/file?path=${path}`).then((response: AxiosResponse) => {
-			dispatch(dataSuccess(response.data));
-			return response.data;
-		}),
-	// 데이터 파일 검색 API : <baseURL>/data/file?search={keyword}
+	// 파일 검색 API : <baseURL>/data/file?search={keyword}
 	search: (keyword: string) => (dispatch: Dispatch) =>
 		instance
 			.get(`data/file?search=${keyword}`)
@@ -160,9 +156,19 @@ const data = {
 			}),
 };
 
+const status = {
+	// 폴더 리스트 검색 API : <baseURL>/data/folder
+	folder: () => (dispatch: Dispatch) =>
+		instance.get('data/folder').then((response: AxiosResponse) => {
+			dispatch(dataSuccess(response.data));
+			return response.data;
+		}),
+};
+
 const api = {
 	auth,
 	data,
+	status,
 };
 
 export default { ...api };

@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
-import { MenuInfo } from '../../store/types';
+import { useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { MenuInfo, MenuState } from '../../store/types';
 import { useDispatch } from 'react-redux';
-import { changeActiveMenu } from '../../store/index';
+import { changeTitle, changeActiveMenu } from '../../store/index';
 import {
 	Box,
 	Grow, // Transitions
@@ -34,9 +36,11 @@ interface MenuBarProps {
 
 const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 	const dispatch = useDispatch();
-	const menuClick = (path: string) => {
+	const navigate = useNavigate();
+	const menuClick = (title: string, path: string) => {
+		dispatch(changeTitle(title));
 		dispatch(changeActiveMenu(path));
-		//window.location.replace(path);
+		navigate(path);
 	};
 	return (
 		<>
@@ -47,7 +51,7 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 						<Grow key={menu.index} in={branch} timeout={menu.index * 300}>
 							<ListItemButton
 								selected={menu.isActive}
-								onClick={() => menuClick(menu.path)}
+								onClick={() => menuClick(menu.title, menu.path)}
 								sx={{
 									pl: 3, // MenuBar 양쪽 간격 맞춤
 									'&.Mui-selected': {
@@ -83,7 +87,7 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 								</ListItemIcon>
 								<ListItemText
 									secondaryTypographyProps={{ fontSize: '0.8rem' }}
-									secondary={menu.title}
+									secondary={menu.description}
 								/>
 							</ListItemButton>
 						</Grow>
@@ -94,4 +98,8 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 	);
 };
 
-export default MenuBar;
+const mapStateToProps = (state: any) => ({
+	menus: (state.menu as MenuState).menus,
+});
+
+export default connect(mapStateToProps, null)(MenuBar);
