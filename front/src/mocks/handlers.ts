@@ -5,40 +5,75 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { PageData, TokenData } from '../services/types';
-import { DataListProps } from '../components/menu/types';
+import { DataInfo, DataInfoList, FolderInfoList } from '../store/types';
 
-const datalist: DataListProps = {
+const datainfo: DataInfo = {
+	id: 1,
+	dataId: 'test1',
+	filename: 'test1.png',
+	fileSize: 10,
+	createdAt: new Date(),
+	isLike: false,
+};
+
+const datalist: DataInfoList = {
 	datas: [
 		{
 			id: 1,
-			dataId: 1,
+			dataId: 'test1',
 			filename: 'test1.png',
 			fileSize: 10,
-			dataType: 'download',
+			createdAt: new Date(),
+			isLike: true,
 		},
 		{
 			id: 2,
-			dataId: 2,
+			dataId: 'test2',
 			filename: 'test2.png',
 			fileSize: 20,
-			dataType: 'download',
+			createdAt: new Date(),
+			isLike: false,
 		},
 		{
 			id: 3,
-			dataId: 3,
+			dataId: 'test3',
 			filename: 'test3.png',
 			fileSize: 30,
-			dataType: 'download',
+			createdAt: new Date(),
+			isLike: false,
 		},
 		{
 			id: 4,
-			dataId: 4,
+			dataId: 'test4',
 			filename: 'test4.png',
 			fileSize: 40,
-			dataType: 'download',
+			createdAt: new Date(),
+			isLike: false,
 		},
 	],
 };
+
+const folderlist: FolderInfoList = {
+	datas: [
+		{
+			path: '/',
+			count: 2,
+		},
+		{
+			path: '/data/data1',
+			count: 10,
+		},
+		{
+			path: '/test1/folder',
+			count: 23,
+		},
+		{
+			path: '/test2',
+			count: 4,
+		},
+	],
+};
+
 const secret = 'S-dV7@1SS#AGd#%^';
 
 export const handlers = [
@@ -68,14 +103,33 @@ export const handlers = [
 		return res(ctx.status(201));
 	}),
 
-	// 다운로드 목록
+	// 파일 세부정보
+	rest.get('/api/data/info/:dataId', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(datainfo));
+	}),
+
+	// 폴더 Tab 리스트 검색
+	rest.get('/api/data/folder', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(folderlist));
+	}),
+
+	// 특정경로 파일 ↔ 폴더 리스트 검색
 	rest.get('/api/data/list/:page', (req, res, ctx) => {
 		const { page } = req.params;
-		const dataType = req.url.searchParams.get('type');
+		const file = req.url.searchParams.get('file');
+		const folder = req.url.searchParams.get('folder');
+		const path = file ? file : folder;
+		const identifier = file ? 'file' : 'folder';
+		const type = req.url.searchParams.get('type');
+		console.log(type);
 		const pageData: PageData = {
 			page: Number(page),
-			type: String(dataType),
+			path: String(path),
+			type: 'all',
+			identifier: identifier,
 		};
-		return res(ctx.status(200), ctx.json({ pageData, ...datalist }));
+		if (identifier === 'file')
+			return res(ctx.status(200), ctx.json({ pageData, ...datalist }));
+		else return res(ctx.status(200), ctx.json({ pageData, ...folderlist }));
 	}),
 ];

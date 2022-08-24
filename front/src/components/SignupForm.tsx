@@ -1,4 +1,5 @@
 import React, { FC, FormEventHandler } from 'react';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Field, reduxForm, ConfigProps } from 'redux-form';
 import {
@@ -11,8 +12,8 @@ import {
 import {
 	Avatar,
 	Button,
+	IconButton,
 	CssBaseline,
-	Link,
 	Grid,
 	Box,
 	Typography,
@@ -20,6 +21,7 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import Copyright from './Copyright';
 import renderField from './validate/TextField';
 
@@ -112,11 +114,14 @@ const SignupForm: FC<SignupProp> = ({
 						>
 							Sign Up
 						</Button>
-						<Grid container justifyContent="flex-end">
+						<Grid container justifyContent="center" sx={{ pb: 2 }}>
 							<Grid item>
-								<Link href="/auth/login" variant="body2" sx={{ mr: 2 }}>
-									Already have an account? Sign in
-								</Link>
+								<IconButton component={Link} to="/auth/login" sx={{ p: 0 }}>
+									<ArrowCircleLeftIcon color="primary" />
+								</IconButton>
+							</Grid>
+							<Grid item xs={8}>
+								Already have an account? Sign in
 							</Grid>
 						</Grid>
 					</Box>

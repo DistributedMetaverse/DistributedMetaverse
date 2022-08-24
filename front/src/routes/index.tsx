@@ -1,26 +1,60 @@
 import React, { FC } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import AppContent from '../components/common/AppContent';
-import { Home, Login, Signup, NotFound } from '../pages/index';
+import {
+	Home,
+	Login,
+	Signup,
+	File,
+	Video,
+	Photo,
+	Recent,
+	Setting,
+	NotFound,
+} from '../pages/index';
 import PrivateRoute from './auth';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import './route.css';
 
 const AuthRoutes: FC = (): JSX.Element => {
+	const location = useLocation();
+	const path = location.pathname.replace('/auth', '');
+	const slide = path === '/login' ? 'left' : 'right';
 	return (
-		<Routes>
-			<Route path="/login" element={<Login />} />
-			<Route path="/signup" element={<Signup />} />
-		</Routes>
+		<TransitionGroup>
+			<CSSTransition key={location.pathname} classNames={slide} timeout={300}>
+				<Routes location={location}>
+					<Route path="/login" element={<Login />} />
+					<Route path="/signup" element={<Signup />} />
+					<Route path="*" element={<NotFound />} />
+				</Routes>
+			</CSSTransition>
+		</TransitionGroup>
 	);
 };
 
 const MainRoutes: FC = (): JSX.Element => {
+	const location = useLocation();
 	return (
-		<Routes>
-			<Route element={<AppContent />}>
-				<Route path="/" element={<Home />} />
-			</Route>
-			<Route path="/*" element={<NotFound />} />
-		</Routes>
+		<TransitionGroup>
+			<CSSTransition
+				key={location.pathname}
+				in={true}
+				classNames="fade"
+				timeout={300}
+				unmountOnExit
+			>
+				<Routes location={location}>
+					<Route path="/" element={<Home />} />
+					<Route path="/file" element={<File />} />
+					<Route path="/video" element={<Video />} />
+					<Route path="/photo" element={<Photo />} />
+					<Route path="/recent" element={<Recent />} />
+					<Route path="/setting" element={<Setting />} />
+					<Route path="*" element={<NotFound />} />
+				</Routes>
+			</CSSTransition>
+		</TransitionGroup>
 	);
 };
 
@@ -29,7 +63,9 @@ const RootRoutes: FC = (): JSX.Element => {
 		<Routes>
 			<Route path="/auth/*" element={<AuthRoutes />} />
 			<Route element={<PrivateRoute />}>
-				<Route path="/*" element={<MainRoutes />} />
+				<Route element={<AppContent />}>
+					<Route path="/*" element={<MainRoutes />} />
+				</Route>
 			</Route>
 		</Routes>
 	);

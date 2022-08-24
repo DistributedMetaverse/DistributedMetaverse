@@ -1,17 +1,4 @@
-import React, {
-	FC,
-	useEffect,
-	useCallback,
-	useState,
-	Dispatch,
-	SetStateAction,
-} from 'react';
-import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
-import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
-import { MenuInfo, MenuState } from '../../store/types';
-import { DataProps, DataListProps } from '../menu/types';
-import Api from '../../services/api';
+import React, { FC, useState, Dispatch, SetStateAction } from 'react';
 import {
 	Box,
 	Slide, // Transitions
@@ -38,8 +25,6 @@ interface DrawerProps extends MuiDrawerProps {
 interface AppMenuProps {
 	open?: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
-	menus?: Array<MenuInfo>;
-	actions: ActionCreatorsMapObject;
 	width: number;
 }
 
@@ -98,32 +83,8 @@ const SlideListSubheader: FC<SlideListSubheaderProps> = ({
 	);
 };
 
-const AppMenu: FC<AppMenuProps> = ({
-	open,
-	setOpen,
-	menus,
-	actions,
-	width,
-}): JSX.Element => {
-	const [page, setPage] = useState(0);
-	const [data, setData] = useState<DataListProps>({ datas: [] });
+const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
 	const [branch, setBranch] = useState(true);
-
-	const fetchAndSetData = useCallback(
-		async (page: number) => {
-			const pageData = {
-				page: page,
-				type: 'download',
-			};
-			const data = await actions.list(pageData);
-			setData(data);
-		},
-		[page]
-	);
-
-	useEffect(() => {
-		fetchAndSetData(page);
-	}, [fetchAndSetData]);
 
 	const toggleDrawer = () => {
 		setOpen(!open);
@@ -178,22 +139,14 @@ const AppMenu: FC<AppMenuProps> = ({
 								display: open ? 'block' : 'none',
 							}}
 						/>
-						<MenuBar branch={branch} menus={menus} />
+						<MenuBar branch={branch} />
 					</>
 				) : (
-					<DownloadBar branch={!branch} datas={data.datas} />
+					<DownloadBar branch={!branch} />
 				)}
 			</List>
 		</Drawer>
 	);
 };
 
-const mapStateToProps = (state: any) => ({
-	menus: (state.menu as MenuState).menus,
-});
-
-const mapDispatchToProps = (dispatch: DispatchAction) => ({
-	actions: bindActionCreators(Api.data, dispatch),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppMenu);
+export default AppMenu;
