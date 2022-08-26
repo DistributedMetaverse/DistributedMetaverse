@@ -11,7 +11,7 @@ import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface PhotoContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	branch: boolean;
 	setFileId: Dispatch<SetStateAction<string>>;
 }
@@ -92,12 +92,12 @@ const PhotoContentRow: FC<PhotoContentDataProps> = ({
 };
 
 const PhotoContent: FC<PhotoContentProps> = ({
-	actions,
+	file,
 	branch,
 	setFileId,
 }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});

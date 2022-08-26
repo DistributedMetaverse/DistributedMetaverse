@@ -17,7 +17,7 @@ import SettingsIcon from '@mui/icons-material/SettingsOutlined';
 import { fileSizeFormat } from '../../utils/format';
 
 interface SettingModalProps {
-	actions: ActionCreatorsMapObject;
+	setting: ActionCreatorsMapObject;
 	open: boolean;
 	serverId: number;
 	setOpen: Dispatch<SetStateAction<boolean>>;
@@ -55,13 +55,13 @@ const SettingListItem: FC<SettingListItemProps> = ({
 };
 
 const SettingModal: FC<SettingModalProps> = ({
-	actions,
+	setting,
 	open,
 	serverId,
 	setOpen,
 }): JSX.Element => {
 	const { id, host, port, size, limit } = useSettingInfoDetails({
-		actions,
+		setting,
 		serverId,
 	});
 	const settingClose = () => setOpen(false);

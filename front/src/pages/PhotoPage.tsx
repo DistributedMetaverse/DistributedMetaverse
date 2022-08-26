@@ -11,17 +11,17 @@ import PhotoContent from '../components/file/photo/PhotoContent';
 
 interface PhotoPageProps {
 	path: string;
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
-const PhotoPage: FC<PhotoPageProps> = ({ path, actions }): JSX.Element => {
+const PhotoPage: FC<PhotoPageProps> = ({ path, file }): JSX.Element => {
 	const [branch, setSwitch] = useState(true);
 	const [fileId, setFileId] = useState('');
 	return (
 		<Box>
 			<PhotoHeader path={path} branch={branch} setSwitch={setSwitch} />
-			<PhotoView actions={actions} fileId={fileId} />
-			<PhotoContent actions={actions} branch={branch} setFileId={setFileId} />
+			<PhotoView file={file} fileId={fileId} />
+			<PhotoContent file={file} branch={branch} setFileId={setFileId} />
 		</Box>
 	);
 };
@@ -31,7 +31,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.file, dispatch),
+	file: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PhotoPage);

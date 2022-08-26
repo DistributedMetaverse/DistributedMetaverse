@@ -11,17 +11,17 @@ import VideoContent from '../components/file/video/VideoContent';
 
 interface VideoPageProps {
 	path: string;
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
-const VideoPage: FC<VideoPageProps> = ({ path, actions }): JSX.Element => {
+const VideoPage: FC<VideoPageProps> = ({ path, file }): JSX.Element => {
 	const [branch, setSwitch] = useState(true);
 	const [fileId, setFileId] = useState('');
 	return (
 		<Box>
 			<VideoHeader path={path} branch={branch} setSwitch={setSwitch} />
-			<VideoPlay actions={actions} fileId={fileId} />
-			<VideoContent actions={actions} branch={branch} setFileId={setFileId} />
+			<VideoPlay file={file} fileId={fileId} />
+			<VideoContent file={file} branch={branch} setFileId={setFileId} />
 		</Box>
 	);
 };
@@ -31,7 +31,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.file, dispatch),
+	file: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoPage);

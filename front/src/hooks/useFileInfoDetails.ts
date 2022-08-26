@@ -3,12 +3,12 @@ import { ActionCreatorsMapObject } from 'redux';
 import { FileInfo } from '../store/types';
 
 interface FileInfoDetailsProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	fileId: string;
 }
 
 const useFileInfoDetails = ({
-	actions,
+	file,
 	fileId,
 }: FileInfoDetailsProps): FileInfo => {
 	const [data, setData] = useState<FileInfo>({
@@ -22,7 +22,7 @@ const useFileInfoDetails = ({
 
 	const fetchAndSetData = useCallback(
 		async (fileId: string) => {
-			const data = await actions.info(fileId);
+			const data = await file.info(fileId);
 			setData(data);
 		},
 		[fileId]

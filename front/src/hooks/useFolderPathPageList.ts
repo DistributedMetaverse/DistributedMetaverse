@@ -10,13 +10,13 @@ import { FolderInfoList } from '../store/types';
 import { PageData } from '../services/types';
 
 interface FolderPathPageList {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	path: string;
 	type: string;
 }
 
 const useFolderPathPageList = ({
-	actions,
+	file,
 	path,
 	type,
 }: FolderPathPageList): [FolderInfoList, Dispatch<SetStateAction<number>>] => {
@@ -31,7 +31,7 @@ const useFolderPathPageList = ({
 				type: type,
 				identifier: 'folder',
 			};
-			const data = await actions.list(pageData);
+			const data = await file.list(pageData);
 			setData(data);
 		},
 		[page]

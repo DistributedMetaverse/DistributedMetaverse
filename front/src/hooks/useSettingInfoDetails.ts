@@ -3,12 +3,12 @@ import { ActionCreatorsMapObject } from 'redux';
 import { SettingInfo } from '../store/types';
 
 interface FileInfoDetailsProps {
-	actions: ActionCreatorsMapObject;
+	setting: ActionCreatorsMapObject;
 	serverId: number;
 }
 
 const useSettingInfoDetails = ({
-	actions,
+	setting,
 	serverId,
 }: FileInfoDetailsProps): SettingInfo => {
 	const [data, setData] = useState<SettingInfo>({
@@ -21,7 +21,7 @@ const useSettingInfoDetails = ({
 
 	const fetchAndSetData = useCallback(
 		async (serverId: number) => {
-			const data = await actions.info(serverId);
+			const data = await setting.info(serverId);
 			setData(data);
 		},
 		[serverId]

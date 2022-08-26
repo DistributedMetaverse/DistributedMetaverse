@@ -8,7 +8,7 @@ import StorageIcon from '@mui/icons-material/Storage';
 import { fileSizeFormat } from '../utils/format';
 
 interface SettingProps {
-	actions: ActionCreatorsMapObject;
+	setting: ActionCreatorsMapObject;
 	setOpen: Dispatch<SetStateAction<boolean>>;
 	setServerId: Dispatch<SetStateAction<number>>;
 }
@@ -130,11 +130,11 @@ const SettingFooter: FC<SettingFooterProps> = ({
 };
 
 const Setting: FC<SettingProps> = ({
-	actions,
+	setting,
 	setOpen,
 	setServerId,
 }): JSX.Element => {
-	const [data, setPage] = useSettingPageList({ actions });
+	const [data, setPage] = useSettingPageList({ setting });
 	console.log(data);
 	const serverClick = (id: number) => {
 		setServerId(id);

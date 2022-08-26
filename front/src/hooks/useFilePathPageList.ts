@@ -10,13 +10,13 @@ import { FileInfoList } from '../store/types';
 import { PageData } from '../services/types';
 
 interface FilePathPageListProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	path: string;
 	type: string;
 }
 
 const useFilePathPageList = ({
-	actions,
+	file,
 	path,
 	type,
 }: FilePathPageListProps): [FileInfoList, Dispatch<SetStateAction<number>>] => {
@@ -31,7 +31,7 @@ const useFilePathPageList = ({
 				type: type,
 				identifier: 'file',
 			};
-			const data = await actions.list(pageData);
+			const data = await file.list(pageData);
 			setData(data);
 		},
 		[page]

@@ -5,7 +5,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import NotStartedIcon from '@mui/icons-material/NotStarted';
 
 interface VideoPlayProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	fileId: string;
 }
 
@@ -57,8 +57,8 @@ const NoVideo: FC = (): JSX.Element => {
 	);
 };
 
-const VideoPlay: FC<VideoPlayProps> = ({ actions, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ actions, fileId });
+const VideoPlay: FC<VideoPlayProps> = ({ file, fileId }): JSX.Element => {
+	const data = useFileInfoDetails({ file, fileId });
 	const filename = data.filename;
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>

@@ -11,7 +11,7 @@ import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface VideoContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	branch: boolean;
 	setFileId: Dispatch<SetStateAction<string>>;
 }
@@ -92,12 +92,12 @@ const VideoContentRow: FC<VideoContentDataProps> = ({
 };
 
 const VideoContent: FC<VideoContentProps> = ({
-	actions,
+	file,
 	branch,
 	setFileId,
 }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});

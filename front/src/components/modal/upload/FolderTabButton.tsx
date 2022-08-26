@@ -29,16 +29,16 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 interface FolderButtonProps {
 	path: string;
 	setPath: Dispatch<SetStateAction<string>>;
-	actions: ActionCreatorsMapObject;
+	status: ActionCreatorsMapObject;
 }
 
 const FolderTabButton: FC<FolderButtonProps> = ({
 	path,
 	setPath,
-	actions,
+	status,
 }): JSX.Element => {
 	const [open, setOpen] = useState(false);
-	const [data, fetchData] = useFolderTabList({ actions, type: 'all' });
+	const [data, fetchData] = useFolderTabList({ status, type: 'all' });
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const datas = data.datas as Array<FolderInfo>;
 
@@ -121,7 +121,7 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 };
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
-	actions: bindActionCreators(Api.status, dispatch),
+	status: bindActionCreators(Api.status, dispatch),
 });
 
 export default connect(null, mapDispatchToProps)(FolderTabButton);

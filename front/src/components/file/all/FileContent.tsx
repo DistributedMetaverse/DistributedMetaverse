@@ -9,7 +9,7 @@ import ContentHeader from '../cmmn/ContentHeader';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface FileContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
 interface FileContentDataProps {
@@ -39,9 +39,9 @@ const FileContentGrid: FC<FileContentDataProps> = ({ datas }): JSX.Element => {
 	);
 };
 
-const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
+const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});

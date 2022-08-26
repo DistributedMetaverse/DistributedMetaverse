@@ -11,7 +11,7 @@ import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface RecentContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	branch: boolean;
 }
 
@@ -74,11 +74,11 @@ const RecentContentRow: FC<RecentContentDataProps> = ({
 };
 
 const RecentContent: FC<RecentContentProps> = ({
-	actions,
+	file,
 	branch,
 }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});

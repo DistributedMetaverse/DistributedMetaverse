@@ -7,12 +7,12 @@ import Pagination from '@mui/material/Pagination';
 import FolderIcon from '@mui/icons-material/Folder';
 
 interface FolderContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
-const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
+const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
 	const [data, setPage] = useFolderPathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});

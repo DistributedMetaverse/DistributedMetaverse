@@ -3,18 +3,18 @@ import { ActionCreatorsMapObject } from 'redux';
 import { FolderInfoList } from '../store/types';
 
 interface FolderInfoProps {
-	actions: ActionCreatorsMapObject;
+	status: ActionCreatorsMapObject;
 	type: 'all' | 'video' | 'photo';
 }
 
 const useFolderTabList = ({
-	actions,
+	status,
 	type,
 }: FolderInfoProps): [FolderInfoList, (type: string) => Promise<void>] => {
 	const [data, setData] = useState<FolderInfoList>({ datas: [] });
 
 	const fetchAndSetData = useCallback(async (type: string) => {
-		const data = await actions.folder(type);
+		const data = await status.folder(type);
 		setData(data);
 	}, []);
 

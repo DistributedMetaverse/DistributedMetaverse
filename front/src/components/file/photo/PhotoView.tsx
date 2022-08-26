@@ -5,7 +5,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual';
 
 interface PhotoViewProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	fileId: string;
 }
 
@@ -57,8 +57,8 @@ const NoPhoto: FC = (): JSX.Element => {
 	);
 };
 
-const PhotoView: FC<PhotoViewProps> = ({ actions, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ actions, fileId });
+const PhotoView: FC<PhotoViewProps> = ({ file, fileId }): JSX.Element => {
+	const data = useFileInfoDetails({ file, fileId });
 	const filename = data.filename;
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>

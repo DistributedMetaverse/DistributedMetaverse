@@ -9,18 +9,18 @@ import { ActionCreatorsMapObject } from 'redux';
 import { SettingInfoList } from '../store/types';
 
 interface FolderPathPageList {
-	actions: ActionCreatorsMapObject;
+	setting: ActionCreatorsMapObject;
 }
 
 const useSettingPageList = ({
-	actions,
+	setting,
 }: FolderPathPageList): [SettingInfoList, Dispatch<SetStateAction<number>>] => {
 	const [page, setPage] = useState(0);
 	const [data, setData] = useState<SettingInfoList>({ datas: [] });
 
 	const fetchAndSetData = useCallback(
 		async (page: number) => {
-			const data = await actions.list(page);
+			const data = await setting.list(page);
 			setData(data);
 		},
 		[page]
