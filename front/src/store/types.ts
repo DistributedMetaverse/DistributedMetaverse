@@ -76,6 +76,21 @@ interface FileState {
 	size: number;
 }
 
+// 6. Setting 관련 State
+// → But, Backend 서버 쪽에서 포워딩 할꺼라서 별도의 State를 만들 필요는 없음
+// → Only, Setting 정보를 확인하기 위한 Interface
+interface SettingInfo {
+	id: number;
+	host: string;
+	port: number;
+	size: number;
+	limit?: number;
+}
+
+interface SettingInfoList {
+	datas?: Array<SettingInfo>;
+}
+
 export type {
 	AuthState,
 	TitleState,
@@ -90,4 +105,6 @@ export type {
 	FileInfo,
 	FileInfoList,
 	FileState,
+	SettingInfo,
+	SettingInfoList,
 };

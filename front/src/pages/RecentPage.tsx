@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
@@ -12,10 +12,11 @@ interface RecentPageProps {
 }
 
 const RecentPage: FC<RecentPageProps> = ({ actions }): JSX.Element => {
+	const [branch, setSwitch] = useState(true);
 	return (
 		<Box>
-			<RecentHeader />
-			<RecentContent actions={actions} />
+			<RecentHeader branch={branch} setSwitch={setSwitch} />
+			<RecentContent actions={actions} branch={branch} />
 		</Box>
 	);
 };

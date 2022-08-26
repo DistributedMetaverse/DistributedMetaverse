@@ -6,17 +6,20 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ContentHeader from '../cmmn/ContentHeader';
+import ContentName from '../cmmn/ContentName';
+import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface RecentContentProps {
 	actions: ActionCreatorsMapObject;
+	branch: boolean;
 }
 
-interface RecentContentGridProps {
+interface RecentContentDataProps {
 	datas: Array<FileInfo>;
 }
 
-const RecentContentGrid: FC<RecentContentGridProps> = ({
+const RecentContentGrid: FC<RecentContentDataProps> = ({
 	datas,
 }): JSX.Element => {
 	return (
@@ -41,7 +44,39 @@ const RecentContentGrid: FC<RecentContentGridProps> = ({
 	);
 };
 
-const RecentContent: FC<RecentContentProps> = ({ actions }): JSX.Element => {
+const RecentContentRow: FC<RecentContentDataProps> = ({
+	datas,
+}): JSX.Element => {
+	return (
+		<Box>
+			{datas &&
+				datas.map((data: FileInfo) => (
+					<Paper
+						key={data.fileId}
+						sx={{
+							mb: 2,
+							pt: 2,
+							pb: 1,
+							display: 'flex',
+							justifyContent: 'space-between',
+						}}
+					>
+						<ContentName filename={data.filename} />
+						<ContentAside
+							fileId={data.fileId}
+							fileSize={data.fileSize}
+							isLike={data.isLike || false}
+						/>
+					</Paper>
+				))}
+		</Box>
+	);
+};
+
+const RecentContent: FC<RecentContentProps> = ({
+	actions,
+	branch,
+}): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
 		actions,
 		path: '/',
@@ -56,7 +91,11 @@ const RecentContent: FC<RecentContentProps> = ({ actions }): JSX.Element => {
 	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
-			<RecentContentGrid datas={datas} />
+			{branch ? (
+				<RecentContentGrid datas={datas} />
+			) : (
+				<RecentContentRow datas={datas} />
+			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
 					count={10}

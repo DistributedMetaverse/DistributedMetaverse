@@ -5,9 +5,16 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { PageData, TokenData } from '../services/types';
-import { FileInfo, FileInfoList, FolderInfoList } from '../store/types';
+import {
+	FileInfo,
+	FileInfoList,
+	FolderInfoList,
+	SearchInfo,
+	SettingInfo,
+	SettingInfoList,
+} from '../store/types';
 
-const datainfo: FileInfo = {
+const fileinfo: FileInfo = {
 	id: 1,
 	fileId: 'test1',
 	filename: 'test1.png',
@@ -29,7 +36,7 @@ const datainfo: FileInfo = {
 	],
 };
 
-const datalist: FileInfoList = {
+const filelist: FileInfoList = {
 	datas: [
 		{
 			id: 1,
@@ -87,6 +94,37 @@ const folderlist: FolderInfoList = {
 	],
 };
 
+const settinginfo: SettingInfo = {
+	id: 1,
+	host: 'https://docs.ipfs.tech/',
+	port: 4001,
+	size: 10000000,
+	limit: 100000000,
+};
+
+const settinglist: SettingInfoList = {
+	datas: [
+		{
+			id: 1,
+			host: '127.0.0.1',
+			port: 4001,
+			size: 10000000,
+		},
+		{
+			id: 2,
+			host: 'https://docs.ipfs.tech/',
+			port: 4002,
+			size: 10000000,
+		},
+		{
+			id: 3,
+			host: '192.168.0.11',
+			port: 4003,
+			size: 10000000,
+		},
+	],
+};
+
 const secret = 'S-dV7@1SS#AGd#%^';
 
 export const handlers = [
@@ -119,8 +157,10 @@ export const handlers = [
 	// 파일 세부정보
 	rest.get('/api/file/info/:fileId', (req, res, ctx) => {
 		const { fileId } = req.params;
-		console.log(fileId);
-		return res(ctx.status(200), ctx.json(datainfo));
+		const searchData: SearchInfo = {
+			fileId: String(fileId),
+		};
+		return res(ctx.status(200), ctx.json({ searchData, ...fileinfo }));
 	}),
 
 	// 특정경로 파일 ↔ 폴더 리스트 검색
@@ -139,13 +179,13 @@ export const handlers = [
 			identifier: identifier,
 		};
 		if (identifier === 'file')
-			return res(ctx.status(200), ctx.json({ pageData, ...datalist }));
+			return res(ctx.status(200), ctx.json({ pageData, ...filelist }));
 		else return res(ctx.status(200), ctx.json({ pageData, ...folderlist }));
 	}),
 
 	// 파일 세부정보
 	rest.get('/api/file/search', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(datalist));
+		return res(ctx.status(200), ctx.json(filelist));
 	}),
 
 	// 현재 확인된 다운로드 갯수 확인
@@ -156,5 +196,15 @@ export const handlers = [
 	// 현재 확인된 폴더 리스트 확인
 	rest.get('/api/status/folder', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(folderlist));
+	}),
+
+	// Setting 세부정보
+	rest.get('/api/setting/info', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(settinginfo));
+	}),
+
+	// Setting 리스트
+	rest.get('/api/setting/list/:page', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(settinglist));
 	}),
 ];

@@ -1,14 +1,21 @@
-import React, { FC } from 'react';
+import React, { FC, Dispatch, SetStateAction } from 'react';
 import { setFilePath } from '../../../store/index';
 import { Box, Grid } from '@mui/material';
 import FolderTabButton from '../cmmn/FolderTabButton';
+import SwitchGridTabButton from '../cmmn/SwitchGridTabButton';
 import NavigationPath from '../NavigationPath';
 
 interface VideoHeaderProps {
 	path: string;
+	branch: boolean;
+	setSwitch: Dispatch<SetStateAction<boolean>>;
 }
 
-const VideoHeader: FC<VideoHeaderProps> = ({ path }): JSX.Element => {
+const VideoHeader: FC<VideoHeaderProps> = ({
+	path,
+	branch,
+	setSwitch,
+}): JSX.Element => {
 	return (
 		<Box sx={{ mb: 2 }}>
 			<Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -20,6 +27,7 @@ const VideoHeader: FC<VideoHeaderProps> = ({ path }): JSX.Element => {
 						<NavigationPath path={path} />
 					</Grid>
 				</Grid>
+				<SwitchGridTabButton branch={branch} setSwitch={setSwitch} />
 			</Box>
 		</Box>
 	);

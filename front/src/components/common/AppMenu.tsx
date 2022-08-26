@@ -10,7 +10,7 @@ import {
 	List,
 	ListSubheader,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, SxProps, Theme } from '@mui/material/styles';
 import ListIcon from '@mui/icons-material/List'; // Sub Icon
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -93,6 +93,11 @@ const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
 	const toggleSwitch = () => {
 		setBranch(!branch);
 	};
+
+	const iconButton: SxProps<Theme> = {
+		'&:hover': { color: 'secondary.main' },
+		'&:disabled': { color: 'active.disabled' },
+	};
 	return (
 		<Drawer variant="permanent" open={open} width={width}>
 			<Toolbar
@@ -104,15 +109,11 @@ const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
 				}}
 			>
 				<Box>
-					<IconButton onClick={toggleSwitch} disabled={branch}>
-						<ListIcon
-							sx={{ color: branch ? 'active.disabled' : 'secondary.main' }}
-						/>
+					<IconButton sx={iconButton} onClick={toggleSwitch} disabled={branch}>
+						<ListIcon />
 					</IconButton>
-					<IconButton onClick={toggleSwitch} disabled={!branch}>
-						<CloudDownloadIcon
-							sx={{ color: branch ? 'secondary.main' : 'active.disabled' }}
-						/>
+					<IconButton sx={iconButton} onClick={toggleSwitch} disabled={!branch}>
+						<CloudDownloadIcon />
 					</IconButton>
 				</Box>
 				<IconButton onClick={toggleDrawer}>

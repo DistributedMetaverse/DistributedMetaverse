@@ -34,7 +34,7 @@ const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
 			<Grid container spacing={3}>
 				{datas &&
 					datas.map((data: FolderInfo) => (
-						<Grid item key={data.path} xs={4} md={3} lg={2}>
+						<Grid item key={data.path} xs={4} md={2} lg={2}>
 							<Paper
 								sx={{
 									p: 2,

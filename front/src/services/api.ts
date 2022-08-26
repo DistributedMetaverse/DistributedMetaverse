@@ -175,10 +175,28 @@ const status = {
 			}),
 };
 
+const setting = {
+	// Setting 세부정보 확인 API : <baseURL>/setting/info?id={serverId}
+	info: (serverId: number) => (dispatch: Dispatch) =>
+		instance
+			.get(`setting/info?id=${serverId}`)
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
+	// Setting 정보 리스트 API : <baseURL>/setting/list/:page
+	list: (page: number) => (dispatch: Dispatch) =>
+		instance.get(`setting/list/${page}`).then((response: AxiosResponse) => {
+			dispatch(fileSuccess(response.data));
+			return response.data;
+		}),
+};
+
 const api = {
 	auth,
 	file,
 	status,
+	setting,
 };
 
 export default { ...api };

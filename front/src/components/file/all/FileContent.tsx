@@ -12,11 +12,11 @@ interface FileContentProps {
 	actions: ActionCreatorsMapObject;
 }
 
-interface FileContentGridProps {
+interface FileContentDataProps {
 	datas: Array<FileInfo>;
 }
 
-const FileContentGrid: FC<FileContentGridProps> = ({ datas }): JSX.Element => {
+const FileContentGrid: FC<FileContentDataProps> = ({ datas }): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
 			{datas &&
