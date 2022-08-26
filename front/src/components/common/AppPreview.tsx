@@ -1,5 +1,4 @@
-import React, { FC } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { FC, ReactElement } from 'react';
 import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
@@ -7,34 +6,35 @@ import { useDispatch } from 'react-redux';
 import { previewSwitch } from '../../store/index';
 import { PreviewState, UserInfo } from '../../store/types';
 import Api from '../../services/api';
-import useDataInfoDetails from '../../hooks/useDataInfoDetails';
+import useFileInfoDetails from '../../hooks/useFileInfoDetails';
 import {
 	Box,
 	Grid,
-	Slide,
+	Paper,
+	Drawer,
 	IconButton,
 	Divider,
 	Typography,
 } from '@mui/material';
+import { SxProps, Theme } from '@mui/material/styles';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import {
-	previewWidthSetting,
-	previewMarginLeftSetting,
-	previewDividerWidthSetting,
-} from '../../utils/control';
+import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
+import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
+import LoupeOutlinedIcon from '@mui/icons-material/LoupeOutlined';
 import { fileSizeFormat } from '../../utils/format';
 
 interface UseFileProps {
 	actions: ActionCreatorsMapObject;
-	dataId: string;
+	fileId: string;
 }
 
 interface AppPreviewProps {
 	preview: PreviewState;
 	actions: ActionCreatorsMapObject;
+	width: number;
 }
 
 interface PreviewHeaderProps {
@@ -43,84 +43,35 @@ interface PreviewHeaderProps {
 
 const PreviewHeader: FC<PreviewHeaderProps> = ({ exist }): JSX.Element => {
 	const dispatch = useDispatch();
-	const location = useLocation();
 	const closeClick = () => {
 		dispatch(previewSwitch(false));
 	};
-	const width = previewWidthSetting(location.pathname, exist);
-	const marginleft = previewMarginLeftSetting(location.pathname, exist);
 	return (
 		<Box
 			sx={{
-				mb: 1,
-				ml: marginleft.header,
-				top: 40,
-				width: width.header,
+				ml: exist ? -2.5 : 3,
+				top: 50,
 				position: 'fixed',
-				'@media (min-width:520px) and (max-width:600px)': {
-					ml: marginleft.headerMin520,
-					width: width.headerMin520,
-				},
-				'@media (min-width:600px) and (max-width:710px)': {
-					ml: marginleft.headerMin600,
-					width: width.headerMin600,
-				},
-				'@media (min-width:710px) and (max-width:900px)': {
-					ml: marginleft.headerMin710,
-					width: width.headerMin710,
-				},
-				'@media (min-width:900px)': {
-					ml: marginleft.headerMin900,
-					width: width.headerMin900,
-				},
-				'@media (min-width:1200px)': {
-					ml: marginleft.headerMin1200,
-					width: width.headerMin1200,
-				},
+				width: 160,
 			}}
 		>
-			<Box sx={{ pb: 0, display: 'flex', justifyContent: 'space-between' }}>
-				<Grid container sx={{ ml: 0.5, width: width.headerGrid }}>
+			<Box
+				sx={{
+					ml: -0.5,
+					pb: 0,
+					display: 'flex',
+					justifyContent: 'space-between',
+				}}
+			>
+				<Grid container sx={{ ml: -1 }}>
 					<Grid item>
 						<DescriptionIcon fontSize="small" />
 					</Grid>
-					<Grid item sx={{ ml: 1 }}>
+					<Grid item sx={{ ml: -0.5 }}>
 						<Typography
 							variant="subtitle2"
 							color="inherit"
-							sx={{
-								'@media (max-width:600px)': {
-									display: 'none',
-								},
-								'@media (min-width:710px)': {
-									display: 'none',
-								},
-							}}
-						>
-							Prew
-						</Typography>
-						<Typography
-							variant="subtitle2"
-							color="inherit"
-							sx={{
-								'@media (max-width:710px)': {
-									display: 'none',
-								},
-								'@media (min-width:900px)': {
-									display: 'none',
-								},
-							}}
-						>
-							Preview
-						</Typography>
-						<Typography
-							variant="subtitle2"
-							color="inherit"
-							sx={{
-								'@media (max-width:900px)': {
-									display: 'none',
-								},
-							}}
+							sx={{ fontSize: '1rem', fontWeight: 'bold' }}
 						>
 							File Preview
 						</Typography>
@@ -128,50 +79,113 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ exist }): JSX.Element => {
 				</Grid>
 				<IconButton
 					color="inherit"
-					sx={{ mt: -1, pt: 0, pb: 0, '&:hover': { color: 'secondary.main' } }}
+					sx={{
+						mr: -1,
+						mt: -0.5,
+						pt: 0,
+						pb: 0,
+						'&:hover': { color: 'secondary.main' },
+					}}
 					onClick={closeClick}
 				>
-					<CancelPresentationIcon fontSize="small" />
+					<CancelPresentationIcon sx={{ fontSize: '1.3rem' }} />
 				</IconButton>
 			</Box>
-			<Divider sx={{ borderColor: 'primary.main' }} />
+			<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
+		</Box>
+	);
+};
+
+interface UseButtonProps {
+	children?: ReactElement;
+}
+
+const UseButton: FC<UseButtonProps> = ({ children }): JSX.Element => {
+	return (
+		<Paper
+			sx={{
+				borderRadius: '50%',
+				backgroundColor: 'background.paper',
+			}}
+		>
+			<IconButton sx={{ p: 1, '&:hover': { color: 'secondary.main' } }}>
+				{children}
+			</IconButton>
+		</Paper>
+	);
+};
+
+const PreviewFooter: FC = (): JSX.Element => {
+	const grid: SxProps<Theme> = {
+		pl: 0,
+		pr: 0,
+	};
+	const font: SxProps<Theme> = {
+		fontSize: '1.6rem',
+	};
+	return (
+		<Box
+			sx={{
+				ml: -5,
+				bottom: 40,
+				position: 'fixed',
+				borderColor: 'primary.main',
+			}}
+		>
+			<Divider
+				sx={{
+					mb: 1,
+					ml: 2,
+					width: 170,
+					borderColor: 'primary.main',
+				}}
+			/>
+			<Box sx={{ ml: 2.5, pb: 0, display: 'flex' }}>
+				<Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+					<Grid item sx={grid}>
+						<UseButton>
+							<IosShareOutlinedIcon fontSize="large" sx={font} />
+						</UseButton>
+					</Grid>
+					<Grid item sx={grid}>
+						<Divider
+							sx={{ mt: 1, width: 2, height: 30, borderColor: 'primary.main' }}
+							orientation="vertical"
+						/>
+					</Grid>
+					<Grid item sx={grid}>
+						<UseButton>
+							<DriveFileRenameOutlineOutlinedIcon fontSize="large" sx={font} />
+						</UseButton>
+					</Grid>
+					<Grid item sx={grid}>
+						<Divider
+							sx={{ mt: 1, width: 2, height: 30, borderColor: 'primary.main' }}
+							orientation="vertical"
+						/>
+					</Grid>
+					<Grid item sx={grid}>
+						<UseButton>
+							<LoupeOutlinedIcon fontSize="large" sx={font} />
+						</UseButton>
+					</Grid>
+				</Grid>
+			</Box>
 		</Box>
 	);
 };
 
 const UseDivider: FC = (): JSX.Element => {
-	const location = useLocation();
-	const dividerWidth = previewDividerWidthSetting(location.pathname);
 	return (
 		<Divider
 			variant="fullWidth"
-			sx={{
-				pt: 3,
-				height: '1px',
-				width: dividerWidth.header,
-				borderColor: 'primary.main',
-				'@media (min-width:520px) and (max-width:600px)': {
-					width: dividerWidth.headerMin520,
-				},
-				'@media (min-width:600px) and (max-width:710px)': {
-					width: dividerWidth.headerMin600,
-				},
-				'@media (min-width:710px) and (max-width:900px)': {
-					width: dividerWidth.headerMin710,
-				},
-				'@media (min-width:900px)': {
-					width: dividerWidth.headerMin900,
-				},
-				'@media (min-width:1200px)': {
-					width: dividerWidth.headerMin1200,
-				},
-			}}
+			sx={{ pt: 3, height: '1px', width: '130px', borderColor: 'primary.main' }}
 		/>
 	);
 };
 
-const UseFile: FC<UseFileProps> = ({ actions, dataId }): JSX.Element => {
-	const data = useDataInfoDetails({ actions, dataId });
+const UseFile: FC<UseFileProps> = ({ actions, fileId }): JSX.Element => {
+	const data = useFileInfoDetails({ actions, fileId });
 	const shared = data.shared as Array<UserInfo>;
 	return (
 		<Box>
@@ -272,6 +286,7 @@ const UseFile: FC<UseFileProps> = ({ actions, dataId }): JSX.Element => {
 						</Box>
 					))}
 			</Box>
+			<PreviewFooter />
 		</Box>
 	);
 };
@@ -307,31 +322,28 @@ const NoFile: FC = (): JSX.Element => {
 	);
 };
 
-const AppPreview: FC<AppPreviewProps> = ({ preview, actions }): JSX.Element => {
-	const location = useLocation();
-	const { dataId, isActive } = preview;
-	const width = previewWidthSetting(location.pathname, true);
+const AppPreview: FC<AppPreviewProps> = ({
+	preview,
+	actions,
+	width,
+}): JSX.Element => {
+	const { fileId, isActive } = preview;
 	return (
-		<Slide
-			direction="left"
-			in={isActive}
-			timeout={isActive ? 300 : 150}
-			mountOnEnter
-			unmountOnExit
+		<Drawer
+			sx={{
+				width: width,
+				flexShrink: 0,
+				'& .MuiDrawer-paper': {
+					width: width,
+				},
+				zIndex: isActive ? 1201 : 0,
+			}}
+			variant="persistent"
+			anchor="right"
+			open={isActive}
 		>
-			<Box
-				sx={{
-					width: width.content,
-					display: 'flex',
-					alignItems: 'center', // 세로 중앙
-					justifyContent: 'center', // 가로 중앙
-					bgcolor: 'background.paper',
-					zIndex: 1201,
-				}}
-			>
-				{isActive ? <UseFile actions={actions} dataId={dataId} /> : <NoFile />}
-			</Box>
-		</Slide>
+			{isActive ? <UseFile actions={actions} fileId={fileId} /> : <NoFile />}
+		</Drawer>
 	);
 };
 
@@ -340,7 +352,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
-	actions: bindActionCreators(Api.data, dispatch),
+	actions: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppPreview);

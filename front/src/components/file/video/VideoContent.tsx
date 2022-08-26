@@ -1,30 +1,32 @@
 import React, { FC, ChangeEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { DataInfo } from '../../store/types';
-import useFilePathPageList from '../../hooks/useFilePathPageList';
+import { FileInfo } from '../../../store/types';
+import useFilePathPageList from '../../../hooks/useFilePathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import DescriptionIcon from '@mui/icons-material/Description';
-import ContentHeader from './cmmn/ContentHeader';
-import ContentFooder from './cmmn/ContentFooder';
+import ContentHeader from '../cmmn/ContentHeader';
+import ContentFooder from '../cmmn/ContentFooder';
 
-interface FileContentProps {
+interface VideoContentProps {
 	actions: ActionCreatorsMapObject;
 }
 
-interface FileContentSwitch {
-	datas: Array<DataInfo>;
+interface VideoContentGridProps {
+	datas: Array<FileInfo>;
 }
 
-const FileContentGrid: FC<FileContentSwitch> = ({ datas }): JSX.Element => {
+const VideoContentGrid: FC<VideoContentGridProps> = ({
+	datas,
+}): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
 			{datas &&
-				datas.map((data: DataInfo) => (
-					<Grid item key={data.dataId} xs={6} md={3} lg={2}>
+				datas.map((data: FileInfo) => (
+					<Grid item key={data.fileId} xs={4} md={3} lg={2}>
 						<Paper sx={{ p: 2 }}>
 							<ContentHeader
-								dataId={data.dataId}
+								fileId={data.fileId}
 								isLike={data.isLike || false}
 							/>
 							<DescriptionIcon fontSize="large" />
@@ -39,7 +41,7 @@ const FileContentGrid: FC<FileContentSwitch> = ({ datas }): JSX.Element => {
 	);
 };
 
-const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
+const VideoContent: FC<VideoContentProps> = ({ actions }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
 		actions,
 		path: '/',
@@ -51,10 +53,10 @@ const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<DataInfo>;
+	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
-			<FileContentGrid datas={datas} />
+			<VideoContentGrid datas={datas} />
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
 					count={10}
@@ -72,4 +74,4 @@ const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
 	);
 };
 
-export default FileContent;
+export default VideoContent;

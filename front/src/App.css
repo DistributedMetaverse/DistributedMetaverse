@@ -5,3 +5,12 @@
 .MuiListItemIcon-root svg {
     font-size: 1rem !important;
 }
+
+.MuiDrawer-paperAnchorRight {
+    align-items: center;
+    justify-content: center;
+}
+
+.MuiDrawer-paperAnchorRight .MuiGrid-item {
+    padding-left: 8px !important;
+}

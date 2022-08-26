@@ -1,9 +1,14 @@
-import React, { FC, useState, MouseEvent } from 'react';
-import { Dispatch, ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import React, {
+	FC,
+	useState,
+	MouseEvent,
+	Dispatch,
+	SetStateAction,
+} from 'react';
+import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import { FolderInfo } from '../../../store/types';
-import { useDispatch } from 'react-redux';
 import Api from '../../../services/api';
 import useFolderTabList from '../../../hooks/useFolderTabList';
 import {
@@ -23,30 +28,27 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 interface FolderButtonProps {
 	path: string;
+	setPath: Dispatch<SetStateAction<string>>;
 	actions: ActionCreatorsMapObject;
-	setPath: ActionCreatorWithPayload<string, string>;
-	type: 'all' | 'video' | 'photo';
 }
 
 const FolderTabButton: FC<FolderButtonProps> = ({
 	path,
-	actions,
 	setPath,
-	type,
+	actions,
 }): JSX.Element => {
-	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
-	const [data, fetchData] = useFolderTabList({ actions, type });
+	const [data, fetchData] = useFolderTabList({ actions, type: 'all' });
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const datas = data.datas as Array<FolderInfo>;
 
 	const showClick = (event: MouseEvent<HTMLButtonElement>) => {
-		fetchData(type); // → Refresh
+		fetchData('all'); // → Refresh
 		setAnchorEl(open ? null : event.currentTarget);
 		setOpen(!open);
 	};
 	const closeClick = (path: string) => {
-		dispatch(setPath(path));
+		setPath(path);
 		setAnchorEl(null);
 		setOpen(false);
 	};
@@ -66,7 +68,7 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 				open={open}
 				anchorEl={anchorEl}
 				placement="bottom-start"
-				sx={{ zIndex: 1201 }}
+				sx={{ zIndex: 1300 }}
 			>
 				<Paper elevation={3}>
 					<MenuList dense sx={{ pt: 0.5, pb: 0.5 }}>
@@ -118,7 +120,7 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 	);
 };
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: DispatchAction) => ({
 	actions: bindActionCreators(Api.status, dispatch),
 });
 

@@ -5,11 +5,11 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { PageData, TokenData } from '../services/types';
-import { DataInfo, DataInfoList, FolderInfoList } from '../store/types';
+import { FileInfo, FileInfoList, FolderInfoList } from '../store/types';
 
-const datainfo: DataInfo = {
+const datainfo: FileInfo = {
 	id: 1,
-	dataId: 'test1',
+	fileId: 'test1',
 	filename: 'test1.png',
 	fileSize: 1000000,
 	description: 'the file is sample',
@@ -22,18 +22,18 @@ const datainfo: DataInfo = {
 			email: 'bbj@naver.conm',
 		},
 		{
-			userId: 1,
+			userId: 2,
 			username: 'test',
 			email: 'test@naver.conm',
 		},
 	],
 };
 
-const datalist: DataInfoList = {
+const datalist: FileInfoList = {
 	datas: [
 		{
 			id: 1,
-			dataId: 'test1',
+			fileId: 'test1',
 			filename: 'test1.png',
 			fileSize: 100000,
 			createdAt: '2022-01-23',
@@ -41,7 +41,7 @@ const datalist: DataInfoList = {
 		},
 		{
 			id: 2,
-			dataId: 'test2',
+			fileId: 'test2',
 			filename: 'test2.png',
 			fileSize: 2000000,
 			createdAt: '2022-01-23',
@@ -49,7 +49,7 @@ const datalist: DataInfoList = {
 		},
 		{
 			id: 3,
-			dataId: 'test3',
+			fileId: 'test3',
 			filename: 'test3.png',
 			fileSize: 3000000,
 			createdAt: '2022-01-23',
@@ -57,7 +57,7 @@ const datalist: DataInfoList = {
 		},
 		{
 			id: 4,
-			dataId: 'test4',
+			fileId: 'test4',
 			filename: 'test4.png',
 			fileSize: 4000000,
 			createdAt: '2022-01-23',
@@ -117,23 +117,20 @@ export const handlers = [
 	}),
 
 	// 파일 세부정보
-	rest.get('/api/data/info/:dataId', (req, res, ctx) => {
+	rest.get('/api/file/info/:fileId', (req, res, ctx) => {
+		const { fileId } = req.params;
+		console.log(fileId);
 		return res(ctx.status(200), ctx.json(datainfo));
 	}),
 
-	// 폴더 Tab 리스트 검색
-	rest.get('/api/data/folder', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(folderlist));
-	}),
-
 	// 특정경로 파일 ↔ 폴더 리스트 검색
-	rest.get('/api/data/list/:page', (req, res, ctx) => {
-		const { page } = req.params;
+	rest.get('/api/file/list', (req, res, ctx) => {
 		const file = req.url.searchParams.get('file');
 		const folder = req.url.searchParams.get('folder');
 		const path = file ? file : folder;
 		const identifier = file ? 'file' : 'folder';
 		const type = req.url.searchParams.get('type');
+		const page = req.url.searchParams.get('page');
 		console.log(type);
 		const pageData: PageData = {
 			page: Number(page),
@@ -144,5 +141,20 @@ export const handlers = [
 		if (identifier === 'file')
 			return res(ctx.status(200), ctx.json({ pageData, ...datalist }));
 		else return res(ctx.status(200), ctx.json({ pageData, ...folderlist }));
+	}),
+
+	// 파일 세부정보
+	rest.get('/api/file/search', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(datalist));
+	}),
+
+	// 현재 확인된 다운로드 갯수 확인
+	rest.get('/api/status/download', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json({ count: 4 }));
+	}),
+
+	// 현재 확인된 폴더 리스트 확인
+	rest.get('/api/status/folder', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(folderlist));
 	}),
 ];
