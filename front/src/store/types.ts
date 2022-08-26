@@ -26,7 +26,7 @@ interface MenuState {
 
 // 3. Preview 관련 State
 interface SearchInfo {
-	dataId: string; // node identifier
+	fileId: string; // node identifier
 }
 
 interface PreviewState extends SearchInfo {
@@ -57,7 +57,7 @@ interface UserInfo {
 	email: string;
 }
 
-interface DataInfo extends SearchInfo {
+interface FileInfo extends SearchInfo {
 	id: number;
 	filename: string;
 	fileSize: number;
@@ -67,11 +67,11 @@ interface DataInfo extends SearchInfo {
 	shared?: Array<UserInfo>;
 }
 
-interface DataInfoList {
-	datas?: Array<DataInfo>;
+interface FileInfoList {
+	datas?: Array<FileInfo>;
 }
 
-interface DataState {
+interface FileState {
 	data: Array<object>;
 	size: number;
 }
@@ -87,7 +87,7 @@ export type {
 	FolderInfo,
 	FolderInfoList,
 	UserInfo,
-	DataInfo,
-	DataInfoList,
-	DataState,
+	FileInfo,
+	FileInfoList,
+	FileState,
 };

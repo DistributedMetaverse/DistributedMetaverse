@@ -2,11 +2,10 @@ import React, { FC, useState, ReactElement } from 'react';
 import { Outlet } from 'react-router';
 import AppHeader from './AppHeader';
 import AppMenu from './AppMenu';
-import AppSubHeader from './AppSubHeader';
+import AppMain from './AppMain';
 import AppPreview from './AppPreview';
-import { CssBaseline, Box, Container } from '@mui/material';
+import { CssBaseline, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Copyright from '../Copyright';
 
 const mdTheme = createTheme({
 	palette: {
@@ -35,7 +34,8 @@ const mdTheme = createTheme({
 	spacing: 6, // Spacing(간격) - Default : 8px
 });
 
-const drawerWidth = 160;
+const drawerMenuWidth = 160;
+const drawerPreviewWidth = 200;
 
 interface LayoutDefaultProps {
 	children?: ReactElement;
@@ -47,25 +47,10 @@ const AppContent: FC<LayoutDefaultProps> = ({ children }): JSX.Element => {
 		<ThemeProvider theme={mdTheme}>
 			<Box sx={{ display: 'flex' }}>
 				<CssBaseline />
-				<AppHeader open={open} setOpen={setOpen} width={drawerWidth} />
-				<AppMenu open={open} setOpen={setOpen} width={drawerWidth} />
-				<Box
-					component="main"
-					sx={{
-						flexGrow: 1,
-						height: '100vh',
-						overflow: 'auto',
-						bgcolor: 'background.default',
-						zIndex: 1201,
-					}}
-				>
-					<Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-						<AppSubHeader />
-						{children || <Outlet />}
-						<Copyright sx={{ pt: 4 }} />
-					</Container>
-				</Box>
-				<AppPreview />
+				<AppHeader open={open} setOpen={setOpen} width={drawerMenuWidth} />
+				<AppMenu open={open} setOpen={setOpen} width={drawerMenuWidth} />
+				<AppMain width={drawerPreviewWidth}>{children || <Outlet />}</AppMain>
+				<AppPreview width={drawerPreviewWidth} />
 			</Box>
 		</ThemeProvider>
 	);

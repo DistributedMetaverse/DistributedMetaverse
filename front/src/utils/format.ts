@@ -3,7 +3,7 @@ const renderNumber = (value: number, size: number): string => {
 	return text.padStart(size, '0');
 };
 
-const timeFormat = (createtime: string): string => {
+const timeFormat = (createtime: number): string => {
 	const date = new Date(createtime);
 	const year = renderNumber(date.getFullYear(), 4);
 	const month = renderNumber(date.getMonth() + 1, 2);

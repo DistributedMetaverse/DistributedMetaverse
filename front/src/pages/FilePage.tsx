@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import { PathState } from '../store/types';
 import Api from '../services/api';
 import { Box } from '@mui/material';
-import FolderHeader from '../components/file/FolderHeader';
-import FolderContent from '../components/file/FolderContent';
-import FileHeader from '../components/file/FileHeader';
-import FileContent from '../components/file/FileContent';
+import FolderHeader from '../components/file/all/FolderHeader';
+import FolderContent from '../components/file/all/FolderContent';
+import FileHeader from '../components/file/all/FileHeader';
+import FileContent from '../components/file/all/FileContent';
 
 interface FilePageProps {
 	path?: PathState;
@@ -37,7 +37,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.data, dispatch),
+	actions: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilePage);

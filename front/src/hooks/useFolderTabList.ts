@@ -4,20 +4,22 @@ import { FolderInfoList } from '../store/types';
 
 interface FolderInfoProps {
 	actions: ActionCreatorsMapObject;
+	type: 'all' | 'video' | 'photo';
 }
 
 const useFolderTabList = ({
 	actions,
-}: FolderInfoProps): [FolderInfoList, () => Promise<void>] => {
+	type,
+}: FolderInfoProps): [FolderInfoList, (type: string) => Promise<void>] => {
 	const [data, setData] = useState<FolderInfoList>({ datas: [] });
 
-	const fetchAndSetData = useCallback(async () => {
-		const data = await actions.folder();
+	const fetchAndSetData = useCallback(async (type: string) => {
+		const data = await actions.folder(type);
 		setData(data);
 	}, []);
 
 	useEffect(() => {
-		fetchAndSetData();
+		fetchAndSetData(type);
 	}, [fetchAndSetData]);
 
 	return [data, fetchAndSetData];

@@ -6,7 +6,7 @@ import {
 	MenuState,
 	PreviewState,
 	PathState,
-	DataState,
+	FileState,
 } from './types';
 
 // 1.1. 인증 관련 State
@@ -135,7 +135,7 @@ const menuSlice = createSlice({
 
 // 3.1. Preview 관련 State
 const previewinitialState: PreviewState = {
-	dataId: '',
+	fileId: '',
 	isActive: false,
 };
 
@@ -145,7 +145,7 @@ const previewSlice = createSlice({
 	initialState: previewinitialState,
 	reducers: {
 		previewInfo: (state: PreviewState, action: PayloadAction<string>) => {
-			state.dataId = action.payload;
+			state.fileId = action.payload;
 			state.isActive = true;
 		},
 		previewSwitch: (state: PreviewState, action: PayloadAction<boolean>) => {
@@ -182,21 +182,21 @@ const pathSlice = createSlice({
 	},
 });
 
-// 5.1. 데이터 검색 및 업로드 관련 State
-const datainitialState: DataState = {
+// 5.1. 파일 검색 및 업로드 관련 State
+const fileinitialState: FileState = {
 	data: [],
 	size: 0,
 };
 
-// 5.2. dataSlice : action + reducer → slice
-const dataSlice = createSlice({
+// 5.2. fileSlice : action + reducer → slice
+const fileSlice = createSlice({
 	name: 'data',
-	initialState: datainitialState,
+	initialState: fileinitialState,
 	reducers: {
-		dataSuccess: (state: DataState, action: PayloadAction<Array<object>>) => {
+		fileSuccess: (state: FileState, action: PayloadAction<Array<object>>) => {
 			state.data = action.payload;
 		},
-		dataProgress: (state: DataState, action: PayloadAction<number>) => {
+		fileProgress: (state: FileState, action: PayloadAction<number>) => {
 			state.size = action.payload;
 		},
 	},
@@ -209,7 +209,7 @@ const rootReducer = combineReducers({
 	menu: menuSlice.reducer,
 	preview: previewSlice.reducer,
 	path: pathSlice.reducer,
-	data: dataSlice.reducer,
+	file: fileSlice.reducer,
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
@@ -218,7 +218,7 @@ const { changeActiveMenu } = menuSlice.actions;
 const { previewInfo, previewSwitch } = previewSlice.actions;
 const { setFolderPath, setFilePath, setFolderType, setFileType } =
 	pathSlice.actions;
-const { dataSuccess, dataProgress } = dataSlice.actions;
+const { fileSuccess, fileProgress } = fileSlice.actions;
 
 export {
 	loginSuccess,
@@ -232,8 +232,8 @@ export {
 	setFilePath,
 	setFolderType,
 	setFileType,
-	dataSuccess,
-	dataProgress,
+	fileSuccess,
+	fileProgress,
 };
 
 export type RootState = ReturnType<typeof rootReducer>;

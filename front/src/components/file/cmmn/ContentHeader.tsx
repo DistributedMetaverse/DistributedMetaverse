@@ -16,15 +16,15 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import MenuIcon from '@mui/icons-material/Menu';
 
 interface ContentHeaderProps {
-	dataId: string;
+	fileId: string;
 	isLike: boolean;
 }
 
 interface TabButtonProps {
-	dataId: string;
+	fileId: string;
 }
 
-const TabButton: FC<TabButtonProps> = ({ dataId }): JSX.Element => {
+const TabButton: FC<TabButtonProps> = ({ fileId }): JSX.Element => {
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -33,8 +33,8 @@ const TabButton: FC<TabButtonProps> = ({ dataId }): JSX.Element => {
 		setAnchorEl(open ? null : event.currentTarget);
 		setOpen(!open);
 	};
-	const previewClick = (dataId: string) => {
-		dispatch(previewInfo(dataId));
+	const previewClick = (fileId: string) => {
+		dispatch(previewInfo(fileId));
 		setAnchorEl(null);
 		setOpen(false);
 	};
@@ -59,7 +59,7 @@ const TabButton: FC<TabButtonProps> = ({ dataId }): JSX.Element => {
 			>
 				<Paper elevation={24}>
 					<MenuList sx={{ px: 0, pt: 0.2, pb: 0.2 }}>
-						<MenuItem onClick={() => previewClick(dataId)} dense sx={{ px: 1 }}>
+						<MenuItem onClick={() => previewClick(fileId)} dense sx={{ px: 1 }}>
 							<ListItemText
 								primaryTypographyProps={{ style: { fontSize: 11 } }}
 								primary="세부정보"
@@ -79,7 +79,7 @@ const TabButton: FC<TabButtonProps> = ({ dataId }): JSX.Element => {
 };
 
 const ContentHeader: FC<ContentHeaderProps> = ({
-	dataId,
+	fileId,
 	isLike,
 }): JSX.Element => {
 	return (
@@ -96,7 +96,7 @@ const ContentHeader: FC<ContentHeaderProps> = ({
 					)}
 				</Grid>
 				<Grid item>
-					<TabButton dataId={dataId} />
+					<TabButton fileId={fileId} />
 				</Grid>
 			</Grid>
 		</Box>

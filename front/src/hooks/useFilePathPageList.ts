@@ -6,7 +6,7 @@ import {
 	SetStateAction,
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { DataInfoList } from '../store/types';
+import { FileInfoList } from '../store/types';
 import { PageData } from '../services/types';
 
 interface FilePathPageListProps {
@@ -19,9 +19,9 @@ const useFilePathPageList = ({
 	actions,
 	path,
 	type,
-}: FilePathPageListProps): [DataInfoList, Dispatch<SetStateAction<number>>] => {
+}: FilePathPageListProps): [FileInfoList, Dispatch<SetStateAction<number>>] => {
 	const [page, setPage] = useState(0);
-	const [data, setData] = useState<DataInfoList>({ datas: [] });
+	const [data, setData] = useState<FileInfoList>({ datas: [] });
 
 	const fetchAndSetData = useCallback(
 		async (page: number) => {

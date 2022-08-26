@@ -22,4 +22,9 @@ interface PageData {
 	identifier: 'file' | 'folder'; // ← enum
 }
 
-export type { LoginData, SignUpData, TokenData, PageData };
+interface KeywordData {
+	page: number;
+	keyword: string;
+}
+
+export type { LoginData, SignUpData, TokenData, PageData, KeywordData };

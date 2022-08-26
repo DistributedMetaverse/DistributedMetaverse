@@ -4,8 +4,8 @@ import {
 	loginSuccess,
 	loginFailure,
 	logoutSuccess,
-	dataSuccess,
-	dataProgress,
+	fileSuccess,
+	fileProgress,
 } from '../store/index';
 import {
 	JWT_USERNAME,
@@ -15,7 +15,7 @@ import {
 import toastMessage from '../utils/toast';
 import { setSessionStorage, clearSessionStorage } from '../utils/storage';
 import { setInterceptors } from './common/interceptors';
-import { LoginData, SignUpData, PageData } from './types';
+import { LoginData, SignUpData, PageData, KeywordData } from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
@@ -99,75 +99,85 @@ const auth = {
 			}),
 };
 
-const data = {
-	// 파일 다운로드 API : <baseURL>/data/download/{dataId}
-	download: (dataId: number) => (dispatch: Dispatch) =>
+const file = {
+	// 파일 다운로드 API : <baseURL>/file/download/{fileId}
+	download: (fileId: number) => (dispatch: Dispatch) =>
 		instance
-			.get(`data/download/${dataId}`)
+			.get(`file/download/${fileId}`)
 			.then((response: AxiosResponse) => {
-				dispatch(dataSuccess(response.data));
+				dispatch(fileSuccess(response.data));
 			})
 			.catch((error: AxiosError) => {
 				const { data } = error.response as AxiosResponse;
 				toastMessage(data.message, 'warn');
 			}),
-	// 파일 업로드 API : <baseURL>/data/upload
+	// 파일 업로드 API : <baseURL>/file/upload
 	upload: (formData: HTMLFormElement) => (dispatch: Dispatch) =>
 		instance
-			.post('data/upload', formData, {
+			.post('file/upload', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 				},
 				onUploadProgress: (progressEvent: ProgressEvent) => {
 					const { loaded, total } = progressEvent;
-					dispatch(dataProgress(Math.round((loaded / total) * 100)));
+					dispatch(fileProgress(Math.round((loaded / total) * 100)));
 				},
 			})
 			.then((response: AxiosResponse) => {
-				dispatch(dataSuccess(response.data));
+				dispatch(fileSuccess(response.data));
 			})
 			.catch((error: AxiosError) => {
 				const { data } = error.response as AxiosResponse;
 				toastMessage(data.message, 'warn');
 			}),
-	// 특정경로 파일 리스트 API : <baseURL>/data/list/{page}?type={type}
+	// 특정경로 파일 리스트 API : <baseURL>/file/list?{file,folder}={path}&type={type}&page={page}
 	list: (pageData: PageData) => (dispatch: Dispatch) =>
 		instance
 			.get(
-				`data/list/${pageData.page}?${pageData.identifier}=${pageData.path}&type=${pageData.type}`
+				`file/list?${pageData.identifier}=${pageData.path}&type=${pageData.type}&page=${pageData.page}`
 			)
 			.then((response: AxiosResponse) => {
-				dispatch(dataSuccess(response.data));
+				dispatch(fileSuccess(response.data));
 				return response.data;
 			}),
-	// 파일 세부정보 API : <baseURL>/data/info/{dataId}
-	info: (dataId: number) => (dispatch: Dispatch) =>
-		instance.get(`data/info/${dataId}`).then((response: AxiosResponse) => {
-			dispatch(dataSuccess(response.data));
+	// 파일 세부정보 API : <baseURL>/file/info/{fileId}
+	info: (fileId: number) => (dispatch: Dispatch) =>
+		instance.get(`file/info/${fileId}`).then((response: AxiosResponse) => {
+			dispatch(fileSuccess(response.data));
 			return response.data;
 		}),
-	// 파일 검색 API : <baseURL>/data/file?search={keyword}
-	search: (keyword: string) => (dispatch: Dispatch) =>
+	// 파일 검색 API : <baseURL>/file/search?keyword={keyword}&page={page}
+	search: (keywordData: KeywordData) => (dispatch: Dispatch) =>
 		instance
-			.get(`data/file?search=${keyword}`)
+			.get(
+				`file/search?keyword=${keywordData.keyword}&page=${keywordData.page}`
+			)
 			.then((response: AxiosResponse) => {
-				dispatch(dataSuccess(response.data));
+				dispatch(fileSuccess(response.data));
 				return response.data;
 			}),
 };
 
 const status = {
-	// 폴더 리스트 검색 API : <baseURL>/data/folder
-	folder: () => (dispatch: Dispatch) =>
-		instance.get('data/folder').then((response: AxiosResponse) => {
-			dispatch(dataSuccess(response.data));
+	// 다운로드 갯수 확인 API : <baseURL>/status/download
+	download: () => (dispatch: Dispatch) =>
+		instance.get(`status/download`).then((response: AxiosResponse) => {
+			dispatch(fileSuccess(response.data));
 			return response.data;
 		}),
+	// 폴더 리스트 검색 API : <baseURL>/status/folder?type={type}
+	folder: (type: string) => (dispatch: Dispatch) =>
+		instance
+			.get(`status/folder?type=${type}`)
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
 };
 
 const api = {
 	auth,
-	data,
+	file,
 	status,
 };
 

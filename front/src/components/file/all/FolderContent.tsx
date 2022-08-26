@@ -1,7 +1,7 @@
 import React, { FC, ChangeEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FolderInfo } from '../../store/types';
-import useFolderPathPageList from '../../hooks/useFolderPathPageList';
+import { FolderInfo } from '../../../store/types';
+import useFolderPathPageList from '../../../hooks/useFolderPathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -34,7 +34,7 @@ const FolderContent: FC<FolderContentProps> = ({ actions }): JSX.Element => {
 			<Grid container spacing={3}>
 				{datas &&
 					datas.map((data: FolderInfo) => (
-						<Grid item key={data.path} xs={6} md={3} lg={2}>
+						<Grid item key={data.path} xs={4} md={3} lg={2}>
 							<Paper
 								sx={{
 									p: 2,

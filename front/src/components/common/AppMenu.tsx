@@ -105,10 +105,14 @@ const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
 			>
 				<Box>
 					<IconButton onClick={toggleSwitch} disabled={branch}>
-						<ListIcon color="disabled" />
+						<ListIcon
+							sx={{ color: branch ? 'active.disabled' : 'secondary.main' }}
+						/>
 					</IconButton>
 					<IconButton onClick={toggleSwitch} disabled={!branch}>
-						<CloudDownloadIcon color="disabled" />
+						<CloudDownloadIcon
+							sx={{ color: branch ? 'secondary.main' : 'active.disabled' }}
+						/>
 					</IconButton>
 				</Box>
 				<IconButton onClick={toggleDrawer}>
