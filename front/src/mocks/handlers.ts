@@ -4,15 +4,8 @@ import {
 	getTokenKeyData,
 	getTokenKeySignature,
 } from './crypto';
-import { PageData, TokenData } from '../services/types';
-import {
-	FileInfo,
-	FileInfoList,
-	FolderInfoList,
-	SearchInfo,
-	SettingInfo,
-	SettingInfoList,
-} from '../store/types';
+import { TokenData } from '../services/types';
+import { FileInfo, FolderInfo, SearchInfo, SettingInfo } from '../store/types';
 
 const fileinfo: FileInfo = {
 	id: 1,
@@ -36,63 +29,59 @@ const fileinfo: FileInfo = {
 	],
 };
 
-const filelist: FileInfoList = {
-	datas: [
-		{
-			id: 1,
-			fileId: 'test1',
-			filename: 'test1.png',
-			fileSize: 100000,
-			createdAt: '2022-01-23',
-			isLike: true,
-		},
-		{
-			id: 2,
-			fileId: 'test2',
-			filename: 'test2.png',
-			fileSize: 2000000,
-			createdAt: '2022-01-23',
-			isLike: false,
-		},
-		{
-			id: 3,
-			fileId: 'test3',
-			filename: 'test3.png',
-			fileSize: 3000000,
-			createdAt: '2022-01-23',
-			isLike: false,
-		},
-		{
-			id: 4,
-			fileId: 'test4',
-			filename: 'test4.png',
-			fileSize: 4000000,
-			createdAt: '2022-01-23',
-			isLike: false,
-		},
-	],
-};
+const filelist: Array<FileInfo> = [
+	{
+		id: 1,
+		fileId: 'test1',
+		filename: 'test1.png',
+		fileSize: 100000,
+		createdAt: '2022-01-23',
+		isLike: true,
+	},
+	{
+		id: 2,
+		fileId: 'test2',
+		filename: 'test2.png',
+		fileSize: 2000000,
+		createdAt: '2022-01-23',
+		isLike: false,
+	},
+	{
+		id: 3,
+		fileId: 'test3',
+		filename: 'test3.png',
+		fileSize: 3000000,
+		createdAt: '2022-01-23',
+		isLike: false,
+	},
+	{
+		id: 4,
+		fileId: 'test4',
+		filename: 'test4.png',
+		fileSize: 4000000,
+		createdAt: '2022-01-23',
+		isLike: false,
+	},
+];
 
-const folderlist: FolderInfoList = {
-	datas: [
-		{
-			path: '/',
-			count: 2,
-		},
-		{
-			path: '/data/data1',
-			count: 10,
-		},
-		{
-			path: '/test1/folder',
-			count: 23,
-		},
-		{
-			path: '/test2',
-			count: 4,
-		},
-	],
-};
+const folderlist: Array<FolderInfo> = [
+	{
+		path: '/',
+		count: 2,
+	},
+	{
+		path: '/data/data1',
+		count: 10,
+	},
+	{
+		path: '/test1/folder',
+		count: 23,
+	},
+	{
+		path: '/test2',
+		count: 4,
+	},
+];
 
 const settinginfo: SettingInfo = {
 	id: 1,
@@ -102,28 +91,26 @@ const settinginfo: SettingInfo = {
 	limit: 100000000,
 };
 
-const settinglist: SettingInfoList = {
-	datas: [
-		{
-			id: 1,
-			host: '127.0.0.1',
-			port: 4001,
-			size: 10000000,
-		},
-		{
-			id: 2,
-			host: 'https://docs.ipfs.tech/',
-			port: 4002,
-			size: 10000000,
-		},
-		{
-			id: 3,
-			host: '192.168.0.11',
-			port: 4003,
-			size: 10000000,
-		},
-	],
-};
+const settinglist: Array<SettingInfo> = [
+	{
+		id: 1,
+		host: '127.0.0.1',
+		port: 4001,
+		size: 10000000,
+	},
+	{
+		id: 2,
+		host: 'https://docs.ipfs.tech/',
+		port: 4002,
+		size: 10000000,
+	},
+	{
+		id: 3,
+		host: '192.168.0.11',
+		port: 4003,
+		size: 10000000,
+	},
+];
 
 const secret = 'S-dV7@1SS#AGd#%^';
 
@@ -166,21 +153,9 @@ export const handlers = [
 	// 특정경로 파일 ↔ 폴더 리스트 검색
 	rest.get('/api/file/list', (req, res, ctx) => {
 		const file = req.url.searchParams.get('file');
-		const folder = req.url.searchParams.get('folder');
-		const path = file ? file : folder;
 		const identifier = file ? 'file' : 'folder';
-		const type = req.url.searchParams.get('type');
-		const page = req.url.searchParams.get('page');
-		console.log(type);
-		const pageData: PageData = {
-			page: Number(page),
-			path: String(path),
-			type: 'all',
-			identifier: identifier,
-		};
-		if (identifier === 'file')
-			return res(ctx.status(200), ctx.json({ pageData, ...filelist }));
-		else return res(ctx.status(200), ctx.json({ pageData, ...folderlist }));
+		if (identifier === 'file') return res(ctx.status(200), ctx.json(filelist));
+		else return res(ctx.status(200), ctx.json(folderlist));
 	}),
 
 	// 파일 세부정보

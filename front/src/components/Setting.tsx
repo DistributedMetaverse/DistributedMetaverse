@@ -146,12 +146,11 @@ const Setting: FC<SettingProps> = ({
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<SettingInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
 			<Grid container spacing={3}>
-				{datas &&
-					datas.map((data: SettingInfo) => (
+				{data &&
+					data.map((data: SettingInfo) => (
 						<Grid item key={data.id} xs={6} md={3} lg={2}>
 							<Paper
 								sx={{

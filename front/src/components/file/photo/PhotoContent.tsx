@@ -111,13 +111,12 @@ const PhotoContent: FC<PhotoContentProps> = ({
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
 			{branch ? (
-				<PhotoContentGrid datas={datas} photoClick={photoClick} />
+				<PhotoContentGrid datas={data} photoClick={photoClick} />
 			) : (
-				<PhotoContentRow datas={datas} photoClick={photoClick} />
+				<PhotoContentRow datas={data} photoClick={photoClick} />
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination

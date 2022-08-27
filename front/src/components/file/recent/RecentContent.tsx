@@ -88,13 +88,12 @@ const RecentContent: FC<RecentContentProps> = ({
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
 			{branch ? (
-				<RecentContentGrid datas={datas} />
+				<RecentContentGrid datas={data} />
 			) : (
-				<RecentContentRow datas={datas} />
+				<RecentContentRow datas={data} />
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination

@@ -28,12 +28,11 @@ const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
 		else return name;
 	};
 
-	const datas = data.datas as Array<FolderInfo>;
 	return (
 		<Box sx={{ mt: 2, mb: 2 }}>
 			<Grid container spacing={3}>
-				{datas &&
-					datas.map((data: FolderInfo) => (
+				{data &&
+					data.map((data: FolderInfo) => (
 						<Grid item key={data.path} xs={4} md={2} lg={2}>
 							<Paper
 								sx={{

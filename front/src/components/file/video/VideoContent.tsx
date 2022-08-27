@@ -111,13 +111,12 @@ const VideoContent: FC<VideoContentProps> = ({
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
 			{branch ? (
-				<VideoContentGrid datas={datas} videoClick={videoClick} />
+				<VideoContentGrid datas={data} videoClick={videoClick} />
 			) : (
-				<VideoContentRow datas={datas} videoClick={videoClick} />
+				<VideoContentRow datas={data} videoClick={videoClick} />
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination

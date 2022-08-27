@@ -28,6 +28,66 @@ interface FolderButtonProps {
 	type: 'all' | 'video' | 'photo';
 }
 
+interface FolderTabMenuItemProps {
+	path: string;
+	datas: Array<FolderInfo>;
+	closeClick: (path: string) => void;
+}
+
+const FolderTabMenuItem: FC<FolderTabMenuItemProps> = ({
+	path,
+	datas,
+	closeClick,
+}): JSX.Element => {
+	return (
+		<MenuList dense sx={{ pt: 0.5, pb: 0.5 }}>
+			{datas &&
+				datas.map((data: FolderInfo) => (
+					<MenuItem
+						key={data.path}
+						onClick={() => closeClick(data.path)}
+						dense
+						sx={{ px: 2, pt: 0.5, pb: 0.5, minHeight: 22 }}
+					>
+						<Grid container spacing={2}>
+							<Grid item xs={8}>
+								<ListItemText
+									primaryTypographyProps={{
+										style: { fontSize: 13, fontWeight: 'bold' },
+									}}
+									primary={data.path}
+								/>
+							</Grid>
+							<Grid item xs={2}>
+								<ListItemText
+									primaryTypographyProps={{ style: { fontSize: 13 } }}
+									primary={data.count}
+								/>
+							</Grid>
+							<Grid
+								item
+								xs={2}
+								sx={{
+									mb: data.path === path ? -0.5 : 0,
+								}}
+							>
+								{data.path === path && (
+									<ListItemIcon>
+										<Check
+											sx={{
+												color: 'text.primary',
+											}}
+										/>
+									</ListItemIcon>
+								)}
+							</Grid>
+						</Grid>
+					</MenuItem>
+				))}
+		</MenuList>
+	);
+};
+
 const FolderTabButton: FC<FolderButtonProps> = ({
 	path,
 	status,
@@ -38,7 +98,6 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 	const [open, setOpen] = useState(false);
 	const [data, fetchData] = useFolderTabList({ status, type });
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-	const datas = data.datas as Array<FolderInfo>;
 
 	const showClick = (event: MouseEvent<HTMLButtonElement>) => {
 		fetchData(type); // → Refresh
@@ -69,49 +128,7 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 				sx={{ zIndex: 1201 }}
 			>
 				<Paper elevation={3}>
-					<MenuList dense sx={{ pt: 0.5, pb: 0.5 }}>
-						{datas &&
-							datas.map((data: FolderInfo) => (
-								<MenuItem
-									key={data.path}
-									onClick={() => closeClick(data.path)}
-									dense
-									sx={{ px: 2, pt: 0.5, pb: 0.5, minHeight: 22 }}
-								>
-									<Grid container spacing={2}>
-										<Grid item xs={8}>
-											<ListItemText
-												primaryTypographyProps={{
-													style: { fontSize: 13, fontWeight: 'bold' },
-												}}
-												primary={data.path}
-											/>
-										</Grid>
-										<Grid item xs={2}>
-											<ListItemText
-												primaryTypographyProps={{ style: { fontSize: 13 } }}
-												primary={data.count}
-											/>
-										</Grid>
-										<Grid
-											item
-											xs={2}
-											sx={{ mb: data.path === path ? -0.5 : 0 }}
-										>
-											{data.path === path && (
-												<ListItemIcon>
-													<Check
-														sx={{
-															color: 'text.primary',
-														}}
-													/>
-												</ListItemIcon>
-											)}
-										</Grid>
-									</Grid>
-								</MenuItem>
-							))}
-					</MenuList>
+					<FolderTabMenuItem path={path} datas={data} closeClick={closeClick} />
 				</Paper>
 			</Popper>
 		</Box>

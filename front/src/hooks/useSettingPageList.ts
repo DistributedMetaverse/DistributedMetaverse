@@ -6,7 +6,7 @@ import {
 	SetStateAction,
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { SettingInfoList } from '../store/types';
+import { SettingInfo } from '../store/types';
 
 interface FolderPathPageList {
 	setting: ActionCreatorsMapObject;
@@ -14,9 +14,12 @@ interface FolderPathPageList {
 
 const useSettingPageList = ({
 	setting,
-}: FolderPathPageList): [SettingInfoList, Dispatch<SetStateAction<number>>] => {
+}: FolderPathPageList): [
+	Array<SettingInfo>,
+	Dispatch<SetStateAction<number>>
+] => {
 	const [page, setPage] = useState(0);
-	const [data, setData] = useState<SettingInfoList>({ datas: [] });
+	const [data, setData] = useState<Array<SettingInfo>>([]);
 
 	const fetchAndSetData = useCallback(
 		async (page: number) => {

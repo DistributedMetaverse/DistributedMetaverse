@@ -46,10 +46,6 @@ interface FolderInfo {
 	count: number;
 }
 
-interface FolderInfoList {
-	datas?: Array<FolderInfo>;
-}
-
 // 5. 데이터 검색 및 업로드 관련 State
 interface UserInfo {
 	userId: number;
@@ -67,18 +63,12 @@ interface FileInfo extends SearchInfo {
 	shared?: Array<UserInfo>;
 }
 
-interface FileInfoList {
-	datas?: Array<FileInfo>;
-}
-
 interface FileState {
 	data: Array<object>;
 	size: number;
 }
 
 // 6. Setting 관련 State
-// → But, Backend 서버 쪽에서 포워딩 할꺼라서 별도의 State를 만들 필요는 없음
-// → Only, Setting 정보를 확인하기 위한 Interface
 interface SettingInfo {
 	id: number;
 	host: string;
@@ -87,9 +77,6 @@ interface SettingInfo {
 	limit?: number;
 }
 
-interface SettingInfoList {
-	datas?: Array<SettingInfo>;
-}
 
 export type {
 	AuthState,
@@ -100,11 +87,8 @@ export type {
 	PreviewState,
 	PathState,
 	FolderInfo,
-	FolderInfoList,
 	UserInfo,
 	FileInfo,
-	FileInfoList,
 	FileState,
 	SettingInfo,
-	SettingInfoList,
 };

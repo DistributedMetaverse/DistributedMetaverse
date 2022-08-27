@@ -39,7 +39,6 @@ const DownloadBar: FC<DownloadProps> = ({
 		path: '/',
 		type: 'download',
 	});
-	const datas = data.datas as Array<FileInfo>;
 
 	const previewClick = (id: string) => {
 		dispatch(previewInfo(id));
@@ -62,8 +61,8 @@ const DownloadBar: FC<DownloadProps> = ({
 			}}
 		>
 			<Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-				{datas &&
-					datas.map((data: FileInfo) => (
+				{data &&
+					data.map((data: FileInfo) => (
 						<Grow key={data.id} in={branch} timeout={data.id * 300}>
 							<Grid item xs={6}>
 								<Button

@@ -51,10 +51,9 @@ const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
-			<FileContentGrid datas={datas} />
+			<FileContentGrid datas={data} />
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
 					count={10}

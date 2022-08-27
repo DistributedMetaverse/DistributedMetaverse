@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FolderInfoList } from '../store/types';
+import { FolderInfo } from '../store/types';
 
 interface FolderInfoProps {
 	status: ActionCreatorsMapObject;
@@ -10,8 +10,8 @@ interface FolderInfoProps {
 const useFolderTabList = ({
 	status,
 	type,
-}: FolderInfoProps): [FolderInfoList, (type: string) => Promise<void>] => {
-	const [data, setData] = useState<FolderInfoList>({ datas: [] });
+}: FolderInfoProps): [Array<FolderInfo>, (type: string) => Promise<void>] => {
+	const [data, setData] = useState<Array<FolderInfo>>([]);
 
 	const fetchAndSetData = useCallback(async (type: string) => {
 		const data = await status.folder(type);
