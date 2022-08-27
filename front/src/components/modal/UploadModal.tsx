@@ -10,12 +10,10 @@ import { UploadInfo } from './upload/types';
 import {
 	Box,
 	Grid,
-	Paper,
 	Modal,
 	Alert,
 	Collapse,
 	IconButton,
-	Button,
 	Divider,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -115,7 +113,7 @@ const UploadModal: FC<UploadModalProps> = ({
 					top: '50%',
 					left: '50%',
 					transform: 'translate(-50%, -50%)',
-					width: 550,
+					width: 400,
 					bgcolor: 'background.paper',
 					border: '2px solid #000',
 					boxShadow: 24,
@@ -126,19 +124,7 @@ const UploadModal: FC<UploadModalProps> = ({
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
 				<CreateFolder />
 				{data.size > 0 && (
-					<Paper>
-						<UploadDetail data={data} />
-						<Divider sx={{ pb: 2, borderColor: 'primary.main' }} />
-						<Button
-							type="submit"
-							fullWidth
-							variant="contained"
-							sx={{ p: 0 }}
-							onClick={uploadSubmit}
-						>
-							Upload
-						</Button>
-					</Paper>
+					<UploadDetail data={data} uploadSubmit={uploadSubmit} />
 				)}
 			</Box>
 		</Modal>

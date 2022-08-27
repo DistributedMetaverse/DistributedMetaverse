@@ -1,35 +1,50 @@
-import React, { FC, ChangeEvent } from 'react';
+import React, { FC, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { FileInfo } from '../../../store/types';
 import useFilePathPageList from '../../../hooks/useFilePathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
-import DescriptionIcon from '@mui/icons-material/Description';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import ContentHeader from '../cmmn/ContentHeader';
+import ContentName from '../cmmn/ContentName';
+import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface VideoContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
+	branch: boolean;
+	setFileId: Dispatch<SetStateAction<string>>;
 }
 
-interface VideoContentGridProps {
+interface VideoContentDataProps {
 	datas: Array<FileInfo>;
+	videoClick: (fileId: string) => void;
 }
 
-const VideoContentGrid: FC<VideoContentGridProps> = ({
+const VideoContentGrid: FC<VideoContentDataProps> = ({
 	datas,
+	videoClick,
 }): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
 			{datas &&
 				datas.map((data: FileInfo) => (
 					<Grid item key={data.fileId} xs={4} md={3} lg={2}>
-						<Paper sx={{ p: 2 }}>
+						<Paper
+							sx={{
+								p: 2,
+								'&:hover': {
+									cursor: 'pointer',
+									backgroundColor: 'action.hover',
+								},
+							}}
+							onClick={() => videoClick(data.fileId)}
+						>
 							<ContentHeader
 								fileId={data.fileId}
 								isLike={data.isLike || false}
 							/>
-							<DescriptionIcon fontSize="large" />
+							<PlayCircleIcon fontSize="large" />
 							<Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>
 								{data.filename}
 							</Typography>
@@ -41,22 +56,68 @@ const VideoContentGrid: FC<VideoContentGridProps> = ({
 	);
 };
 
-const VideoContent: FC<VideoContentProps> = ({ actions }): JSX.Element => {
+const VideoContentRow: FC<VideoContentDataProps> = ({
+	datas,
+	videoClick,
+}): JSX.Element => {
+	return (
+		<Box>
+			{datas &&
+				datas.map((data: FileInfo) => (
+					<Paper
+						key={data.fileId}
+						sx={{
+							mb: 2,
+							pt: 2,
+							pb: 1,
+							'&:hover': {
+								cursor: 'pointer',
+								backgroundColor: 'action.hover',
+							},
+							display: 'flex',
+							justifyContent: 'space-between',
+						}}
+						onClick={() => videoClick(data.fileId)}
+					>
+						<ContentName filename={data.filename} />
+						<ContentAside
+							fileId={data.fileId}
+							fileSize={data.fileSize}
+							isLike={data.isLike || false}
+						/>
+					</Paper>
+				))}
+		</Box>
+	);
+};
+
+const VideoContent: FC<VideoContentProps> = ({
+	file,
+	branch,
+	setFileId,
+}): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});
+
+	const videoClick = (fileId: string) => {
+		setFileId(fileId);
+	};
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
 		const value = (event.target as HTMLButtonElement).textContent as any;
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
-			<VideoContentGrid datas={datas} />
+			{branch ? (
+				<VideoContentGrid datas={data} videoClick={videoClick} />
+			) : (
+				<VideoContentRow datas={data} videoClick={videoClick} />
+			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
 					count={10}

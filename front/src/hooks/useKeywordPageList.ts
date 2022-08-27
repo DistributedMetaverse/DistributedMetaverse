@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FileInfoList } from '../store/types';
+import { FileInfo } from '../store/types';
 import { KeywordData } from '../services/types';
 
 interface FilePathPageListProps {
@@ -12,10 +12,10 @@ const useKeywordPageList = ({
 	file,
 	keyword,
 }: FilePathPageListProps): [
-	FileInfoList,
+	Array<FileInfo>,
 	(page: number, keyword: string) => Promise<void>
 ] => {
-	const [data, setData] = useState<FileInfoList>({ datas: [] });
+	const [data, setData] = useState<Array<FileInfo>>([]);
 
 	const fetchAndSetData = useCallback(
 		async (page: number, keyword: string) => {

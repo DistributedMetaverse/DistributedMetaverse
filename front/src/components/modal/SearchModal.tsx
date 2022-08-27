@@ -133,7 +133,6 @@ const SearchModal: FC<SearchModalProps> = ({
 	const [text, setText] = useState('');
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 	const [data, fetchData] = useKeywordPageList({ file, keyword: '' });
-	const datas = data.datas as Array<FileInfo>;
 
 	const searchClose = () => setOpenSearch(false);
 	const searchOnChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -189,7 +188,7 @@ const SearchModal: FC<SearchModalProps> = ({
 				</Paper>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
 				{anchorEl ? (
-					<UseKeyword page={page} datas={datas} changePage={changePage} />
+					<UseKeyword page={page} datas={data} changePage={changePage} />
 				) : (
 					<NoKeyword />
 				)}

@@ -6,22 +6,25 @@ import {
 	SetStateAction,
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FolderInfoList } from '../store/types';
+import { FolderInfo } from '../store/types';
 import { PageData } from '../services/types';
 
 interface FolderPathPageList {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	path: string;
 	type: string;
 }
 
 const useFolderPathPageList = ({
-	actions,
+	file,
 	path,
 	type,
-}: FolderPathPageList): [FolderInfoList, Dispatch<SetStateAction<number>>] => {
+}: FolderPathPageList): [
+	Array<FolderInfo>,
+	Dispatch<SetStateAction<number>>
+] => {
 	const [page, setPage] = useState(0);
-	const [data, setData] = useState<FolderInfoList>({ datas: [] });
+	const [data, setData] = useState<Array<FolderInfo>>([]);
 
 	const fetchAndSetData = useCallback(
 		async (page: number) => {
@@ -31,7 +34,7 @@ const useFolderPathPageList = ({
 				type: type,
 				identifier: 'folder',
 			};
-			const data = await actions.list(pageData);
+			const data = await file.list(pageData);
 			setData(data);
 		},
 		[page]

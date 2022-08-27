@@ -9,14 +9,14 @@ import ContentHeader from '../cmmn/ContentHeader';
 import ContentFooder from '../cmmn/ContentFooder';
 
 interface FileContentProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
-interface FileContentGridProps {
+interface FileContentDataProps {
 	datas: Array<FileInfo>;
 }
 
-const FileContentGrid: FC<FileContentGridProps> = ({ datas }): JSX.Element => {
+const FileContentGrid: FC<FileContentDataProps> = ({ datas }): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
 			{datas &&
@@ -39,9 +39,9 @@ const FileContentGrid: FC<FileContentGridProps> = ({ datas }): JSX.Element => {
 	);
 };
 
-const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
+const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});
@@ -51,10 +51,9 @@ const FileContent: FC<FileContentProps> = ({ actions }): JSX.Element => {
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const datas = data.datas as Array<FileInfo>;
 	return (
 		<Box sx={{ mt: 2 }}>
-			<FileContentGrid datas={datas} />
+			<FileContentGrid datas={data} />
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
 					count={10}

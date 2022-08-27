@@ -12,10 +12,10 @@ import FileContent from '../components/file/all/FileContent';
 
 interface FilePageProps {
 	path?: PathState;
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
-const FilePage: FC<FilePageProps> = ({ path, actions }): JSX.Element => {
+const FilePage: FC<FilePageProps> = ({ path, file }): JSX.Element => {
 	const { folderPath, filePath, folderType, fileType } = path as {
 		folderPath: string;
 		filePath: string;
@@ -25,9 +25,9 @@ const FilePage: FC<FilePageProps> = ({ path, actions }): JSX.Element => {
 	return (
 		<Box>
 			<FolderHeader path={folderPath} type={folderType} />
-			<FolderContent actions={actions} />
+			<FolderContent file={file} />
 			<FileHeader path={filePath} type={fileType} />
-			<FileContent actions={actions} />
+			<FileContent file={file} />
 		</Box>
 	);
 };
@@ -37,7 +37,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.file, dispatch),
+	file: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilePage);

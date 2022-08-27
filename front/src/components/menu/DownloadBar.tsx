@@ -23,23 +23,22 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 interface DownloadProps {
 	preview: PreviewState;
 	branch: boolean;
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 }
 
 const DownloadBar: FC<DownloadProps> = ({
 	preview,
 	branch,
-	actions,
+	file,
 }): JSX.Element => {
 	const dispatch = useDispatch();
 	const page = 1; // default
 	const { fileId, isActive } = preview;
 	const [data, setPage] = useFilePathPageList({
-		actions,
+		file,
 		path: '/',
 		type: 'download',
 	});
-	const datas = data.datas as Array<FileInfo>;
 
 	const previewClick = (id: string) => {
 		dispatch(previewInfo(id));
@@ -62,8 +61,8 @@ const DownloadBar: FC<DownloadProps> = ({
 			}}
 		>
 			<Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-				{datas &&
-					datas.map((data: FileInfo) => (
+				{data &&
+					data.map((data: FileInfo) => (
 						<Grow key={data.id} in={branch} timeout={data.id * 300}>
 							<Grid item xs={6}>
 								<Button
@@ -135,7 +134,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.file, dispatch),
+	file: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DownloadBar);

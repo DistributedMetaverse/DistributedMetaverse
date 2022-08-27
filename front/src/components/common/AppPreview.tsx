@@ -27,13 +27,13 @@ import LoupeOutlinedIcon from '@mui/icons-material/LoupeOutlined';
 import { fileSizeFormat } from '../../utils/format';
 
 interface UseFileProps {
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	fileId: string;
 }
 
 interface AppPreviewProps {
 	preview: PreviewState;
-	actions: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	width: number;
 }
 
@@ -184,8 +184,8 @@ const UseDivider: FC = (): JSX.Element => {
 	);
 };
 
-const UseFile: FC<UseFileProps> = ({ actions, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ actions, fileId });
+const UseFile: FC<UseFileProps> = ({ file, fileId }): JSX.Element => {
+	const data = useFileInfoDetails({ file, fileId });
 	const shared = data.shared as Array<UserInfo>;
 	return (
 		<Box>
@@ -324,7 +324,7 @@ const NoFile: FC = (): JSX.Element => {
 
 const AppPreview: FC<AppPreviewProps> = ({
 	preview,
-	actions,
+	file,
 	width,
 }): JSX.Element => {
 	const { fileId, isActive } = preview;
@@ -342,7 +342,7 @@ const AppPreview: FC<AppPreviewProps> = ({
 			anchor="right"
 			open={isActive}
 		>
-			{isActive ? <UseFile actions={actions} fileId={fileId} /> : <NoFile />}
+			{isActive ? <UseFile file={file} fileId={fileId} /> : <NoFile />}
 		</Drawer>
 	);
 };
@@ -352,7 +352,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
-	actions: bindActionCreators(Api.file, dispatch),
+	file: bindActionCreators(Api.file, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppPreview);
