@@ -2,7 +2,6 @@ import React, { FC, FormEventHandler } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Field, reduxForm, ConfigProps } from 'redux-form';
-import { validateEmail } from '../utils/validation';
 import {
 	Avatar,
 	Button,
@@ -17,29 +16,12 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
-import Copyright from './Copyright';
-import renderField from './validate/TextField';
+import Copyright from '../Copyright';
+import renderField from '../validate/TextField';
+import { defaultTheme } from '../../utils/theme';
+import { validateEmail } from '../../utils/validation';
 
-const theme = createTheme({
-	palette: {
-		text: {
-			primary: '#fff', // Main Text
-			secondary: '#fff', // Validation Text
-		},
-		action: {
-			disabled: '#fff', // Button Disabled Text
-			disabledBackground: '#34343B', // Button Disabled Background Color
-		},
-		background: {
-			default: '#1D1B22',
-			paper: '#26262E',
-		},
-		secondary: {
-			main: '#86868A', // LockOut Icon Background Color
-		},
-	},
-	spacing: 6, // Spacing(간격) - Default : 8px
-});
+const theme = createTheme(defaultTheme);
 
 interface LoginProp {
 	onSubmit: FormEventHandler<HTMLFormElement>;
@@ -135,8 +117,8 @@ const validateLogin = (values: any) => {
 	}
 
 	requiredFields.forEach((field: string) => {
-		if ((values as any).field === '') {
-			(errors as any).field = ['The', field, 'field is required.'].join(' ');
+		if ((values as any)[field] === '') {
+			(errors as any)[field] = ['The', field, 'field is required.'].join(' ');
 		}
 	});
 

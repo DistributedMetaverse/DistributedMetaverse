@@ -4,7 +4,8 @@ import AppContent from '../components/common/AppContent';
 import {
 	Home,
 	Login,
-	Signup,
+	AdminSignup,
+	UserSignup,
 	File,
 	Video,
 	Photo,
@@ -12,6 +13,7 @@ import {
 	Setting,
 	NotFound,
 } from '../pages/index';
+import AdminRoute from './admin';
 import PrivateRoute from './auth';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import './route.css';
@@ -25,7 +27,10 @@ const AuthRoutes: FC = (): JSX.Element => {
 			<CSSTransition key={location.pathname} classNames={slide} timeout={300}>
 				<Routes location={location}>
 					<Route path="/login" element={<Login />} />
-					<Route path="/signup" element={<Signup />} />
+					<Route path="/signup" element={<UserSignup />} />
+					<Route element={<AdminRoute />}>
+						<Route path="/admin" element={<AdminSignup />} />
+					</Route>
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</CSSTransition>

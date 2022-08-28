@@ -15,7 +15,7 @@ const SettingPage: FC<SettingPageProps> = ({ setting }): JSX.Element => {
 	const [open, setOpen] = useState(false);
 	const [serverId, setServerId] = useState(0);
 	return (
-		<Box>
+		<Box sx={{ mt: -2 }}>
 			<Paper sx={{ mb: 2, pt: 2, pb: 1 }}>
 				<Alert severity="info">
 					현재 Web Server에서 가용 중인 DB 세팅 정보들을 보여줍니다.

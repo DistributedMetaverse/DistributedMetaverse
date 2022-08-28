@@ -6,7 +6,7 @@ const PrivateRoute: FC = (): JSX.Element => {
 	if (getAccessToken() && isAuthenticated()) {
 		return <Outlet />;
 	}
-	return <Navigate to={{ pathname: '/auth/login' }} replace />;
+	return <Navigate to={{ pathname: '/auth/admin' }} replace />;
 };
 
 export default PrivateRoute;

@@ -1,20 +1,10 @@
 import React, { FC, FormEventHandler } from 'react';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Field, reduxForm, ConfigProps } from 'redux-form';
 import {
-	validateEmail,
-	validateUpperCase,
-	validateLowerCase,
-	validateDigit,
-	validateSpecialChar,
-} from '../utils/validation';
-import {
 	Avatar,
 	Button,
-	IconButton,
 	CssBaseline,
-	Grid,
 	Box,
 	Paper,
 	Typography,
@@ -22,38 +12,27 @@ import {
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import Copyright from './Copyright';
-import renderField from './validate/TextField';
+import Copyright from '../Copyright';
+import renderField from '../validate/TextField';
+import { defaultTheme } from '../../utils/theme';
+import {
+	validateEmail,
+	validateUpperCase,
+	validateLowerCase,
+	validateDigit,
+	validateSpecialChar,
+} from '../../utils/validation';
 
-const theme = createTheme({
-	palette: {
-		text: {
-			primary: '#fff', // Main Text
-			secondary: '#fff', // Validation Text
-		},
-		action: {
-			disabled: '#fff', // Button Disabled Text
-			disabledBackground: '#34343B', // Button Disabled Background Color
-		},
-		background: {
-			default: '#1D1B22',
-			paper: '#26262E',
-		},
-		secondary: {
-			main: '#86868A', // LockOut Icon Background Color
-		},
-	},
-	spacing: 6, // Spacing(간격) - Default : 8px
-});
+const theme = createTheme(defaultTheme);
 
-interface SignupProp {
+interface RegistryProp {
 	onSubmit: FormEventHandler<HTMLFormElement>;
 	formState: any;
+	admin: boolean;
 	submitting: boolean;
 }
 
-const SignupForm: FC<SignupProp> = ({
+const RegistryForm: FC<RegistryProp> = ({
 	onSubmit,
 	formState,
 	submitting,
@@ -83,7 +62,15 @@ const SignupForm: FC<SignupProp> = ({
 						<Avatar sx={{ m: 1, mt: 3, bgcolor: 'secondary.main' }}>
 							<LockOutlinedIcon />
 						</Avatar>
-						<Typography variant="h6">Sign up</Typography>
+						<Typography variant="h6">Admin Registry</Typography>
+						<Typography
+							component="span"
+							variant="h6"
+							sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
+						>
+							※ 관리자 정보를 입력해주세요 ※ <br />
+							관리자 정보가 있어야 페이지가 정상적으로 실행됩니다.
+						</Typography>
 						<Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 0 }}>
 							<Field
 								component={renderField}
@@ -121,18 +108,6 @@ const SignupForm: FC<SignupProp> = ({
 							>
 								Sign Up
 							</Button>
-							<Grid container justifyContent="center" sx={{ pb: 2 }}>
-								<Grid item>
-									<IconButton component={Link} to="/auth/login" sx={{ p: 0 }}>
-										<ArrowCircleLeftIcon color="primary" />
-									</IconButton>
-								</Grid>
-								<Grid item xs={8}>
-									<Typography variant="subtitle2" sx={{ mt: 0.2 }}>
-										Already have an account? Sign in
-									</Typography>
-								</Grid>
-							</Grid>
 						</Box>
 					</Box>
 				</Paper>
@@ -153,8 +128,8 @@ const validateSignup = (values: any) => {
 	}
 
 	requiredFields.forEach((field: string) => {
-		if ((values as any).field === '') {
-			(errors as any).field = ['The', field, 'field is required.'].join(' ');
+		if ((values as any)[field] === '') {
+			(errors as any)[field] = ['The', field, 'field is required.'].join(' ');
 		}
 	});
 
@@ -191,11 +166,11 @@ const validateSignup = (values: any) => {
 };
 
 const mapStateToProps = (state: ConfigProps, ownProps: any = {}) => ({
-	formState: (state.form as any).SignupForm,
+	formState: (state.form as any).RegistryForm,
 	ownProps: ownProps,
 });
 
 export default reduxForm({
-	form: 'SignupForm',
+	form: 'RegistryForm',
 	validate: validateSignup,
-})(connect(mapStateToProps, null)(SignupForm));
+})(connect(mapStateToProps, null)(RegistryForm));

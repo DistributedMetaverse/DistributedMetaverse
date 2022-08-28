@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { MenuInfo, MenuState } from '../../store/types';
 import { useDispatch } from 'react-redux';
-import { changeTitle, changeActiveMenu } from '../../store/index';
+import { changeTitle, menuActive, settingSwitch } from '../../store/index';
 import {
 	Box,
 	Grow, // Transitions
@@ -14,18 +14,18 @@ import {
 	Typography,
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/HomeOutlined'; // Main Icon
+import AccessTimeIcon from '@mui/icons-material/AccessTimeOutlined';
 import FolderCopyIcon from '@mui/icons-material/FolderCopyOutlined';
 import VideocamIcon from '@mui/icons-material/VideocamOutlined';
 import PhotoIcon from '@mui/icons-material/PhotoOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTimeOutlined';
 import SettingsIcon from '@mui/icons-material/SettingsOutlined';
 
 const AppIcon = [
 	HomeIcon,
+	AccessTimeIcon,
 	FolderCopyIcon,
 	VideocamIcon,
 	PhotoIcon,
-	AccessTimeIcon,
 	SettingsIcon,
 ];
 
@@ -39,16 +39,22 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 	const navigate = useNavigate();
 	const menuClick = (title: string, path: string) => {
 		dispatch(changeTitle(title));
-		dispatch(changeActiveMenu(path));
+		dispatch(menuActive(path));
+		dispatch(settingSwitch(false));
 		navigate(path);
 	};
 	return (
-		<>
+		<Box>
 			{menus &&
 				menus.map((menu: MenuInfo) => {
 					const IconComponent = AppIcon[menu.index - 1];
 					return (
-						<Grow key={menu.index} in={branch} timeout={menu.index * 300}>
+						<Grow
+							key={menu.index}
+							in={branch && menu.isShow}
+							appear={menu.isShow}
+							timeout={menu.index * 300}
+						>
 							<ListItemButton
 								selected={menu.isActive}
 								onClick={() => menuClick(menu.title, menu.path)}
@@ -94,7 +100,7 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 					);
 				})}
 			<Divider sx={{ my: 1 }} />
-		</>
+		</Box>
 	);
 };
 

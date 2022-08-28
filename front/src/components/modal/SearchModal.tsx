@@ -5,9 +5,7 @@ import React, {
 	SetStateAction,
 	ChangeEvent,
 } from 'react';
-import { ActionCreatorsMapObject } from 'redux';
 import { FileInfo } from '../../store/types';
-import useKeywordPageList from '../../hooks/useKeywordPageList';
 import {
 	Box,
 	Paper,
@@ -30,10 +28,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
+
 interface SearchModalProps {
-	file: ActionCreatorsMapObject;
+	keyword: string;
+	setKeyword: Dispatch<SetStateAction<string>>;
 	openSearch: boolean;
 	setOpenSearch: Dispatch<SetStateAction<boolean>>;
+	data: Array<FileInfo>;
+	fetchData: (page: number, keyword: string) => Promise<void>;
 }
 
 interface UseKeywordProps {
@@ -125,30 +127,27 @@ const NoKeyword: FC = (): JSX.Element => {
 };
 
 const SearchModal: FC<SearchModalProps> = ({
-	file,
+	keyword,
+	setKeyword,
 	openSearch,
 	setOpenSearch,
+	data,
+	fetchData,
 }): JSX.Element => {
 	const [page, setPage] = useState(0);
-	const [text, setText] = useState('');
-	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-	const [data, fetchData] = useKeywordPageList({ file, keyword: '' });
-
 	const searchClose = () => setOpenSearch(false);
 	const searchOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-		const keyword = event.currentTarget.value;
-		setAnchorEl(event.currentTarget);
-		setText(keyword);
-		fetchData(0, keyword); // 초기화
+		const text = event.currentTarget.value;
+		fetchData(0, text); // 초기화
+		setKeyword(text);
 	};
 	const changePage = (newPage: number) => {
 		setPage(newPage);
-		fetchData(newPage, text);
+		fetchData(newPage, keyword);
 	};
 
 	const cancelClick = () => {
-		setAnchorEl(null);
-		setText('');
+		setKeyword('');
 	};
 	return (
 		<Modal open={openSearch} onClose={searchClose}>
@@ -177,17 +176,17 @@ const SearchModal: FC<SearchModalProps> = ({
 					<InputBase
 						sx={{ ml: 1, flex: 1 }}
 						placeholder="Search"
-						value={text}
+						value={keyword}
 						onChange={searchOnChange}
 					/>
-					{anchorEl && (
+					{keyword !== '' && (
 						<IconButton onClick={cancelClick} sx={{ p: 0 }}>
 							<ClearIcon />
 						</IconButton>
 					)}
 				</Paper>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
-				{anchorEl ? (
+				{keyword !== '' ? (
 					<UseKeyword page={page} datas={data} changePage={changePage} />
 				) : (
 					<NoKeyword />

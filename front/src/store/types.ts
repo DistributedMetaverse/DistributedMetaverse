@@ -18,6 +18,7 @@ interface MenuInfo extends TitleState {
 	description: string;
 	position: number;
 	isActive: boolean;
+	isShow: boolean;
 }
 
 interface MenuState {
@@ -77,6 +78,9 @@ interface SettingInfo {
 	limit?: number;
 }
 
+interface SettingState {
+	isActive: boolean;
+}
 
 export type {
 	AuthState,
@@ -91,4 +95,5 @@ export type {
 	FileInfo,
 	FileState,
 	SettingInfo,
+	SettingState,
 };
