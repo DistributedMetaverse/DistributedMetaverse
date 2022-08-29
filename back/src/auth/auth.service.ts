@@ -4,6 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
+import {
+  UserNotFounException,
+  UserMisMatchException,
+} from '../common/exception/error.exception'
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -20,11 +24,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: [`등록되지 않은 사용자입니다.`],
-        error: 'Forbidden'
-      })
+      throw new UserNotFounException()
     }
 
     const isMatch = await bcrypt.compare(loginUserDto.password, user.password);
@@ -33,11 +33,7 @@ export class AuthService {
       const { password, ...result } = user;
       return result;
     } else {
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: [`사용자 정보가 일치하지 않습니다.`],
-        error: 'Forbidden'
-      })
+      throw new UserMisMatchException()
     }
   }
 

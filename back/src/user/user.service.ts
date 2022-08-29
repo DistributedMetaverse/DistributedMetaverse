@@ -1,10 +1,11 @@
-import { Injectable, ForbiddenException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { bcryptConstant } from '../constants'
+import { bcryptConstant } from '../common/config/constants'
+import { EmailAlreadyExistException } from '../common/exception/error.exception'
 
 @Injectable()
 export class UserService {
@@ -18,11 +19,7 @@ export class UserService {
       where: { email: createUserDto.email }
     });
     if (isExist) {
-      throw new ForbiddenException({
-        statusCode: HttpStatus.FORBIDDEN,
-        message: [`이미 등록된 사용자입니다.`],
-        error: 'Forbidden'
-      })
+      throw new EmailAlreadyExistException()
     }
 
     createUserDto.password = await bcrypt.hash(createUserDto.password, bcryptConstant.saltOrRounds);

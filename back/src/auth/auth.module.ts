@@ -8,7 +8,8 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { User } from '../user/entities/user.entity';
 import { UserModule } from '../user/user.module';
-import { jwtConstants } from '../constants';
+import { UserService } from '../user/user.service';
+import { jwtConstants } from '../common/config/constants';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { jwtConstants } from '../constants';
       signOptions: { expiresIn: '60s' },
     }),
     TypeOrmModule.forFeature([User])],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, UserService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

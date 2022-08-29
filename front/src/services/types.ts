@@ -15,6 +15,10 @@ interface TokenData {
 	refreshtoken: string;
 }
 
+interface CSRFData {
+	csrfToken: string;
+}
+
 interface PageData {
 	page: number;
 	path: string;
@@ -27,4 +31,11 @@ interface KeywordData {
 	keyword: string;
 }
 
-export type { LoginData, SignUpData, TokenData, PageData, KeywordData };
+export type {
+	LoginData,
+	SignUpData,
+	TokenData,
+	CSRFData,
+	PageData,
+	KeywordData,
+};

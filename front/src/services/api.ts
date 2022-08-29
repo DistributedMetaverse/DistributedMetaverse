@@ -15,7 +15,13 @@ import {
 import toastMessage from '../utils/toast';
 import { setSessionStorage, clearSessionStorage } from '../utils/storage';
 import { setInterceptors } from './common/interceptors';
-import { LoginData, SignUpData, PageData, KeywordData } from './types';
+import {
+	LoginData,
+	SignUpData,
+	CSRFData,
+	PageData,
+	KeywordData,
+} from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
@@ -29,9 +35,13 @@ const instance = createInstance();
 
 const auth = {
 	// 로그인 API : <baseURL>/auth/login
-	login: (userData: LoginData) => (dispatch: Dispatch) =>
+	login: (userData: LoginData, csrfData: CSRFData) => (dispatch: Dispatch) =>
 		instance
-			.post('auth/login', userData)
+			.post('auth/login', userData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
 			.then((response: AxiosResponse) => {
 				const tokenData = {
 					username: response.data.username,
@@ -66,9 +76,13 @@ const auth = {
 		window.location.replace('/');
 	},
 	// 회원가입 API : <baseURL>/auth/signup
-	register: (userData: SignUpData) => () =>
+	register: (userData: SignUpData, csrfData: CSRFData) => () =>
 		instance
-			.post('auth/signup', userData)
+			.post('auth/signup', userData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
 			.then((response: AxiosResponse) => {
 				toastMessage(response.data, 'success');
 				window.location.replace('/');
@@ -85,7 +99,7 @@ const auth = {
 					toastMessage(data, 'error');
 				}
 			}),
-	// 토큰 재생성 API : <baseURL>/auth/refresh
+	// Access 토큰 재생성 API : <baseURL>/auth/refresh
 	refresh: () => (dispatch: Dispatch) =>
 		instance
 			.get('auth/refresh')
@@ -95,6 +109,17 @@ const auth = {
 			})
 			.catch((error: AxiosError) => {
 				dispatch(loginFailure(error.message));
+				return error.response;
+			}),
+	// CSRF 토큰 생성 API : <baseURL>/auth/csrf-token
+	csrf: () => (dispatch: Dispatch) =>
+		instance
+			.get('auth/csrf-token')
+			.then((response: AxiosResponse) => {
+				dispatch(response.data);
+				return response;
+			})
+			.catch((error: AxiosError) => {
 				return error.response;
 			}),
 };
@@ -112,24 +137,26 @@ const file = {
 				toastMessage(data.message, 'warn');
 			}),
 	// 파일 업로드 API : <baseURL>/file/upload
-	upload: (formData: HTMLFormElement) => (dispatch: Dispatch) =>
-		instance
-			.post('file/upload', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data',
-				},
-				onUploadProgress: (progressEvent: ProgressEvent) => {
-					const { loaded, total } = progressEvent;
-					dispatch(fileProgress(Math.round((loaded / total) * 100)));
-				},
-			})
-			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
-			})
-			.catch((error: AxiosError) => {
-				const { data } = error.response as AxiosResponse;
-				toastMessage(data.message, 'warn');
-			}),
+	upload:
+		(formData: HTMLFormElement, csrfData: CSRFData) => (dispatch: Dispatch) =>
+			instance
+				.post('file/upload', formData, {
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+						'Content-Type': 'multipart/form-data',
+					},
+					onUploadProgress: (progressEvent: ProgressEvent) => {
+						const { loaded, total } = progressEvent;
+						dispatch(fileProgress(Math.round((loaded / total) * 100)));
+					},
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
+				})
+				.catch((error: AxiosError) => {
+					const { data } = error.response as AxiosResponse;
+					toastMessage(data.message, 'warn');
+				}),
 	// 특정경로 파일 리스트 API : <baseURL>/file/list?{file,folder}={path}&type={type}&page={page}
 	list: (pageData: PageData) => (dispatch: Dispatch) =>
 		instance

@@ -13,7 +13,6 @@ import {
 	Setting,
 	NotFound,
 } from '../pages/index';
-import AdminRoute from './admin';
 import PrivateRoute from './auth';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import './route.css';
@@ -28,9 +27,7 @@ const AuthRoutes: FC = (): JSX.Element => {
 				<Routes location={location}>
 					<Route path="/login" element={<Login />} />
 					<Route path="/signup" element={<UserSignup />} />
-					<Route element={<AdminRoute />}>
-						<Route path="/admin" element={<AdminSignup />} />
-					</Route>
+					<Route path="/admin" element={<AdminSignup />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</CSSTransition>

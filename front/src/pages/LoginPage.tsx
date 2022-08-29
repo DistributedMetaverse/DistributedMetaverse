@@ -4,6 +4,7 @@ import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import { AuthState } from '../store/types';
 import Api from '../services/api';
+import useCSRFToken from '../hooks/useCSRFToken';
 import LoginForm from '../components/form/LoginForm';
 
 interface LoginDispatchProps {
@@ -11,20 +12,20 @@ interface LoginDispatchProps {
 }
 
 const LoginPage: FC<LoginDispatchProps> = ({ auth }): JSX.Element => {
+	const csrfData = useCSRFToken({ auth });
 	const submitForm = (event: FormEvent<HTMLFormElement>) => {
 		const data = new FormData(event.currentTarget);
 		const userData = {
 			username: data.get('email'),
 			password: data.get('password'),
 		};
-		auth.login(userData);
+		auth.login(userData, csrfData);
 		event.preventDefault(); // 새로고침 방지
 	};
 	return <LoginForm onSubmit={submitForm} />;
 };
 
 const mapStateToProps = (state: any) => ({
-	token: (state.auth as AuthState).token,
 	isAuthenticated: (state.auth as AuthState).isAuthenticated,
 });
 

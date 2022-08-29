@@ -3,6 +3,7 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import Api from '../../services/api';
+import useCSRFToken from '../../hooks/useCSRFToken';
 import SignupForm from '../../components/form/SignupForm';
 
 interface SignupDispatchProps {
@@ -10,6 +11,7 @@ interface SignupDispatchProps {
 }
 
 const UserSignupPage: FC<SignupDispatchProps> = ({ auth }): JSX.Element => {
+	const csrfData = useCSRFToken({ auth });
 	const submitForm = (event: FormEvent<HTMLFormElement>) => {
 		const data = new FormData(event.currentTarget);
 		const userData = {
@@ -17,7 +19,7 @@ const UserSignupPage: FC<SignupDispatchProps> = ({ auth }): JSX.Element => {
 			username: data.get('username'),
 			password: data.get('password'),
 		};
-		auth.register(userData);
+		auth.register(userData, csrfData);
 		event.preventDefault(); // 새로고침 방지
 	};
 	return <SignupForm onSubmit={submitForm} />;

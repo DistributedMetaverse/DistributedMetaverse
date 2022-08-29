@@ -18,12 +18,14 @@ import UploadModal from '../modal/UploadModal';
 
 interface AppSubHeaderProps extends TitleState {
 	title: string;
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
 	status: ActionCreatorsMapObject;
 }
 
 const AppSubHeader: FC<AppSubHeaderProps> = ({
 	title,
+	auth,
 	file,
 	status,
 }): JSX.Element => {
@@ -92,7 +94,8 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 				fetchData={fetchKeywordData}
 			/>
 			<UploadModal
-				actions={file}
+				auth={auth}
+				file={file}
 				openUpload={openUpload}
 				setOpenUpload={setOpenUpload}
 			/>
@@ -106,6 +109,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
+	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
 	status: bindActionCreators(Api.status, dispatch),
 });
