@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
-import { FileInfo, PreviewState } from '../../store/types';
 import { useDispatch } from 'react-redux';
+import { FileInfo, PreviewState } from '../../store/types';
 import { previewInfo, previewSwitch } from '../../store/index';
 import Api from '../../services/api';
 import useFilePathPageList from '../../hooks/useFilePathPageList';
@@ -88,12 +88,14 @@ const DownloadBar: FC<DownloadProps> = ({
 											component="span"
 											variant="h6"
 											sx={{
+												pt: 0.5,
 												width: '100%',
 												alignItems: 'center',
-												fontSize: '0.5rem',
+												fontSize: '0.2rem',
+												color: 'secondary.main',
 											}}
 										>
-											{data.fileId}
+											{data.createdAt}
 										</Typography>
 									</Box>
 								</Button>

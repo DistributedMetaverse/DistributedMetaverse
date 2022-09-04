@@ -1,6 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, RequestMethod, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,9 +10,17 @@ import { FileModule } from './file/file.module';
 import { StatusModule } from './status/status.module';
 import { SettingModule } from './setting/setting.module';
 import { UserModule } from './user/user.module';
+import { isAuthenticated } from './common/middleware/auth.middleware';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { isAdmin } from './common/middleware/registry.middleware';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'front/build'),
+      exclude: ['/api/(.*)'],
+    }),
     ConfigModule.forRoot({
       isGlobal: true, 
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test', 
@@ -34,6 +44,16 @@ import { UserModule } from './user/user.module';
     UserModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(isAuthenticated, LoggerMiddleware)
+      .forRoutes(FileModule, StatusModule, SettingModule, UserModule);
+    // consumer
+    //   .apply(isAdmin)
+    //   .forRoutes({ path:'/auth/**', method: RequestMethod.ALL });
+  }
+}
+

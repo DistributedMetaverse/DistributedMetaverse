@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { UploadInfo } from './upload/types';
+import useCSRFToken from '../../hooks/useCSRFToken';
 import {
 	Box,
 	Grid,
@@ -29,9 +30,10 @@ interface UseFolderProps {
 }
 
 interface UploadModalProps {
+	auth: ActionCreatorsMapObject;
+	file: ActionCreatorsMapObject;
 	openUpload: boolean;
 	setOpenUpload: Dispatch<SetStateAction<boolean>>;
-	actions: ActionCreatorsMapObject;
 }
 
 const UseFolder: FC<UseFolderProps> = ({ setData, setFile }): JSX.Element => {
@@ -86,22 +88,24 @@ const UseFolder: FC<UseFolderProps> = ({ setData, setFile }): JSX.Element => {
 };
 
 const UploadModal: FC<UploadModalProps> = ({
-	actions,
+	auth,
+	file,
 	openUpload,
 	setOpenUpload,
 }): JSX.Element => {
-	const [file, setFile] = useState<File | null>(null);
+	const [fileinfo, setFile] = useState<File | null>(null);
 	const [data, setData] = useState<UploadInfo>({
 		name: '',
 		size: 0,
 		type: '',
 		lastModified: 0,
 	});
+	const csrfData = useCSRFToken({ auth });
 	const uploadSubmit = () => {
-		if (file) {
+		if (fileinfo) {
 			const formData = new FormData();
-			formData.append('file', file);
-			actions.upload(file);
+			formData.append('file', fileinfo);
+			file.upload(formData, csrfData);
 		}
 	};
 	const uploadClose = () => setOpenUpload(false);

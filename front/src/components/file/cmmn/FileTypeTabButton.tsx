@@ -48,6 +48,58 @@ interface FileTypeTabButtonProps {
 	setType: ActionCreatorWithPayload<string, string>;
 }
 
+interface FileTypeTabMenuItemProps {
+	type: string;
+	closeClick: (type: string) => void;
+}
+
+const FileTypeTabMenuItem: FC<FileTypeTabMenuItemProps> = ({
+	type,
+	closeClick,
+}): JSX.Element => {
+	return (
+		<MenuList sx={{ px: 0.5, pt: 0.2, pb: 0.2 }}>
+			{searchType.map((data: FileSearchTypeProps) => (
+				<MenuItem
+					key={data.type}
+					onClick={() => closeClick(data.type)}
+					dense
+					sx={{
+						px: 1,
+						pt: data.type !== type ? 0.5 : 0,
+						pb: data.type !== type ? 0.5 : 0,
+						minHeight: 20,
+					}}
+				>
+					<Grid container spacing={2}>
+						<Grid item xs={3}>
+							{data.type === type && (
+								<ListItemIcon>
+									<Check
+										sx={{
+											ml: 0.5,
+											mt: 0.5,
+											color: 'text.primary',
+										}}
+									/>
+								</ListItemIcon>
+							)}
+						</Grid>
+						<Grid item xs={9} sx={{ mt: data.type === type ? 0.5 : 0 }}>
+							<ListItemText
+								primaryTypographyProps={{
+									style: { fontSize: 13, fontWeight: 'bold' },
+								}}
+								primary={data.name}
+							/>
+						</Grid>
+					</Grid>
+				</MenuItem>
+			))}
+		</MenuList>
+	);
+};
+
 const FileTypeTabButton: FC<FileTypeTabButtonProps> = ({
 	type,
 	setType,
@@ -91,45 +143,7 @@ const FileTypeTabButton: FC<FileTypeTabButtonProps> = ({
 				sx={{ zIndex: 1201 }}
 			>
 				<Paper elevation={3}>
-					<MenuList sx={{ px: 0.5, pt: 0.2, pb: 0.2 }}>
-						{searchType.map((data: FileSearchTypeProps) => (
-							<MenuItem
-								key={data.type}
-								onClick={() => closeClick(data.type)}
-								dense
-								sx={{
-									px: 1,
-									pt: data.type !== type ? 0.5 : 0,
-									pb: data.type !== type ? 0.5 : 0,
-									minHeight: 20,
-								}}
-							>
-								<Grid container spacing={2}>
-									<Grid item xs={3}>
-										{data.type === type && (
-											<ListItemIcon>
-												<Check
-													sx={{
-														ml: 0.5,
-														mt: 0.5,
-														color: 'text.primary',
-													}}
-												/>
-											</ListItemIcon>
-										)}
-									</Grid>
-									<Grid item xs={9} sx={{ mt: data.type === type ? 0.5 : 0 }}>
-										<ListItemText
-											primaryTypographyProps={{
-												style: { fontSize: 13, fontWeight: 'bold' },
-											}}
-											primary={data.name}
-										/>
-									</Grid>
-								</Grid>
-							</MenuItem>
-						))}
-					</MenuList>
+					<FileTypeTabMenuItem type={type} closeClick={closeClick} />
 				</Paper>
 			</Popper>
 		</Box>

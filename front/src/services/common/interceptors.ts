@@ -45,7 +45,7 @@ const setInterceptors = (instance: AxiosInstance) => {
 					refreshtoken: getSessionStorage(JWT_REFRESH_TOKEN),
 				};
 				clearSessionStorage(JWT_ACCESS_TOKEN);
-				const { status, data } = await axios.post(
+				const { status, data } = await axios.patch(
 					[config.baseURL, 'auth/refresh'].join('/'),
 					tokenData
 				); // O

@@ -6,6 +6,10 @@ interface AuthState {
 	errorMessage: string;
 }
 
+interface TokenState {
+	token: object;
+}
+
 // 2. 메뉴 관련 State
 interface TitleState {
 	title: string;
@@ -18,6 +22,7 @@ interface MenuInfo extends TitleState {
 	description: string;
 	position: number;
 	isActive: boolean;
+	isShow: boolean;
 }
 
 interface MenuState {
@@ -77,9 +82,13 @@ interface SettingInfo {
 	limit?: number;
 }
 
+interface SettingState {
+	isActive: boolean;
+}
 
 export type {
 	AuthState,
+	TokenState,
 	TitleState,
 	MenuInfo,
 	MenuState,
@@ -91,4 +100,5 @@ export type {
 	FileInfo,
 	FileState,
 	SettingInfo,
+	SettingState,
 };

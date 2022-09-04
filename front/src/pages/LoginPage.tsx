@@ -1,35 +1,39 @@
-import React, { FC, FormEvent } from 'react';
+import React, { FC, BaseSyntheticEvent } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import { AuthState } from '../store/types';
 import Api from '../services/api';
-import LoginForm from '../components/LoginForm';
+import useCSRFToken from '../hooks/useCSRFToken';
+import LoginForm from '../components/form/LoginForm';
+import { LoginFormValues } from '../components/form/types';
 
 interface LoginDispatchProps {
-	actions: ActionCreatorsMapObject;
+	auth: ActionCreatorsMapObject;
 }
 
-const LoginPage: FC<LoginDispatchProps> = ({ actions }): JSX.Element => {
-	const submitForm = (event: FormEvent<HTMLFormElement>) => {
-		const data = new FormData(event.currentTarget);
+const LoginPage: FC<LoginDispatchProps> = ({ auth }): JSX.Element => {
+	const csrfData = useCSRFToken({ auth });
+	const submitForm = (
+		data: LoginFormValues,
+		event?: BaseSyntheticEvent<object, any, any>
+	) => {
 		const userData = {
-			username: data.get('email'),
-			password: data.get('password'),
+			username: data.email,
+			password: data.password,
 		};
-		actions.login(userData);
-		event.preventDefault(); // 새로고침 방지
+		auth.login(userData, csrfData);
+		if (event) event.preventDefault(); // 새로고침 방지
 	};
 	return <LoginForm onSubmit={submitForm} />;
 };
 
 const mapStateToProps = (state: any) => ({
-	token: (state.auth as AuthState).token,
 	isAuthenticated: (state.auth as AuthState).isAuthenticated,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-	actions: bindActionCreators(Api.auth, dispatch),
+	auth: bindActionCreators(Api.auth, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

@@ -1,6 +1,15 @@
 import React, { FC, useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
+import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { SettingState } from '../../store/types';
+import { menuSwitch, settingSwitch } from '../../store/index';
+import Api from '../../services/api';
 import {
 	Box,
+	Grid,
 	Slide, // Transitions
 	Drawer as MuiDrawer,
 	DrawerProps as MuiDrawerProps,
@@ -14,6 +23,8 @@ import { styled, SxProps, Theme } from '@mui/material/styles';
 import ListIcon from '@mui/icons-material/List'; // Sub Icon
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import SettingsIcon from '@mui/icons-material/SettingsOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBar from '../menu/MenuBar';
 import DownloadBar from '../menu/DownloadBar';
 
@@ -23,9 +34,16 @@ interface DrawerProps extends MuiDrawerProps {
 }
 
 interface AppMenuProps {
+	auth: ActionCreatorsMapObject;
+	setting: boolean;
 	open?: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
 	width: number;
+}
+
+interface AppMenuFooterProps {
+	auth: ActionCreatorsMapObject;
+	setting: boolean;
 }
 
 const Drawer = styled(MuiDrawer, {
@@ -83,7 +101,66 @@ const SlideListSubheader: FC<SlideListSubheaderProps> = ({
 	);
 };
 
-const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
+const AppMenuFooter: FC<AppMenuFooterProps> = ({ auth, setting }) => {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	const settingClick = () => {
+		dispatch(menuSwitch(false));
+		dispatch(settingSwitch(true));
+		navigate('/setting');
+	};
+	const logoutClick = () => {
+		auth.logout();
+	};
+
+	const font: SxProps<Theme> = {
+		fontSize: '1.7rem',
+	};
+	const settingButton: SxProps<Theme> = {
+		p: 1,
+		'&:hover': { color: 'secondary.main' },
+		'&:disabled': { color: 'active.disabled' },
+	};
+	const logoutButton: SxProps<Theme> = {
+		p: 1,
+		'&:hover': { color: 'secondary.main' },
+	};
+	return (
+		<Box>
+			<Divider
+				variant="middle"
+				sx={{ height: '2px', borderColor: 'primary.main' }}
+			/>
+			<Box sx={{ mt: 2, px: 1, display: 'flex' }}>
+				<Grid container sx={{ justifyContent: 'space-between' }}>
+					<Grid item>
+						<IconButton
+							sx={settingButton}
+							onClick={settingClick}
+							disabled={setting}
+						>
+							<SettingsIcon fontSize="large" sx={font} />
+						</IconButton>
+					</Grid>
+					<Grid item>
+						<IconButton sx={logoutButton} onClick={logoutClick}>
+							<LogoutIcon fontSize="large" sx={font} />
+						</IconButton>
+					</Grid>
+				</Grid>
+			</Box>
+		</Box>
+	);
+};
+
+const AppMenu: FC<AppMenuProps> = ({
+	auth,
+	setting,
+	open,
+	setOpen,
+	width,
+}): JSX.Element => {
 	const [branch, setBranch] = useState(true);
 
 	const toggleDrawer = () => {
@@ -150,8 +227,17 @@ const AppMenu: FC<AppMenuProps> = ({ open, setOpen, width }): JSX.Element => {
 					<DownloadBar branch={!branch} />
 				)}
 			</List>
+			{branch && <AppMenuFooter auth={auth} setting={setting} />}
 		</Drawer>
 	);
 };
 
-export default AppMenu;
+const mapStateToProps = (state: any) => ({
+	setting: (state.setting as SettingState).isActive,
+});
+
+const mapDispatchToProps = (dispatch: DispatchAction) => ({
+	auth: bindActionCreators(Api.auth, dispatch),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppMenu);
