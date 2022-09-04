@@ -4,6 +4,7 @@ import {
 	loginSuccess,
 	loginFailure,
 	logoutSuccess,
+	tokenSuccess,
 	fileSuccess,
 	fileProgress,
 } from '../store/index';
@@ -18,6 +19,7 @@ import { setInterceptors } from './common/interceptors';
 import {
 	LoginData,
 	SignUpData,
+	TokenData,
 	CSRFData,
 	PageData,
 	KeywordData,
@@ -100,12 +102,12 @@ const auth = {
 				}
 			}),
 	// Access 토큰 재생성 API : <baseURL>/auth/refresh
-	refresh: () => (dispatch: Dispatch) =>
+	refresh: (tokenData: TokenData) => (dispatch: Dispatch) =>
 		instance
-			.get('auth/refresh')
+			.patch('auth/refresh', tokenData)
 			.then((response: AxiosResponse) => {
-				dispatch(response.data);
-				return response;
+				dispatch(tokenSuccess(response.data));
+				return response.data;
 			})
 			.catch((error: AxiosError) => {
 				dispatch(loginFailure(error.message));
@@ -116,8 +118,8 @@ const auth = {
 		instance
 			.get('auth/csrf-token')
 			.then((response: AxiosResponse) => {
-				dispatch(response.data);
-				return response;
+				dispatch(tokenSuccess(response.data));
+				return response.data;
 			})
 			.catch((error: AxiosError) => {
 				return error.response;

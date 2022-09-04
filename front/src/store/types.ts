@@ -6,6 +6,10 @@ interface AuthState {
 	errorMessage: string;
 }
 
+interface TokenState {
+	token: object;
+}
+
 // 2. 메뉴 관련 State
 interface TitleState {
 	title: string;
@@ -84,6 +88,7 @@ interface SettingState {
 
 export type {
 	AuthState,
+	TokenState,
 	TitleState,
 	MenuInfo,
 	MenuState,

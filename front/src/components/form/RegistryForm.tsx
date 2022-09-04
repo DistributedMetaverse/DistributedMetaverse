@@ -1,6 +1,7 @@
-import React, { FC, FormEventHandler } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm, ConfigProps } from 'redux-form';
+import React, { FC, BaseSyntheticEvent } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
 	Avatar,
 	Button,
@@ -13,30 +14,45 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../Copyright';
-import renderField from '../validate/TextField';
+import RenderField from '../validate/TextField';
+import { SignupFormValues } from './types';
 import { defaultTheme } from '../../utils/theme';
-import {
-	validateEmail,
-	validateUpperCase,
-	validateLowerCase,
-	validateDigit,
-	validateSpecialChar,
-} from '../../utils/validation';
+import { validateEmail, validatePassword } from '../../utils/validation';
 
 const theme = createTheme(defaultTheme);
 
+const schema = yup
+	.object({
+		email: yup
+			.string()
+			.required('이메일을 입력해주세요')
+			.matches(validateEmail, '유효하지 않은 이메일 주소입니다')
+			.min(5, '5자 이상 입력해주세요!')
+			.max(50, '입력 범위가 초과되었습니다'),
+		password: yup
+			.string()
+			.required('비밀번호를 입력해주세요')
+			.matches(validatePassword, '특수문자 숫자와 대소문자가 필요합니다')
+			.min(8, '8자 이상 입력해주세요!')
+			.max(50, '입력 범위가 초과되었습니다'),
+		repeat_password: yup
+			.string()
+			.required('비밀번호를 입력해주세요')
+			.oneOf([yup.ref('password')], '패스워드가 일치하지 않습니다'),
+	})
+	.required();
+
 interface RegistryProp {
-	onSubmit: FormEventHandler<HTMLFormElement>;
-	formState: any;
-	admin: boolean;
-	submitting: boolean;
+	onSubmit: (
+		data: SignupFormValues,
+		event?: BaseSyntheticEvent<object, any, any>
+	) => void;
 }
 
-const RegistryForm: FC<RegistryProp> = ({
-	onSubmit,
-	formState,
-	submitting,
-}): JSX.Element => {
+const RegistryForm: FC<RegistryProp> = ({ onSubmit }): JSX.Element => {
+	const { control, handleSubmit, formState } = useForm<SignupFormValues>({
+		resolver: yupResolver(schema),
+	});
 	return (
 		<ThemeProvider theme={theme}>
 			<Container component="main" maxWidth="xs">
@@ -71,39 +87,69 @@ const RegistryForm: FC<RegistryProp> = ({
 							※ 관리자 정보를 입력해주세요 ※ <br />
 							관리자 정보가 있어야 페이지가 정상적으로 실행됩니다.
 						</Typography>
-						<Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 0 }}>
-							<Field
-								component={renderField}
-								type="email"
+						<Box
+							component="form"
+							onSubmit={handleSubmit(onSubmit)}
+							noValidate
+							sx={{ mt: 0 }}
+						>
+							<Controller
 								name="email"
-								label="Email Address"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="email"
+										label="Email Address"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
-							<Field
-								component={renderField}
-								type="text"
+							<Controller
 								name="username"
-								label="Username"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="text"
+										label="username"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
-							<Field
-								component={renderField}
-								type="password"
+							<Controller
 								name="password"
-								label="Password"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="password"
+										label="password"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
-							<Field
-								component={renderField}
-								type="password"
+							<Controller
 								name="repeat_password"
-								label="Repeat Password"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="password"
+										label="repeat_password"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
 							<Button
 								type="submit"
 								fullWidth
 								variant="contained"
-								disabled={
-									!submitting &&
-									Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
-								}
+								disabled={formState.isSubmitted && !formState.isValid}
 								sx={{ mt: 3, mb: 2 }}
 							>
 								Sign Up
@@ -117,60 +163,4 @@ const RegistryForm: FC<RegistryProp> = ({
 	);
 };
 
-// FormEvent<HTMLFormElement> → any 타입핑
-const validateSignup = (values: any) => {
-	const errors: any = {};
-
-	const requiredFields = ['email', 'username', 'password', 'repeat_password'];
-
-	if (!validateEmail(values.email)) {
-		errors.email = 'Invalid email address.';
-	}
-
-	requiredFields.forEach((field: string) => {
-		if ((values as any)[field] === '') {
-			(errors as any)[field] = ['The', field, 'field is required.'].join(' ');
-		}
-	});
-
-	if (
-		Object.prototype.hasOwnProperty.call(values, 'email') &&
-		(values.email.length < 3 || values.email.length > 50)
-	) {
-		errors.email = 'email field must be between 3 and 50 in size';
-	}
-
-	if (Object.prototype.hasOwnProperty.call(values, 'password')) {
-		if (values.password.length < 8 || values.password.length > 100) {
-			errors.password = 'password field must be between 8 and 100 in size';
-		} else if (!validateUpperCase(values.password)) {
-			errors.password = 'password does not contain uppercase letters';
-		} else if (!validateLowerCase(values.password)) {
-			errors.password = 'password does not contain lowercase letters';
-		} else if (!validateDigit(values.password)) {
-			errors.password = 'password does not contain numbers';
-		} else if (!validateSpecialChar(values.password)) {
-			errors.password = 'password does not contain special characters';
-		}
-	}
-
-	if (
-		Object.prototype.hasOwnProperty.call(values, 'password') &&
-		Object.prototype.hasOwnProperty.call(values, 'repeat_password') &&
-		values.password !== values.repeat_password
-	) {
-		errors.repeat_password = 'Passwords do not match';
-	}
-
-	return errors;
-};
-
-const mapStateToProps = (state: ConfigProps, ownProps: any = {}) => ({
-	formState: (state.form as any).RegistryForm,
-	ownProps: ownProps,
-});
-
-export default reduxForm({
-	form: 'RegistryForm',
-	validate: validateSignup,
-})(connect(mapStateToProps, null)(RegistryForm));
+export default RegistryForm;

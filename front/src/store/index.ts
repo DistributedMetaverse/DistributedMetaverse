@@ -1,7 +1,7 @@
 import { createSlice, combineReducers, PayloadAction } from '@reduxjs/toolkit';
-import { reducer as formReducer } from 'redux-form';
 import {
 	AuthState,
+	TokenState,
 	TitleState,
 	MenuState,
 	PreviewState,
@@ -16,6 +16,10 @@ const authinitialState: AuthState = {
 	isAuthenticated: false,
 	isLoading: false,
 	errorMessage: '',
+};
+
+const tokeninitialState: TokenState = {
+	token: new Object(),
 };
 
 // 1.2. authSlice : action + reducer → slice
@@ -38,6 +42,16 @@ const authSlice = createSlice({
 			state.isAuthenticated = false;
 			state.isLoading = true;
 			state.token = '';
+		},
+	},
+});
+
+const tokenSlice = createSlice({
+	name: 'token',
+	initialState: tokeninitialState,
+	reducers: {
+		tokenSuccess: (state: TokenState, action: PayloadAction<object>) => {
+			state.token = action.payload;
 		},
 	},
 });
@@ -231,8 +245,8 @@ const settingSlice = createSlice({
 });
 
 const rootReducer = combineReducers({
-	form: formReducer, // <- redux-form
 	auth: authSlice.reducer,
+	token: tokenSlice.reducer,
 	title: titleSlice.reducer,
 	menu: menuSlice.reducer,
 	preview: previewSlice.reducer,
@@ -242,6 +256,7 @@ const rootReducer = combineReducers({
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
+const { tokenSuccess } = tokenSlice.actions;
 const { changeTitle } = titleSlice.actions;
 const { menuActive, menuSwitch } = menuSlice.actions;
 const { previewInfo, previewSwitch } = previewSlice.actions;
@@ -254,6 +269,7 @@ export {
 	loginSuccess,
 	loginFailure,
 	logoutSuccess,
+	tokenSuccess,
 	changeTitle,
 	menuActive,
 	menuSwitch,

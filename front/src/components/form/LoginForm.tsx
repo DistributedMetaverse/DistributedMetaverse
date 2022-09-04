@@ -1,7 +1,8 @@
-import React, { FC, FormEventHandler } from 'react';
+import React, { FC, BaseSyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Field, reduxForm, ConfigProps } from 'redux-form';
+import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import {
 	Avatar,
 	Button,
@@ -17,23 +18,40 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import Copyright from '../Copyright';
-import renderField from '../validate/TextField';
+import RenderField from '../validate/TextField';
+import { LoginFormValues } from './types';
 import { defaultTheme } from '../../utils/theme';
 import { validateEmail } from '../../utils/validation';
 
 const theme = createTheme(defaultTheme);
 
+const schema = yup
+	.object({
+		email: yup
+			.string()
+			.required('이메일을 입력해주세요')
+			.matches(validateEmail, '유효하지 않은 이메일 주소입니다')
+			.min(5, '5자 이상 입력해주세요!')
+			.max(50, '입력 범위가 초과되었습니다'),
+		password: yup
+			.string()
+			.required('비밀번호를 입력해주세요')
+			.min(8, '8자 이상 입력해주세요!')
+			.max(50, '입력 범위가 초과되었습니다'),
+	})
+	.required();
+
 interface LoginProp {
-	onSubmit: FormEventHandler<HTMLFormElement>;
-	formState: any;
-	submitting: boolean;
+	onSubmit: (
+		data: LoginFormValues,
+		event?: BaseSyntheticEvent<object, any, any>
+	) => void;
 }
 
-const LoginForm: FC<LoginProp> = ({
-	onSubmit,
-	formState,
-	submitting,
-}): JSX.Element => {
+const LoginForm: FC<LoginProp> = ({ onSubmit }): JSX.Element => {
+	const { control, handleSubmit, formState } = useForm<LoginFormValues>({
+		resolver: yupResolver(schema),
+	});
 	return (
 		<ThemeProvider theme={theme}>
 			<Container component="main" maxWidth="xs">
@@ -60,27 +78,43 @@ const LoginForm: FC<LoginProp> = ({
 							<LockOutlinedIcon />
 						</Avatar>
 						<Typography variant="h6">Log In</Typography>
-						<Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
-							<Field
-								component={renderField}
-								type="email"
+						<Box
+							component="form"
+							onSubmit={handleSubmit(onSubmit)}
+							noValidate
+							sx={{ mt: 1 }}
+						>
+							<Controller
 								name="email"
-								label="Email Address"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="email"
+										label="Email Address"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
-							<Field
-								component={renderField}
-								type="password"
+							<Controller
 								name="password"
-								label="Password"
+								control={control}
+								render={({ field, fieldState, formState }) => (
+									<RenderField
+										type="password"
+										label="password"
+										field={field}
+										fieldState={fieldState}
+										formState={formState}
+									/>
+								)}
 							/>
 							<Button
 								type="submit"
 								fullWidth
 								variant="contained"
-								disabled={
-									!submitting &&
-									Object.prototype.hasOwnProperty.call(formState, 'syncErrors')
-								}
+								disabled={formState.isSubmitted && !formState.isValid}
 								sx={{ mt: 3, mb: 2 }}
 							>
 								Sign In
@@ -106,45 +140,4 @@ const LoginForm: FC<LoginProp> = ({
 	);
 };
 
-// FormEvent<HTMLFormElement> → any 타입핑
-const validateLogin = (values: any) => {
-	const errors: any = {};
-
-	const requiredFields = ['email', 'password'];
-
-	if (!validateEmail(values.email)) {
-		errors.email = 'Invalid email address.';
-	}
-
-	requiredFields.forEach((field: string) => {
-		if ((values as any)[field] === '') {
-			(errors as any)[field] = ['The', field, 'field is required.'].join(' ');
-		}
-	});
-
-	if (
-		Object.prototype.hasOwnProperty.call(values, 'email') &&
-		(values.email.length < 3 || values.email.length > 50)
-	) {
-		errors.email = 'email field must be between 3 and 50 in size';
-	}
-
-	if (
-		Object.prototype.hasOwnProperty.call(values, 'password') &&
-		(values.password.length < 8 || values.password.length > 100)
-	) {
-		errors.password = 'password field must be between 8 and 100 in size';
-	}
-
-	return errors;
-};
-
-const mapStateToProps = (state: ConfigProps, ownProps: any = {}) => ({
-	formState: (state.form as any).LoginForm,
-	ownProps: ownProps,
-});
-
-export default reduxForm({
-	form: 'LoginForm',
-	validate: validateLogin,
-})(connect(mapStateToProps, null)(LoginForm));
+export default LoginForm;

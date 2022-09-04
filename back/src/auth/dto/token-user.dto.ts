@@ -1,9 +1,12 @@
 import { IsString } from "class-validator";
 
-export class LoginUserDto {
+export class TokenUserDto {
   @IsString()
   username: string;
 
   @IsString()
-  password: string;
+  accesstoken: string;
+
+  @IsString()
+  refreshtoken: string;
 }

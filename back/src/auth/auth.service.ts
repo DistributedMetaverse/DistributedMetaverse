@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import {
   UserNotFounException,
   UserMisMatchException,
 } from '../common/exception/error.exception'
+import { jwtConstants } from '../common/config/constants';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -20,7 +21,7 @@ export class AuthService {
 
   async validateUser(loginUserDto: LoginUserDto): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { email: loginUserDto.email }
+      where: { email: loginUserDto.username }
     });
 
     if (!user) {
@@ -37,10 +38,42 @@ export class AuthService {
     }
   }
 
+  // 1. LocalStrategy(validate) → 2. AuthService(validateUser) → 3. LocalStrategy(validate) → 4. AuthService(login)
   async login(user: any) {
-    const payload = { email: user.email, userName: user.userName, id: user.id, role:user.role };
+    const payload  = {
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    };
+
     return {
-      accessToken: this.jwtService.sign(payload)
+      username: user.username,
+      accesstoken: this.jwtService.sign(payload, {
+        secret: jwtConstants.jwtAccesstokenSecret,
+        expiresIn: jwtConstants.jwtAccesstokenValidationSecond,
+      }),
+      refreshtoken: this.jwtService.sign(payload, {
+        secret: jwtConstants.jwtRefreshtokenSecret,
+        expiresIn: jwtConstants.jwtRefreshtokenValidationSecond,
+      })
+    }
+  }
+
+  // 1. TokenStrategy(validate) → 2. AuthService(refresh)
+  async refresh(user: any) {
+    const payload  = {
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    };
+
+    return {
+      username: user.username,
+      accesstoken: this.jwtService.sign(payload, {
+        secret: jwtConstants.jwtAccesstokenSecret,
+        expiresIn: jwtConstants.jwtAccesstokenValidationSecond,
+      }),
+      refreshtoken: user.refreshtoken
     }
   }
 }

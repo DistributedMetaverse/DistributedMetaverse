@@ -3,7 +3,10 @@ const bcryptConstant = {
 };
 
 const jwtConstants = {
-  secret: 'secretKey',
+  jwtAccesstokenSecret: 'accessTokenSecretKey',
+  jwtRefreshtokenSecret: 'refreshTokenSecretKey',
+  jwtAccesstokenValidationSecond: '15m',
+  jwtRefreshtokenValidationSecond: '1h',
 };
 
 export { bcryptConstant, jwtConstants }

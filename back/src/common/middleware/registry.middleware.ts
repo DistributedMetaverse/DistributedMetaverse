@@ -9,16 +9,12 @@ export class isAdmin implements NestMiddleware {
     private readonly userService: UserService
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    try{
-      const user = await this.userService.findAll()
-      
-      if (!user) {
-        throw new RedirectError(HttpStatus.TEMPORARY_REDIRECT, '/auth/admin');
-      } else {
-        next()
-      }
-    }catch {
+    const user = await this.userService.findAll()
+    
+    if (user.length === 0) {
       throw new RedirectError(HttpStatus.TEMPORARY_REDIRECT, '/auth/admin');
+    } else {
+      next()
     }
   }
 }

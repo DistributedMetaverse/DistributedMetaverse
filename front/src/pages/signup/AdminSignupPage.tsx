@@ -1,10 +1,11 @@
-import React, { FC, FormEvent } from 'react';
+import React, { FC, BaseSyntheticEvent } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import Api from '../../services/api';
 import useCSRFToken from '../../hooks/useCSRFToken';
 import RegistryForm from '../../components/form/RegistryForm';
+import { SignupFormValues } from '../../components/form/types';
 
 interface SignupDispatchProps {
 	auth: ActionCreatorsMapObject;
@@ -12,15 +13,17 @@ interface SignupDispatchProps {
 
 const AdminSignupPage: FC<SignupDispatchProps> = ({ auth }): JSX.Element => {
 	const csrfData = useCSRFToken({ auth });
-	const submitForm = (event: FormEvent<HTMLFormElement>) => {
-		const data = new FormData(event.currentTarget);
+	const submitForm = (
+		data: SignupFormValues,
+		event?: BaseSyntheticEvent<object, any, any>
+	) => {
 		const userData = {
-			email: data.get('email'),
-			username: data.get('username'),
-			password: data.get('password'),
+			email: data.email,
+			username: data.username,
+			password: data.password,
 		};
 		auth.register(userData, csrfData);
-		event.preventDefault(); // 새로고침 방지
+		if (event) event.preventDefault(); // 새로고침 방지
 	};
 	return <RegistryForm onSubmit={submitForm} />;
 };

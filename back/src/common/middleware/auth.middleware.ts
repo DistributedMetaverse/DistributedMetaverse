@@ -1,11 +1,10 @@
 import { JwtService } from '@nestjs/jwt';
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { UserService } from '../../user/user.service';
 import {
   UnAuthorizedException,
   AccessTokenNotFoundException,
-  RefreshTokenNotFoundException,
 } from '../exception/error.exception'
 
 interface UserRequest extends Request {
@@ -31,13 +30,13 @@ export class isAuthenticated implements NestMiddleware {
           req.user = user
           next()
         } else {
-          throw new UnAuthorizedException()
+          throw new AccessTokenNotFoundException()
         }
       } else {
-        throw new AccessTokenNotFoundException()
+        throw new UnAuthorizedException()
       }
     }catch {
-      throw new UnAuthorizedException()
+      throw new AccessTokenNotFoundException()  // → Access Token 만료시간(verify) 검증
     }
   }
 }

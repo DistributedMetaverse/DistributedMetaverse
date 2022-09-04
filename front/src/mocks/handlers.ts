@@ -113,6 +113,9 @@ const settinglist: Array<SettingInfo> = [
 ];
 
 const secret = 'S-dV7@1SS#AGd#%^';
+const csrfToken = {
+	csrfToken: 'Z2xKbR8k-wUeOvO_K0GiJqG7q3O1jjjCJ2Vs',
+};
 
 export const handlers = [
 	// 로그인
@@ -139,6 +142,11 @@ export const handlers = [
 	// 토큰 재생성
 	rest.post('/api/auth/refresh', (req, res, ctx) => {
 		return res(ctx.status(201));
+	}),
+
+	// 토큰 재생성
+	rest.get('/api/auth/csrf-token', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(csrfToken));
 	}),
 
 	// 파일 세부정보
