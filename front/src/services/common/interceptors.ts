@@ -38,16 +38,24 @@ const setInterceptors = (instance: AxiosInstance) => {
 			const url = config.url as string;
 			const headers = config.headers as AxiosResponseHeaders;
 			// -> Access Token 인증 실패 (UNAUTHORIZED : status === 401)
-			if (status === 401 && url.indexOf('auth/') === -1) {
+			if ((status === 401 || status === 410) && url.indexOf('auth/') === -1) {
 				const tokenData = {
 					username: getSessionStorage(JWT_USERNAME),
 					accesstoken: getSessionStorage(JWT_ACCESS_TOKEN),
 					refreshtoken: getSessionStorage(JWT_REFRESH_TOKEN),
 				};
 				clearSessionStorage(JWT_ACCESS_TOKEN);
+				const { data: csrfData } = await axios.get(
+					[config.baseURL, 'auth/csrf-token'].join('/')
+				); // O
 				const { status, data } = await axios.patch(
 					[config.baseURL, 'auth/refresh'].join('/'),
-					tokenData
+					tokenData,
+					{
+						headers: {
+							'CSRF-Token': csrfData.csrfToken,
+						},
+					}
 				); // O
 				if (status === 200) {
 					setSessionStorage(JWT_ACCESS_TOKEN, data.accesstoken);
@@ -61,6 +69,14 @@ const setInterceptors = (instance: AxiosInstance) => {
 
 			// -> Refresh Token 인증 실패 (FORBIDDEN : status === 403)
 			if (status === 403 && config.url === 'auth/refresh') {
+				clearSessionStorage(JWT_USERNAME);
+				clearSessionStorage(JWT_ACCESS_TOKEN);
+				clearSessionStorage(JWT_REFRESH_TOKEN);
+				return axios(config);
+			}
+
+			// -> 서버 오류 (INTERNAL_SERVER_ERROR : status === 500)
+			if (status === 500) {
 				clearSessionStorage(JWT_USERNAME);
 				clearSessionStorage(JWT_ACCESS_TOKEN);
 				clearSessionStorage(JWT_REFRESH_TOKEN);

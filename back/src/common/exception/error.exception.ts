@@ -10,6 +10,12 @@ class AccessTokenNotFoundException extends HttpException {
 class RefreshTokenNotFoundException extends HttpException {
   constructor() { super(ErrorCode.CM003, HttpStatus.FORBIDDEN); }
 }
+class InValidTokenException extends HttpException {
+  constructor() { super(ErrorCode.CM004, HttpStatus.GONE); }
+}
+class InternalServerErrorException extends HttpException {
+  constructor() { super(ErrorCode.CM005, HttpStatus.INTERNAL_SERVER_ERROR); }
+}
 
 class EmailAlreadyExistException extends HttpException {
   constructor() { super(ErrorCode.USER01, HttpStatus.FORBIDDEN); }
@@ -28,6 +34,8 @@ export {
   UnAuthorizedException,
   AccessTokenNotFoundException,
   RefreshTokenNotFoundException,
+  InValidTokenException,
+  InternalServerErrorException,
   EmailAlreadyExistException,
   UserNotFounException,
   PasswordMisMatchException,

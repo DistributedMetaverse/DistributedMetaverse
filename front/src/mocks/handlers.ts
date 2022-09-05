@@ -140,7 +140,7 @@ export const handlers = [
 	}),
 
 	// 토큰 재생성
-	rest.post('/api/auth/refresh', (req, res, ctx) => {
+	rest.patch('/api/auth/refresh', (req, res, ctx) => {
 		return res(ctx.status(201));
 	}),
 

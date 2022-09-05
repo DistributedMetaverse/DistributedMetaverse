@@ -6,7 +6,9 @@ interface CSRFTokenProps {
 	auth: ActionCreatorsMapObject;
 }
 
-const useCSRFToken = ({ auth }: CSRFTokenProps): CSRFData => {
+const useCSRFToken = ({
+	auth,
+}: CSRFTokenProps): [CSRFData, () => Promise<void>] => {
 	const [data, setData] = useState<CSRFData>({ csrfToken: '' });
 
 	const fetchAndSetData = useCallback(async () => {
@@ -18,7 +20,7 @@ const useCSRFToken = ({ auth }: CSRFTokenProps): CSRFData => {
 		fetchAndSetData();
 	}, [fetchAndSetData]);
 
-	return data;
+	return [data, fetchAndSetData];
 };
 
 export default useCSRFToken;

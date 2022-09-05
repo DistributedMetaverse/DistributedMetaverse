@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -40,7 +40,7 @@ export class AuthService {
 
   // 1. LocalStrategy(validate) → 2. AuthService(validateUser) → 3. LocalStrategy(validate) → 4. AuthService(login)
   async login(user: any) {
-    const payload  = {
+    const payload = {
       email: user.email,
       username: user.username,
       role: user.role,

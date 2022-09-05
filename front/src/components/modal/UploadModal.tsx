@@ -100,9 +100,10 @@ const UploadModal: FC<UploadModalProps> = ({
 		type: '',
 		lastModified: 0,
 	});
-	const csrfData = useCSRFToken({ auth });
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	const uploadSubmit = () => {
 		if (fileinfo) {
+			fetchCSRFTokenData();
 			const formData = new FormData();
 			formData.append('file', fileinfo);
 			file.upload(formData, csrfData);
