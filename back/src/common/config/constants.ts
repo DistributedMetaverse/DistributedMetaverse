@@ -5,8 +5,8 @@ const bcryptConstant = {
 const jwtConstants = {
   jwtAccesstokenSecret: 'accessTokenSecretKey',
   jwtRefreshtokenSecret: 'refreshTokenSecretKey',
-  jwtAccesstokenValidationSecond: '15m',
-  jwtRefreshtokenValidationSecond: '1h',
+  jwtAccesstokenValidationSecond: 60 * 15, // 15m
+  jwtRefreshtokenValidationSecond: 60 * 60,  // 1h or 7d
 };
 
 export { bcryptConstant, jwtConstants }

@@ -189,17 +189,15 @@ const file = {
 
 const status = {
 	// 다운로드 갯수 확인 API : <baseURL>/status/download
-	download: () => (dispatch: Dispatch) =>
+	download: () => () =>
 		instance.get(`status/download`).then((response: AxiosResponse) => {
-			dispatch(fileSuccess(response.data));
 			return response.data;
 		}),
 	// 폴더 리스트 검색 API : <baseURL>/status/folder?type={type}
-	folder: (type: string) => (dispatch: Dispatch) =>
+	folder: (type: string) => () =>
 		instance
 			.get(`status/folder?type=${type}`)
 			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
 				return response.data;
 			}),
 };

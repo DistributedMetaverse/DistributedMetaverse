@@ -5,7 +5,10 @@ import { UserService } from '../../user/user.service';
 import {
   UnAuthorizedException,
   AccessTokenNotFoundException,
+  InValidTokenException,
+  InternalServerErrorException,
 } from '../exception/error.exception'
+import { jwtConstants } from '../../common/config/constants';
 
 interface UserRequest extends Request {
     user: any
@@ -24,8 +27,11 @@ export class isAuthenticated implements NestMiddleware {
         req.headers.authorization.startsWith('Bearer')
       ) {
         const token = req.headers.authorization.split(' ')[1];
-        const decoded = await this.jwtService.verify(token);
-        const user = await this.userService.findOne(decoded.email)
+        const decoded = await this.jwtService.verify(
+          token,
+          { secret: jwtConstants.jwtAccesstokenSecret }
+        );
+        const user = await this.userService.findOne(decoded.username) // username → email
         if (user) {
           req.user = user
           next()
@@ -35,8 +41,18 @@ export class isAuthenticated implements NestMiddleware {
       } else {
         throw new UnAuthorizedException()
       }
-    }catch {
-      throw new AccessTokenNotFoundException()  // → Access Token 만료시간(verify) 검증
+    }catch (e) {
+      switch (e.message) {
+        // 토큰에 대한 오류를 판단합니다.
+        case 'INVALID_TOKEN':
+        case 'TOKEN_IS_ARRAY':
+        case 'NO_USER':
+          throw new UnAuthorizedException()
+        case 'EXPIRED_TOKEN':
+          throw new InValidTokenException()
+        default:
+          throw new InternalServerErrorException()
+      }
     }
   }
 }

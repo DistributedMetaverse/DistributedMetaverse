@@ -13,11 +13,12 @@ interface LoginDispatchProps {
 }
 
 const LoginPage: FC<LoginDispatchProps> = ({ auth }): JSX.Element => {
-	const csrfData = useCSRFToken({ auth });
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	const submitForm = (
 		data: LoginFormValues,
 		event?: BaseSyntheticEvent<object, any, any>
 	) => {
+		fetchCSRFTokenData();
 		const userData = {
 			username: data.email,
 			password: data.password,

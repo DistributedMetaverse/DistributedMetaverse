@@ -20,8 +20,15 @@ import { jwtConstants } from '../common/config/constants';
       secret: jwtConstants.jwtAccesstokenSecret,
       signOptions: { expiresIn: '60s' },
     }),
-    TypeOrmModule.forFeature([User])],
-  providers: [AuthService, UserService, LocalStrategy, JwtStrategy, TokenStrategy],
+    TypeOrmModule.forFeature([User])    // → UserRepository
+  ],
+  providers: [
+    AuthService,
+    UserService,
+    LocalStrategy,
+    JwtStrategy,
+    TokenStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

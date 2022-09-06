@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { CreateStatusDto } from './dto/create-status.dto';
-import { UpdateStatusDto } from './dto/update-status.dto';
+
+const folderlist = [
+	{
+		path: '/',
+		count: 2,
+	},
+	{
+		path: '/data/data1',
+		count: 10,
+	},
+	{
+		path: '/test1/folder',
+		count: 23,
+	},
+	{
+		path: '/test2',
+		count: 4,
+	},
+];
 
 @Injectable()
 export class StatusService {
-  create(createStatusDto: CreateStatusDto) {
-    return 'This action adds a new status';
+
+  findDownloadToday() {
+    return { count: 4 };
   }
 
-  findAll() {
-    return `This action returns all status`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} status`;
-  }
-
-  update(id: number, updateStatusDto: UpdateStatusDto) {
-    return `This action updates a #${id} status`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} status`;
+  findFolder() {
+    return folderlist;
   }
 }

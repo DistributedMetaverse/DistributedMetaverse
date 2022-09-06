@@ -12,11 +12,12 @@ interface SignupDispatchProps {
 }
 
 const UserSignupPage: FC<SignupDispatchProps> = ({ auth }): JSX.Element => {
-	const csrfData = useCSRFToken({ auth });
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	const submitForm = (
 		data: SignupFormValues,
 		event?: BaseSyntheticEvent<object, any, any>
 	) => {
+		fetchCSRFTokenData();
 		const userData = {
 			email: data.email,
 			username: data.username,
