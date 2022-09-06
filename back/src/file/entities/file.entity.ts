@@ -45,6 +45,9 @@ export class File {
     @Column({ type: "text", nullable: true })
     description: string;
 
+    @Column({ type: "text" })
+    path: string;
+
     @Column({ type: "boolean", default: false })
     isLike: boolean;
 

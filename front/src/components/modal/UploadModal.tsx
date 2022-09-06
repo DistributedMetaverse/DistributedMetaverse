@@ -25,6 +25,8 @@ import FolderTabButton from './upload/FolderTabButton';
 import NavigationPath from '../file/NavigationPath';
 
 interface UseFolderProps {
+	path: string;
+	setPath: Dispatch<SetStateAction<string>>;
 	setData: Dispatch<SetStateAction<UploadInfo>>;
 	setFile: Dispatch<SetStateAction<File | null>>;
 }
@@ -36,8 +38,12 @@ interface UploadModalProps {
 	setOpenUpload: Dispatch<SetStateAction<boolean>>;
 }
 
-const UseFolder: FC<UseFolderProps> = ({ setData, setFile }): JSX.Element => {
-	const [path, setPath] = useState('/');
+const UseFolder: FC<UseFolderProps> = ({
+	path,
+	setPath,
+	setData,
+	setFile,
+}): JSX.Element => {
 	const [check, setCheck] = useState(false);
 	const handleCapture = (event: ChangeEvent<HTMLInputElement>) => {
 		const files = event.target.files;
@@ -93,6 +99,7 @@ const UploadModal: FC<UploadModalProps> = ({
 	openUpload,
 	setOpenUpload,
 }): JSX.Element => {
+	const [path, setPath] = useState('/');
 	const [fileinfo, setFile] = useState<File | null>(null);
 	const [data, setData] = useState<UploadInfo>({
 		name: '',
@@ -105,6 +112,7 @@ const UploadModal: FC<UploadModalProps> = ({
 		if (fileinfo) {
 			fetchCSRFTokenData();
 			const formData = new FormData();
+			formData.append('path', path);
 			formData.append('file', fileinfo);
 			file.upload(formData, csrfData);
 		}
@@ -125,7 +133,12 @@ const UploadModal: FC<UploadModalProps> = ({
 					p: 4,
 				}}
 			>
-				<UseFolder setData={setData} setFile={setFile} />
+				<UseFolder
+					path={path}
+					setPath={setPath}
+					setData={setData}
+					setFile={setFile}
+				/>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
 				<CreateFolder />
 				{data.size > 0 && (
