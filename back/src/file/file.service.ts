@@ -73,6 +73,7 @@ export class FileService {
   ) {
     const [results, total] = await this.fileRepository.findAndCount({
       select: ['id', 'fileId', 'filename', 'fileSize', 'isLike', 'createdAt'],
+      where: keyword !== '' ? { filename: Like(`%${keyword}%`) } : {},
       take: 10, // → Default
       skip: 10 * page,
       order: { createdAt: 'DESC' },

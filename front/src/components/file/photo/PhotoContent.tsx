@@ -99,7 +99,7 @@ const PhotoContent: FC<PhotoContentProps> = ({
 	const [data, setPage] = useFilePathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'photo',
 	});
 
 	const photoClick = (fileId: string) => {

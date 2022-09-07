@@ -74,7 +74,6 @@ const UseKeyword: FC<UseKeywordProps> = ({
 				<Table size="small">
 					<TableHead>
 						<TableRow>
-							<TableCell>NodeId</TableCell>
 							<TableCell align="center">Filename</TableCell>
 							<TableCell>Filesize</TableCell>
 							<TableCell align="center">Download</TableCell>
@@ -84,7 +83,6 @@ const UseKeyword: FC<UseKeywordProps> = ({
 						{datas &&
 							datas.map((data: FileInfo) => (
 								<TableRow key={data.fileId}>
-									<TableCell>{data.fileId}</TableCell>
 									<TableCell align="center">{data.filename}</TableCell>
 									<TableCell>{data.fileSize}</TableCell>
 									<TableCell align="center">

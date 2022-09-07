@@ -99,7 +99,7 @@ const VideoContent: FC<VideoContentProps> = ({
 	const [data, setPage] = useFilePathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'video',
 	});
 
 	const videoClick = (fileId: string) => {

@@ -80,7 +80,7 @@ const RecentContent: FC<RecentContentProps> = ({
 	const [data, setPage] = useFilePathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'recent',
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {

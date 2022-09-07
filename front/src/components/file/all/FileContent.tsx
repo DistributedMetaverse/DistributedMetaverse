@@ -43,7 +43,7 @@ const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
 	const [data, setPage] = useFilePathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'all',
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {

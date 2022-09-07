@@ -14,7 +14,7 @@ const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
 	const [data, setPage] = useFolderPathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'all',
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {

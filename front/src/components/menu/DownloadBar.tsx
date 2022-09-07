@@ -45,7 +45,7 @@ const DownloadBar: FC<DownloadProps> = ({
 		if (fileId === id) dispatch(previewSwitch(!isActive));
 	};
 	const prevClick = () => {
-		if (page > 1) setPage(page - 1);
+		if (page > 0) setPage(page - 1);
 	};
 	const nextClick = () => {
 		setPage(page + 1);
@@ -95,7 +95,7 @@ const DownloadBar: FC<DownloadProps> = ({
 												color: 'secondary.main',
 											}}
 										>
-											{data.createdAt}
+											{data.createdAt.split('T')[0]}
 										</Typography>
 									</Box>
 								</Button>
