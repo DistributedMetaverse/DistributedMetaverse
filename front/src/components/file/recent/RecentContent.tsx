@@ -9,6 +9,7 @@ import ContentHeader from '../cmmn/ContentHeader';
 import ContentName from '../cmmn/ContentName';
 import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
+import { pagingCount } from '../../../utils/pagination';
 
 interface RecentContentProps {
 	file: ActionCreatorsMapObject;
@@ -36,7 +37,11 @@ const RecentContentGrid: FC<RecentContentDataProps> = ({
 							<Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>
 								{data.filename}
 							</Typography>
-							<ContentFooder fileSize={data.fileSize} />
+							<ContentFooder
+								fileId={data.fileId}
+								fileSize={data.fileSize}
+								path={data.path}
+							/>
 						</Paper>
 					</Grid>
 				))}
@@ -65,6 +70,7 @@ const RecentContentRow: FC<RecentContentDataProps> = ({
 						<ContentAside
 							fileId={data.fileId}
 							fileSize={data.fileSize}
+							path={data.path}
 							isLike={data.isLike || false}
 						/>
 					</Paper>
@@ -77,7 +83,7 @@ const RecentContent: FC<RecentContentProps> = ({
 	file,
 	branch,
 }): JSX.Element => {
-	const [data, setPage] = useFilePathPageList({
+	const [data, take, total, setPage] = useFilePathPageList({
 		file,
 		path: '/',
 		type: 'recent',
@@ -97,7 +103,7 @@ const RecentContent: FC<RecentContentProps> = ({
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={10}
+					count={pagingCount(take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}

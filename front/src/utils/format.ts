@@ -14,6 +14,11 @@ const timeFormat = (createtime: number): string => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const linkFormat = (fileId: string, path: string): string => {
+	if (path === '/') return 'https://ipfs.io/ipfs/' + fileId;
+	return 'https://ipfs.io/ipfs' + path + '/' + fileId;
+};
+
 const fileSizeFormat = (bytes: number): string => {
 	const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
 	if (bytes == 0) return '0 Byte';
@@ -21,4 +26,4 @@ const fileSizeFormat = (bytes: number): string => {
 	return (bytes / Math.pow(1024, i)).toFixed(2) + ' ' + sizes[i];
 };
 
-export { timeFormat, fileSizeFormat };
+export { timeFormat, linkFormat, fileSizeFormat };

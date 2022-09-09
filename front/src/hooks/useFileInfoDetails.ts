@@ -16,8 +16,9 @@ const useFileInfoDetails = ({
 		fileId: '',
 		filename: '',
 		fileSize: 0,
-		createdAt: '2022-01-23',
+		path: '/',
 		isLike: false,
+		createdAt: '2022-01-23',
 	});
 
 	const fetchAndSetData = useCallback(

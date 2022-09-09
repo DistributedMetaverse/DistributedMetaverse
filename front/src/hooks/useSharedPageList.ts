@@ -6,21 +6,19 @@ import {
 	SetStateAction,
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FileInfo } from '../store/types';
-import { PageData } from '../services/types';
+import { UserInfo } from '../store/types';
+import { SharedData } from '../services/types';
 
-interface FilePathPageListProps {
+interface SharedPageListProps {
 	file: ActionCreatorsMapObject;
-	path: string;
-	type: string;
+	fileId: number;
 }
 
-const useFilePathPageList = ({
+const useSharedPageList = ({
 	file,
-	path,
-	type,
-}: FilePathPageListProps): [
-	Array<FileInfo>,
+	fileId,
+}: SharedPageListProps): [
+	Array<UserInfo>,
 	number,
 	number,
 	Dispatch<SetStateAction<number>>
@@ -28,30 +26,28 @@ const useFilePathPageList = ({
 	const [page, setPage] = useState(0);
 	const [take, setTake] = useState(10);
 	const [total, setTotal] = useState(0);
-	const [data, setData] = useState<Array<FileInfo>>([]);
+	const [data, setData] = useState<Array<UserInfo>>([]);
 
 	const fetchAndSetData = useCallback(
-		async (page: number, path: string, type: string) => {
-			const pageData: PageData = {
+		async (page: number) => {
+			const sharedData: SharedData = {
+				fileId: fileId,
 				page: page,
-				path: path,
-				type: type,
-				identifier: 'file',
 			};
-			const data = await file.list(pageData);
+			const data = await file.shared(sharedData);
 			const { results, take, total } = data;
 			setTake(take);
 			setTotal(total);
 			setData(results);
 		},
-		[page, path, type]
+		[page]
 	);
 
 	useEffect(() => {
-		fetchAndSetData(page, path, type);
+		fetchAndSetData(page);
 	}, [fetchAndSetData]);
 
 	return [data, take, total, setPage];
 };
 
-export default useFilePathPageList;
+export default useSharedPageList;

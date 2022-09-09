@@ -4,8 +4,7 @@ import AppContent from '../components/common/AppContent';
 import {
 	Home,
 	Login,
-	AdminSignup,
-	UserSignup,
+	Signup,
 	File,
 	Video,
 	Photo,
@@ -26,8 +25,7 @@ const AuthRoutes: FC = (): JSX.Element => {
 			<CSSTransition key={location.pathname} classNames={slide} timeout={300}>
 				<Routes location={location}>
 					<Route path="/login" element={<Login />} />
-					<Route path="/signup" element={<UserSignup />} />
-					<Route path="/admin" element={<AdminSignup />} />
+					<Route path="/signup" element={<Signup />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</CSSTransition>

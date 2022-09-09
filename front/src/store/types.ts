@@ -31,7 +31,7 @@ interface MenuState {
 
 // 3. Preview 관련 State
 interface SearchInfo {
-	fileId: string; // node identifier
+	fileId: string; // node identifier → IPFS 해시 조회용
 }
 
 interface PreviewState extends SearchInfo {
@@ -42,8 +42,8 @@ interface PreviewState extends SearchInfo {
 interface PathState {
 	folderPath: string;
 	filePath: string;
-	folderType: string; // enum → (all / video / photo / pdf / doc)
-	fileType: string; // enum → (all / video / photo / pdf / doc)
+	folderType: string; // enum → (all / video / photo)
+	fileType: string; // enum → (all / video / photo)
 }
 
 interface FolderInfo {
@@ -63,8 +63,9 @@ interface FileInfo extends SearchInfo {
 	filename: string;
 	fileSize: number;
 	description?: string;
-	createdAt: string;
+	path: string;
 	isLike?: boolean;
+	createdAt: string;
 	shared?: Array<UserInfo>;
 }
 
@@ -86,6 +87,13 @@ interface SettingState {
 	isActive: boolean;
 }
 
+// 7. Paging 관련 State
+interface PageState {
+	results: Array<FileInfo | FolderInfo | UserInfo>;
+	take: number;
+	total: number;
+}
+
 export type {
 	AuthState,
 	TokenState,
@@ -101,4 +109,5 @@ export type {
 	FileState,
 	SettingInfo,
 	SettingState,
+	PageState,
 };

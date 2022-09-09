@@ -7,6 +7,7 @@ import {
 	PreviewState,
 	PathState,
 	FileState,
+	PageState,
 	SettingState,
 } from './types';
 
@@ -244,6 +245,26 @@ const settingSlice = createSlice({
 	},
 });
 
+// 7.1. Paging 관련 State
+const pageinitialState: PageState = {
+	results: [],
+	take: 10,
+	total: 0,
+};
+
+// 6.2. pageSlice : action + reducer → slice
+const pageSlice = createSlice({
+	name: 'page',
+	initialState: pageinitialState,
+	reducers: {
+		pageSuccess: (state: PageState, action: PayloadAction<PageState>) => {
+			state.results = action.payload.results;
+			state.take = action.payload.take;
+			state.total = action.payload.total;
+		},
+	},
+});
+
 const rootReducer = combineReducers({
 	auth: authSlice.reducer,
 	token: tokenSlice.reducer,
@@ -253,6 +274,7 @@ const rootReducer = combineReducers({
 	path: pathSlice.reducer,
 	file: fileSlice.reducer,
 	setting: settingSlice.reducer,
+	page: pageSlice.reducer,
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
@@ -264,6 +286,7 @@ const { setFolderPath, setFilePath, setFolderType, setFileType } =
 	pathSlice.actions;
 const { fileSuccess, fileProgress } = fileSlice.actions;
 const { settingSwitch } = settingSlice.actions;
+const { pageSuccess } = pageSlice.actions;
 
 export {
 	loginSuccess,
@@ -282,6 +305,7 @@ export {
 	fileSuccess,
 	fileProgress,
 	settingSwitch,
+	pageSuccess,
 };
 
 export type RootState = ReturnType<typeof rootReducer>;

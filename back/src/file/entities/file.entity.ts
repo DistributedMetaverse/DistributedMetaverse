@@ -52,6 +52,9 @@ export class File {
     isLike: boolean;
 
     @Column({ type: "boolean", default: false })
+    isDel: boolean;
+
+    @Column({ type: "boolean", default: false })
     downIPFS: boolean;
 
     @CreateDateColumn({ type: 'timestamp' })

@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { File } from './entities/file.entity';
-import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
 import { UploadFileDto } from './dto/upload-file.dto'
-import { JwtUtil } from '../auth/guard/jwt.util';
 import { Pagination } from '../common/pagination/paginate';
 import * as bcrypt from 'bcrypt';
 
@@ -13,16 +12,13 @@ export class FileService {
   constructor(
     @InjectRepository(File)
     private fileRepository: Repository<File>,
-    private readonly jwtUtil: JwtUtil,
-    private readonly userService: UserService
   ) {}
   async uploadFile(
-    auth: string,
+    user: User,
     file: Express.Multer.File,
     uploadFileDto: UploadFileDto
   ) {
-    const decoded = await this.jwtUtil.decode(auth);
-    const user = await this.userService.findOne(decoded.username) // username → email
+    Logger.warn("file user: ", user);
     const newFile = new File();
     newFile.user = user;
     newFile.fileId = await bcrypt.hash(file.buffer, 10);
@@ -33,10 +29,15 @@ export class FileService {
     return await this.fileRepository.save(newFile);
   }
 
- async findFileType (mimeType: string, page: number, take: number) {
+ async findFileType (
+    user: User,
+    mimeType: string,
+    page: number,
+    take: number
+  ) {
   const [results, total] = await this.fileRepository.findAndCount({
     select: ['id', 'fileId', 'filename', 'fileSize', 'isLike', 'createdAt'],
-    where: mimeType !== '' ? { mimeType: Like(`%${mimeType}%`) } : {},
+    where: mimeType !== '' ? { user: user, mimeType: Like(`%${mimeType}%`) } : { user: user },
     take: take,
     skip: take * page,
     order: { createdAt: 'DESC' },
@@ -45,10 +46,11 @@ export class FileService {
     results,
     total,
   });
-  return pagination.results;
+  return pagination;
  }
 
   listFileType(
+    user: User,
     filePath: string,
     folderPath: string,
     type: string,
@@ -56,24 +58,25 @@ export class FileService {
   ) {
     if (filePath) {
       switch(type) {
-        case 'all': return this.findFileType('', page, 10)
-        case 'photo': return this.findFileType('image', page, 10)
-        case 'video': return this.findFileType('video', page, 10)
-        case 'download': return this.findFileType('', page, 5)
-        case 'recent': return this.findFileType('', page, 10)
-        default: return this.findFileType('', page, 10)
+        case 'all': return this.findFileType(user, '', page, 10)
+        case 'photo': return this.findFileType(user, 'image', page, 10)
+        case 'video': return this.findFileType(user, 'video', page, 10)
+        case 'download': return this.findFileType(user, '', page, 5)
+        case 'recent': return this.findFileType(user, '', page, 10)
+        default: return this.findFileType(user, '', page, 10)
       }
     }
     return [];
   }
 
   async searchFileList(
+    user: User,
     keyword: string,
     page: number
   ) {
     const [results, total] = await this.fileRepository.findAndCount({
       select: ['id', 'fileId', 'filename', 'fileSize', 'isLike', 'createdAt'],
-      where: keyword !== '' ? { filename: Like(`%${keyword}%`) } : {},
+      where: keyword !== '' ? { user: user, filename: Like(`%${keyword}%`) } : { user: user},
       take: 10, // → Default
       skip: 10 * page,
       order: { createdAt: 'DESC' },
@@ -82,6 +85,6 @@ export class FileService {
       results,
       total,
     });
-    return pagination.results;
+    return pagination;
   }
 }

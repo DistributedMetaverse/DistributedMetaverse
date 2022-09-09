@@ -33,14 +33,6 @@ const searchType: Array<FileSearchTypeProps> = [
 		name: 'Show Photo',
 		type: 'photo',
 	},
-	{
-		name: 'Show Pdf',
-		type: 'pdf',
-	},
-	{
-		name: 'Show Doc',
-		type: 'doc',
-	},
 ];
 
 interface FileTypeTabButtonProps {

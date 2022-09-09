@@ -9,6 +9,7 @@ import ContentHeader from '../cmmn/ContentHeader';
 import ContentName from '../cmmn/ContentName';
 import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
+import { pagingCount } from '../../../utils/pagination';
 
 interface VideoContentProps {
 	file: ActionCreatorsMapObject;
@@ -48,7 +49,11 @@ const VideoContentGrid: FC<VideoContentDataProps> = ({
 							<Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>
 								{data.filename}
 							</Typography>
-							<ContentFooder fileSize={data.fileSize} />
+							<ContentFooder
+								fileId={data.fileId}
+								fileSize={data.fileSize}
+								path={data.path}
+							/>
 						</Paper>
 					</Grid>
 				))}
@@ -83,6 +88,7 @@ const VideoContentRow: FC<VideoContentDataProps> = ({
 						<ContentAside
 							fileId={data.fileId}
 							fileSize={data.fileSize}
+							path={data.path}
 							isLike={data.isLike || false}
 						/>
 					</Paper>
@@ -96,7 +102,7 @@ const VideoContent: FC<VideoContentProps> = ({
 	branch,
 	setFileId,
 }): JSX.Element => {
-	const [data, setPage] = useFilePathPageList({
+	const [data, take, total, setPage] = useFilePathPageList({
 		file,
 		path: '/',
 		type: 'video',
@@ -120,7 +126,7 @@ const VideoContent: FC<VideoContentProps> = ({
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={10}
+					count={pagingCount(take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}

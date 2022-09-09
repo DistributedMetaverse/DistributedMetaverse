@@ -19,15 +19,15 @@ const FilePage: FC<FilePageProps> = ({ path, file }): JSX.Element => {
 	const { folderPath, filePath, folderType, fileType } = path as {
 		folderPath: string;
 		filePath: string;
-		folderType: 'all' | 'video' | 'photo' | 'pdf' | 'doc';
-		fileType: 'all' | 'video' | 'photo' | 'pdf' | 'doc';
+		folderType: 'all' | 'video' | 'photo';
+		fileType: 'all' | 'video' | 'photo';
 	};
 	return (
 		<Box>
 			<FolderHeader path={folderPath} type={folderType} />
-			<FolderContent file={file} />
+			<FolderContent file={file} path={folderPath} type={folderType} />
 			<FileHeader path={filePath} type={fileType} />
-			<FileContent file={file} />
+			<FileContent file={file} path={filePath} type={fileType} />
 		</Box>
 	);
 };

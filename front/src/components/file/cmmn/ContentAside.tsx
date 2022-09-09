@@ -1,22 +1,42 @@
-import React, { FC } from 'react';
-import { Box, Grid, Divider, Typography } from '@mui/material';
+import React, { FC, useState } from 'react';
+import { Dispatch } from '@reduxjs/toolkit';
+import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
+import { connect } from 'react-redux';
+import Api from '../../../services/api';
+import { Box, Grid, IconButton, Divider, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import ContentTabButton from './ContentTabButton';
-import { fileSizeFormat } from '../../../utils/format';
+import AlertModal from '../../modal/AlertModal';
+import { linkFormat, fileSizeFormat } from '../../../utils/format';
 
 interface ContentAsideProps {
+	file: ActionCreatorsMapObject;
 	fileId: string;
 	fileSize: number;
+	path: string;
 	isLike: boolean;
 }
 
 const ContentAside: FC<ContentAsideProps> = ({
+	file,
 	fileId,
 	fileSize,
+	path,
 	isLike,
 }): JSX.Element => {
+	const [link, setLink] = useState('');
+	const [openAlert, setOpenAlert] = useState(false);
+
+	const likeClick = () => {
+		file.like(fileId);
+	};
+
+	const alertOpen = (fileId: string, path: string) => {
+		setLink(linkFormat(fileId, path));
+		setOpenAlert(true);
+	};
 	return (
 		<Box sx={{ pt: 0.5, pr: 3, display: 'flex' }}>
 			<Divider
@@ -34,24 +54,41 @@ const ContentAside: FC<ContentAsideProps> = ({
 					</Typography>
 				</Grid>
 				<Grid item>
-					<ShareIcon fontSize="small" sx={{ color: 'secondary.main' }} />
+					<IconButton
+						sx={{ p: 0, mt: -1.2 }}
+						onClick={() => alertOpen(fileId, path)}
+					>
+						<ShareIcon fontSize="small" sx={{ color: 'secondary.main' }} />
+					</IconButton>
 				</Grid>
 				<Grid item>
-					{isLike ? (
-						<StarIcon fontSize="small" sx={{ color: 'secondary.main' }} />
-					) : (
-						<StarOutlineIcon
-							fontSize="small"
-							sx={{ color: 'secondary.main' }}
-						/>
-					)}
+					<IconButton sx={{ p: 0, mt: -1 }} onClick={likeClick}>
+						{isLike ? (
+							<StarIcon fontSize="small" sx={{ color: 'secondary.main' }} />
+						) : (
+							<StarOutlineIcon
+								fontSize="small"
+								sx={{ color: 'secondary.main' }}
+							/>
+						)}
+					</IconButton>
 				</Grid>
 				<Grid item>
-					<ContentTabButton fileId={fileId} />
+					<ContentTabButton file={file} fileId={fileId} />
 				</Grid>
 			</Grid>
+			<AlertModal
+				title={'IPFS에 저장된 링크 주소입니다.'}
+				content={link}
+				openAlert={openAlert}
+				setOpenAlert={setOpenAlert}
+			/>
 		</Box>
 	);
 };
 
-export default ContentAside;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+	file: bindActionCreators(Api.file, dispatch),
+});
+
+export default connect(null, mapDispatchToProps)(ContentAside);

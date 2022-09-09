@@ -81,7 +81,8 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 				</Box>
 			</Box>
 			<AlertModal
-				count={count}
+				title={'현재 다운로드 된 갯수를 표기합니다.'}
+				content={`현재 다운도드 된 갯수는 ${count}개 입니다.`}
 				openAlert={openAlert}
 				setOpenAlert={setOpenAlert}
 			/>

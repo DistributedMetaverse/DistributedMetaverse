@@ -99,13 +99,21 @@ const UseKeyword: FC<UseKeywordProps> = ({
 				</Table>
 			</TableContainer>
 			<TablePagination
-				rowsPerPageOptions={[10, 25, 100]}
+				rowsPerPageOptions={[]} // → Disabled
 				component="div"
 				count={datas.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}
 				onRowsPerPageChange={handleChangeRowsPerPage}
+				sx={{
+					'.MuiTablePagination-displayedRows': {
+						color: 'primary.main',
+					},
+					'.Mui-disabled': {
+						color: 'primary.main',
+					},
+				}}
 			/>
 			<Collapse in={check}>
 				<Alert icon={<CheckIcon fontSize="inherit" />} severity="success">

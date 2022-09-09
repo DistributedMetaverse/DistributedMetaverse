@@ -7,9 +7,12 @@ import Pagination from '@mui/material/Pagination';
 import DescriptionIcon from '@mui/icons-material/Description';
 import ContentHeader from '../cmmn/ContentHeader';
 import ContentFooder from '../cmmn/ContentFooder';
+import { pagingCount } from '../../../utils/pagination';
 
 interface FileContentProps {
 	file: ActionCreatorsMapObject;
+	path: string;
+	type: string;
 }
 
 interface FileContentDataProps {
@@ -31,7 +34,11 @@ const FileContentGrid: FC<FileContentDataProps> = ({ datas }): JSX.Element => {
 							<Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>
 								{data.filename}
 							</Typography>
-							<ContentFooder fileSize={data.fileSize} />
+							<ContentFooder
+								fileId={data.fileId}
+								fileSize={data.fileSize}
+								path={data.path}
+							/>
 						</Paper>
 					</Grid>
 				))}
@@ -39,11 +46,15 @@ const FileContentGrid: FC<FileContentDataProps> = ({ datas }): JSX.Element => {
 	);
 };
 
-const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
-	const [data, setPage] = useFilePathPageList({
+const FileContent: FC<FileContentProps> = ({
+	file,
+	path,
+	type,
+}): JSX.Element => {
+	const [data, take, total, setPage] = useFilePathPageList({
 		file,
-		path: '/',
-		type: 'all',
+		path: path,
+		type: type,
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
@@ -56,7 +67,7 @@ const FileContent: FC<FileContentProps> = ({ file }): JSX.Element => {
 			<FileContentGrid datas={data} />
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={10}
+					count={pagingCount(take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}

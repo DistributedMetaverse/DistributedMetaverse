@@ -34,7 +34,7 @@ const DownloadBar: FC<DownloadProps> = ({
 	const dispatch = useDispatch();
 	const page = 1; // default
 	const { fileId, isActive } = preview;
-	const [data, setPage] = useFilePathPageList({
+	const [data, take, total, setPage] = useFilePathPageList({
 		file,
 		path: '/',
 		type: 'download',
@@ -107,26 +107,28 @@ const DownloadBar: FC<DownloadProps> = ({
 				variant="fullWidth"
 				sx={{ pt: 3, height: '2px', borderColor: 'primary.main' }}
 			/>
-			<Box sx={{ pt: 2, display: 'flex' }}>
-				<Grid container sx={{ justifyContent: 'space-between' }}>
-					<Grid item>
-						<IconButton
-							onClick={prevClick}
-							sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
-						>
-							<ArrowCircleLeftIcon />
-						</IconButton>
+			{take < total && (
+				<Box sx={{ pt: 2, display: 'flex' }}>
+					<Grid container sx={{ justifyContent: 'space-between' }}>
+						<Grid item>
+							<IconButton
+								onClick={prevClick}
+								sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
+							>
+								<ArrowCircleLeftIcon />
+							</IconButton>
+						</Grid>
+						<Grid item>
+							<IconButton
+								onClick={nextClick}
+								sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
+							>
+								<ArrowCircleRightIcon />
+							</IconButton>
+						</Grid>
 					</Grid>
-					<Grid item>
-						<IconButton
-							onClick={nextClick}
-							sx={{ p: 0, '&:hover': { color: 'text.primary' } }}
-						>
-							<ArrowCircleRightIcon />
-						</IconButton>
-					</Grid>
-				</Grid>
-			</Box>
+				</Box>
+			)}
 		</Box>
 	);
 };

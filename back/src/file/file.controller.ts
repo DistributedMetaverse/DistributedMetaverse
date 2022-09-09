@@ -4,13 +4,14 @@ import {
   Post,
   Body,
   Query,
-  Headers,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
 import { UploadFileDto } from './dto/upload-file.dto'
+import { User } from '../user/entities/user.entity';
+import { AuthToken } from '../auth/auth.decorator';
 
 @Controller('file')
 export class FileController {
@@ -22,27 +23,29 @@ export class FileController {
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @UploadedFile() file: Express.Multer.File, 
-    @Headers('Authorization') auth: string,
+    @AuthToken() user: User,
     @Body() uploadFileDto: UploadFileDto
   ) {
-    return this.fileService.uploadFile(auth, file, uploadFileDto);
+    return this.fileService.uploadFile(user, file, uploadFileDto);
   }
 
   @Get('list')
   listFile(
+    @AuthToken() user: User,
     @Query('file') filePath: string,
     @Query('folder') folderPath: string,
     @Query('type') type: string,
     @Query('page') page: number,
   ) {
-    return this.fileService.listFileType(filePath, folderPath, type, page);
+    return this.fileService.listFileType(user, filePath, folderPath, type, page);
   }
 
   @Get('search')
   searchFile(
+    @AuthToken() user: User,
     @Query('keyword') keyword: string,
     @Query('page') page: number,
   ) {
-    return this.fileService.searchFileList(keyword, page);
+    return this.fileService.searchFileList(user, keyword, page);
   }
 }

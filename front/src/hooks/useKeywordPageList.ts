@@ -24,7 +24,8 @@ const useKeywordPageList = ({
 				keyword: keyword,
 			};
 			const data = await file.search(keywordData);
-			setData(data);
+			const { results } = data;
+			setData(results);
 		},
 		[keyword]
 	);

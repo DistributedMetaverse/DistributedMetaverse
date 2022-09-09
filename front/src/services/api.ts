@@ -7,6 +7,7 @@ import {
 	tokenSuccess,
 	fileSuccess,
 	fileProgress,
+	pageSuccess,
 } from '../store/index';
 import {
 	JWT_USERNAME,
@@ -166,7 +167,7 @@ const file = {
 				`file/list?${pageData.identifier}=${pageData.path}&type=${pageData.type}&page=${pageData.page}`
 			)
 			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
+				dispatch(pageSuccess(response.data));
 				return response.data;
 			}),
 	// 파일 세부정보 API : <baseURL>/file/info/{fileId}
@@ -175,6 +176,43 @@ const file = {
 			dispatch(fileSuccess(response.data));
 			return response.data;
 		}),
+	// 파일 공유된 사용자 리스트 API : <baseURL>/file/shared/{fileId}?page={page}
+	shared: (fileId: number, page: number) => (dispatch: Dispatch) =>
+		instance
+			.get(`file/shared/${fileId}?page=${page}`)
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
+	// 파일 수정 API : <baseURL>/file/modify/{fileId}
+	modify:
+		(fileId: number, filename: string, description: string) =>
+		(dispatch: Dispatch) =>
+			instance
+				.patch(`file/modify/${fileId}`, {
+					filename: filename,
+					description: description,
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
+					return response.data;
+				}),
+	// 파일 삭제 API : <baseURL>/file/delete/{fileId}
+	delete: (fileId: string) => (dispatch: Dispatch) =>
+		instance
+			.patch(`file/delete`, { fileId: fileId })
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
+	// 파일 즐겨찾기 API : <baseURL>/file/like/{fileId}
+	like: (fileId: string) => (dispatch: Dispatch) =>
+		instance
+			.patch(`file/like`, { fileId: fileId })
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
 	// 파일 검색 API : <baseURL>/file/search?keyword={keyword}&page={page}
 	search: (keywordData: KeywordData) => (dispatch: Dispatch) =>
 		instance
@@ -182,7 +220,7 @@ const file = {
 				`file/search?keyword=${keywordData.keyword}&page=${keywordData.page}`
 			)
 			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
+				dispatch(pageSuccess(response.data));
 				return response.data;
 			}),
 };

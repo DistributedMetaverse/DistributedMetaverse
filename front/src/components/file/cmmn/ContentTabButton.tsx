@@ -1,4 +1,5 @@
 import React, { FC, useState, MouseEvent } from 'react';
+import { ActionCreatorsMapObject } from 'redux';
 import { useDispatch } from 'react-redux';
 import { previewInfo } from '../../../store/index';
 import {
@@ -13,10 +14,12 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 
 interface ContentTabButtonProps {
+	file: ActionCreatorsMapObject;
 	fileId: string;
 }
 
 const ContentTabButton: FC<ContentTabButtonProps> = ({
+	file,
 	fileId,
 }): JSX.Element => {
 	const dispatch = useDispatch();
@@ -33,6 +36,7 @@ const ContentTabButton: FC<ContentTabButtonProps> = ({
 		setOpen(false);
 	};
 	const removeClick = () => {
+		file.delete(fileId);
 		setAnchorEl(null);
 		setOpen(false);
 	};

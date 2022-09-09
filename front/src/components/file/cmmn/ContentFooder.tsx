@@ -1,13 +1,27 @@
-import React, { FC } from 'react';
-import { Box, Grid, Divider, Typography } from '@mui/material';
+import React, { FC, useState } from 'react';
+import { Box, Grid, IconButton, Divider, Typography } from '@mui/material';
 import ShareIcon from '@mui/icons-material/Share';
-import { fileSizeFormat } from '../../../utils/format';
+import AlertModal from '../../modal/AlertModal';
+import { linkFormat, fileSizeFormat } from '../../../utils/format';
 
 interface ContentFooterProps {
+	fileId: string;
 	fileSize: number;
+	path: string;
 }
 
-const ContentFooter: FC<ContentFooterProps> = ({ fileSize }): JSX.Element => {
+const ContentFooter: FC<ContentFooterProps> = ({
+	fileId,
+	fileSize,
+	path,
+}): JSX.Element => {
+	const [link, setLink] = useState('');
+	const [openAlert, setOpenAlert] = useState(false);
+
+	const alertOpen = (fileId: string, path: string) => {
+		setLink(linkFormat(fileId, path));
+		setOpenAlert(true);
+	};
 	return (
 		<Box>
 			<Divider
@@ -48,13 +62,21 @@ const ContentFooter: FC<ContentFooterProps> = ({ fileSize }): JSX.Element => {
 						</Box>
 					</Grid>
 					<Grid item>
-						<ShareIcon
-							fontSize="small"
-							sx={{ mt: 0.7, color: 'secondary.main' }}
-						/>
+						<IconButton
+							sx={{ p: 0, mr: 0.7 }}
+							onClick={() => alertOpen(fileId, path)}
+						>
+							<ShareIcon fontSize="small" sx={{ color: 'secondary.main' }} />
+						</IconButton>
 					</Grid>
 				</Grid>
 			</Box>
+			<AlertModal
+				title={'IPFS에 저장된 링크 주소입니다.'}
+				content={link}
+				openAlert={openAlert}
+				setOpenAlert={setOpenAlert}
+			/>
 		</Box>
 	);
 };
