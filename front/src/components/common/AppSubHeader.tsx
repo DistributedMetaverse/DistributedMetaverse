@@ -22,6 +22,7 @@ interface AppSubHeaderProps extends TitleState {
 	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
 	status: ActionCreatorsMapObject;
+	infra: ActionCreatorsMapObject;
 }
 
 const AppSubHeader: FC<AppSubHeaderProps> = ({
@@ -29,6 +30,7 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 	auth,
 	file,
 	status,
+	infra,
 }): JSX.Element => {
 	const [keyword, setKeyword] = useState('');
 	const [openAlert, setOpenAlert] = useState(false);
@@ -102,6 +104,7 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 			/>
 			<UploadModal
 				file={file}
+				infra={infra}
 				openUpload={openUpload}
 				setOpenUpload={setOpenUpload}
 				csrfData={csrfData}
@@ -120,6 +123,7 @@ const mapDispatchToProps = (dispatch: DispatchAction) => ({
 	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
 	status: bindActionCreators(Api.status, dispatch),
+	infra: bindActionCreators(Api.infra, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppSubHeader);

@@ -23,9 +23,11 @@ import {
 	SignUpData,
 	TokenData,
 	CSRFData,
+	SubmitData,
 	PageData,
 	KeywordData,
 	SharedData,
+	IPFSData,
 } from './types';
 
 // 인스턴스 API 생성
@@ -37,6 +39,9 @@ const createInstance = () => {
 	return setInterceptors(instance);
 };
 const instance = createInstance();
+const ipfs = axios.create({
+	baseURL: '/ipfs', // proxy: process.env.REACT_APP_IPFS_URL
+});
 
 const auth = {
 	// 로그인 API : <baseURL>/auth/login
@@ -170,6 +175,18 @@ const file = {
 					const { data } = error.response as AxiosResponse;
 					toastMessage(data.message, 'warn');
 				}),
+	// 파일 업로드 완료 API : <baseURL>/file/upload/submit
+	submit:
+		(submitData: SubmitData, csrfData: CSRFData) => (dispatch: Dispatch) =>
+			instance
+				.post('file/upload/submit', submitData, {
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+					},
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
+				}),
 	// 특정경로 파일 리스트 API : <baseURL>/file/list?{file,folder}={path}&type={type}&page={page}
 	list: (pageData: PageData) => (dispatch: Dispatch) =>
 		instance
@@ -286,13 +303,18 @@ const status = {
 		instance.get(`status/download`).then((response: AxiosResponse) => {
 			return response.data;
 		}),
-	// 폴더 리스트 검색 API : <baseURL>/status/folder?type={type}
+	// 폴더 경로 리스트 검색 API : <baseURL>/status/folder?type={type}
 	folder: (type: string) => () =>
 		instance
 			.get(`status/folder?type=${type}`)
 			.then((response: AxiosResponse) => {
 				return response.data;
 			}),
+	// 파일 경로 리스트 검색 API : <baseURL>/status/file?type={type}
+	file: (type: string) => () =>
+		instance.get(`status/file?type=${type}`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
 };
 
 const setting = {
@@ -312,11 +334,51 @@ const setting = {
 		}),
 };
 
+const infra = {
+	// 파일 업로드 API : <ipfsURL>/ipfs/api/v0/add
+	upload:
+		(formData: HTMLFormElement, csrfData: CSRFData) => (dispatch: Dispatch) =>
+			ipfs
+				.post('add', formData, {
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+						'Content-Type': 'multipart/form-data',
+					},
+					onUploadProgress: (progressEvent: ProgressEvent) => {
+						const { loaded, total } = progressEvent;
+						dispatch(fileProgress(Math.round((loaded / total) * 100)));
+					},
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
+				})
+				.catch((error: AxiosError) => {
+					const { data } = error.response as AxiosResponse;
+					toastMessage(data.message, 'warn');
+				}),
+	// 파일 다운로드 API : <ipfsURL>/ipfs/api/v0/cat
+	download: (ipfsData: IPFSData, csrfData: CSRFData) => (dispatch: Dispatch) =>
+		ipfs
+			.post(`cat`, ipfsData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+};
+
 const api = {
 	auth,
 	file,
 	status,
 	setting,
+	infra,
 };
 
 export default { ...api };

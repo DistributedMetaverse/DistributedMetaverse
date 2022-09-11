@@ -25,7 +25,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from '@mui/icons-material/Check';
 import CreateFolder from './upload/CreateFolder';
 import UploadDetail from './upload/UploadDetail';
-import FolderTabButton from './upload/FolderTabButton';
+import FilePathTabButton from './upload/FilePathTabButton';
 import NavigationPath from '../file/NavigationPath';
 
 interface UseFolderProps {
@@ -39,6 +39,7 @@ interface UseFolderProps {
 
 interface UploadModalProps {
 	file: ActionCreatorsMapObject;
+	infra: ActionCreatorsMapObject;
 	openUpload: boolean;
 	setOpenUpload: Dispatch<SetStateAction<boolean>>;
 	csrfData: CSRFData;
@@ -54,7 +55,7 @@ const UseExist: FC<UseExistProps> = ({ path, setPath }): JSX.Element => {
 	return (
 		<Grid container spacing={1} sx={{ width: 350 }}>
 			<Grid item>
-				<FolderTabButton path={path} setPath={setPath} />
+				<FilePathTabButton path={path} setPath={setPath} />
 			</Grid>
 			<Grid item sx={{ ml: 1 }}>
 				<NavigationPath path={path} />
@@ -155,6 +156,7 @@ const UseFolder: FC<UseFolderProps> = ({
 
 const UploadModal: FC<UploadModalProps> = ({
 	file,
+	infra,
 	openUpload,
 	setOpenUpload,
 	csrfData,
@@ -174,9 +176,18 @@ const UploadModal: FC<UploadModalProps> = ({
 		if (fileinfo) {
 			fetchData();
 			const formData = new FormData();
-			formData.append('path', path);
+			//formData.append('path', path);	// → Disabled
 			formData.append('file', fileinfo);
-			await file.upload(formData, csrfData);
+			//await file.upload(formData, csrfData);	// → Disabled
+			const data = await infra.upload(formData, csrfData);
+			const submitData = {
+				fileId: data.Hash,
+				filename: fileinfo.name,
+				fileSize: fileinfo.size,
+				mimeType: fileinfo.type,
+				path: path,
+			};
+			await file.submit(submitData, csrfData);
 			dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		}
 	};
@@ -205,7 +216,20 @@ const UploadModal: FC<UploadModalProps> = ({
 					setFolder={setFolder}
 				/>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
-				{newFolder === '' && (
+				{path.split('/').length >= 3 && (
+					<Alert
+						variant="outlined"
+						severity="warning"
+						sx={{
+							'.MuiAlert-message': {
+								color: '#626274',
+							},
+						}}
+					>
+						해당 Path는 더 이상 수정할 수 없습니다.
+					</Alert>
+				)}
+				{newFolder === '' && path.split('/').length < 3 && (
 					<CreateFolder path={path} setPath={setPath} setFolder={setFolder} />
 				)}
 				{data.size > 0 && (

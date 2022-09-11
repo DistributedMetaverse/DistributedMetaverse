@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { StatusService } from './status.service';
 import { User } from '../user/entities/user.entity';
 import { AuthToken } from '../auth/auth.decorator';
@@ -8,17 +8,20 @@ export class StatusController {
   constructor(private readonly statusService: StatusService) {}
 
   @Get('download')
-  findDownloadToday(@AuthToken() user: User) {
-    return this.statusService.findDownloadToday(user);
+  findDownload(@AuthToken() user: User) {
+    return this.statusService.findDownloadCount(user);
   }
 
   @Get('folder')
   findFolderPath(@AuthToken() user: User) {
-    return this.statusService.findFolderGroupCount(user);
+    return this.statusService.findFolder(user);
   }
 
   @Get('file')
-  findFilePath(@AuthToken() user: User) {
-    return this.statusService.findFileGroupCount(user);
+  findFilePath(
+    @AuthToken() user: User,
+    @Query('type') type: string
+  ) {
+    return this.statusService.findFile(user, type);
   }
 }

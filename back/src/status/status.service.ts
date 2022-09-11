@@ -11,7 +11,12 @@ export class StatusService {
     private fileRepository: Repository<File>,
   ) {}
 
-  async findDownloadToday(user: User) {
+  /**
+   * 파일을 다운로드하고, Ready 中 상태 Service
+   * @param user - 해당 유저의 정보를 확인합니다.
+   * @returns 
+   */
+  async findDownloadCount(user: User) {
     const count = await this.fileRepository.count({
       select: ['id'],
       where: { user: user, downIPFS: true, isDel: false },
@@ -19,29 +24,61 @@ export class StatusService {
     return { count: count };
   }
 
-  async findFolderGroupCount(user: User) {
-    const path = await this.fileRepository.createQueryBuilder('file')
-      .select('file.path AS path')
+  /**
+   * 특정 폴더에 대한 Path별 갯수 Service
+   * @param user - 해당 유저의 정보를 확인합니다.
+   * @returns 
+   */
+  async findFolderPathGroupCount(
+    user: User,
+  ) {
+    return await this.fileRepository.createQueryBuilder('file')
+      .select("SUBSTRING_INDEX(file.path, '/', 2) AS folderPath")
       .addSelect('COUNT(file.path) AS count')
       .where(
-        'file.user_id = :id and file.is_del = :isDel and file.down_ipfs = :downIPFS', 
+        'file.user_id = :id AND file.is_del = :isDel AND file.down_ipfs = :downIPFS',
         { id: user.id, isDel: Number(false), downIPFS: Number(false) }
       )
-      .groupBy('file.path')
+      .groupBy('folderPath')
       .getRawMany();
-    return path;
   }
 
-  async findFileGroupCount(user: User) {
-    const path = await this.fileRepository.createQueryBuilder('file')
-      .select('file.path AS path')
+  /**
+   * 파일 타입에 대한 Path별 갯수 Service
+   * @param user - 해당 유저의 정보를 확인합니다.
+   * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
+   * @returns 
+   */
+  async findFileTypePathGroupCount(
+    user: User,
+    mimeType: string,
+  ) {
+    return await this.fileRepository.createQueryBuilder('file')
+      .select('file.path AS filePath')
       .addSelect('COUNT(file.path) AS count')
       .where(
-        'file.user_id = :id and file.is_del = :isDel and file.down_ipfs = :downIPFS', 
-        { id: user.id, isDel: Number(false), downIPFS: Number(false) }
+        'file.user_id = :id AND file.is_del = :isDel AND file.down_ipfs = :downIPFS AND mime_type LIKE :mimeType',
+        { id: user.id, isDel: Number(false), downIPFS: Number(false), mimeType: `%${mimeType}%` }
       )
       .groupBy('file.path')
       .getRawMany();
-    return path;
+  }
+
+  async findFolder(
+    user: User,
+  ) {
+    return this.findFolderPathGroupCount(user)
+  }
+
+  async findFile(
+    user: User,
+    type: string,
+  ) {
+    switch(type) {
+      case 'all': return this.findFileTypePathGroupCount(user, '')
+      case 'photo': return this.findFileTypePathGroupCount(user, 'image')
+      case 'video': return this.findFileTypePathGroupCount(user, 'video')
+      default: return this.findFileTypePathGroupCount(user, '')
+    }
   }
 }

@@ -7,7 +7,8 @@ import {
 import { TokenData } from '../services/types';
 import {
 	FileInfo,
-	FolderInfo,
+	FolderPathInfo,
+	FilePathInfo,
 	PageState,
 	SearchInfo,
 	SettingInfo,
@@ -87,19 +88,19 @@ const filelist: PageState = {
 const folderlist: PageState = {
 	results: [
 		{
-			path: '/',
+			folderPath: '/',
 			count: 2,
 		},
 		{
-			path: '/data/data1',
+			folderPath: '/data/data1',
 			count: 10,
 		},
 		{
-			path: '/test1/folder',
+			folderPath: '/test1/folder',
 			count: 23,
 		},
 		{
-			path: '/test2',
+			folderPath: '/test2',
 			count: 4,
 		},
 	],
@@ -107,21 +108,40 @@ const folderlist: PageState = {
 	total: 4,
 };
 
-const folderTablist: Array<FolderInfo> = [
+const folderPathTablist: Array<FolderPathInfo> = [
 	{
-		path: '/',
+		folderPath: '/',
 		count: 2,
 	},
 	{
-		path: '/data/data1',
+		folderPath: '/data/data1',
 		count: 10,
 	},
 	{
-		path: '/test1/folder',
+		folderPath: '/test1/folder',
 		count: 23,
 	},
 	{
-		path: '/test2',
+		folderPath: '/test2',
+		count: 4,
+	},
+];
+
+const filePathTablist: Array<FilePathInfo> = [
+	{
+		filePath: '/',
+		count: 2,
+	},
+	{
+		filePath: '/data/data1',
+		count: 10,
+	},
+	{
+		filePath: '/test1/folder',
+		count: 23,
+	},
+	{
+		filePath: '/test2',
 		count: 4,
 	},
 ];
@@ -177,9 +197,11 @@ const csrfToken = {
 	csrfToken: 'Z2xKbR8k-wUeOvO_K0GiJqG7q3O1jjjCJ2Vs',
 };
 
+const prifix = '/api';
+
 export const handlers = [
 	// 로그인
-	rest.post('/api/auth/login', (req, res, ctx) => {
+	rest.post(prifix + '/auth/login', (req, res, ctx) => {
 		const username = 'test';
 		const accessToken = getTokenKeyHeader() + '.' + getTokenKeyData(60 * 30); // 30분
 		const refreshToken = getTokenKeyHeader() + '.' + getTokenKeyData(60 * 60); // 60분
@@ -195,22 +217,22 @@ export const handlers = [
 	}),
 
 	// 회원가입
-	rest.post('/api/auth/signup', (req, res, ctx) => {
+	rest.post(prifix + '/auth/signup', (req, res, ctx) => {
 		return res(ctx.status(201));
 	}),
 
 	// 토큰 재생성
-	rest.patch('/api/auth/refresh', (req, res, ctx) => {
+	rest.patch(prifix + '/auth/refresh', (req, res, ctx) => {
 		return res(ctx.status(201));
 	}),
 
 	// 토큰 재생성
-	rest.get('/api/auth/csrf-token', (req, res, ctx) => {
+	rest.get(prifix + '/auth/csrf-token', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(csrfToken));
 	}),
 
 	// 파일 세부정보
-	rest.get('/api/file/info/:fileId', (req, res, ctx) => {
+	rest.get(prifix + '/file/info/:fileId', (req, res, ctx) => {
 		const { fileId } = req.params;
 		const searchData: SearchInfo = {
 			fileId: String(fileId),
@@ -219,12 +241,12 @@ export const handlers = [
 	}),
 
 	// 파일 공유된 사용자 리스트
-	rest.get('/api/file/shared/:fileId', (req, res, ctx) => {
+	rest.get(prifix + '/file/shared/:fileId', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(sharedlist));
 	}),
 
 	// 특정경로 파일 ↔ 폴더 리스트 검색
-	rest.get('/api/file/list', (req, res, ctx) => {
+	rest.get(prifix + '/file/list', (req, res, ctx) => {
 		const file = req.url.searchParams.get('file');
 		const identifier = file ? 'file' : 'folder';
 		if (identifier === 'file') return res(ctx.status(200), ctx.json(filelist));
@@ -232,27 +254,37 @@ export const handlers = [
 	}),
 
 	// 파일 세부정보
-	rest.get('/api/file/search', (req, res, ctx) => {
+	rest.get(prifix + '/file/search', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(filelist));
 	}),
 
 	// 현재 확인된 다운로드 갯수 확인
-	rest.get('/api/status/download', (req, res, ctx) => {
+	rest.get(prifix + '/status/download', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json({ count: 4 }));
 	}),
 
-	// 현재 확인된 폴더 리스트 확인
-	rest.get('/api/status/folder', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(folderTablist));
+	// 현재 확인된 폴더 경로 리스트 확인
+	rest.get(prifix + '/status/folder', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(folderPathTablist));
+	}),
+
+	// 현재 확인된 파일 경로 리스트 확인
+	rest.get(prifix + '/status/file', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(filePathTablist));
 	}),
 
 	// Setting 세부정보
-	rest.get('/api/setting/info', (req, res, ctx) => {
+	rest.get(prifix + '/setting/info', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(settinginfo));
 	}),
 
 	// Setting 리스트
-	rest.get('/api/setting/list/:page', (req, res, ctx) => {
+	rest.get(prifix + '/setting/list/:page', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(settinglist));
+	}),
+
+	// IPFS 파일 업로드
+	rest.post('/ipfs/add', (req, res, ctx) => {
+		return res(ctx.status(201));
 	}),
 ];

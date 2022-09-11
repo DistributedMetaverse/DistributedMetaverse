@@ -46,8 +46,14 @@ interface PathState {
 	fileType: string; // enum → (all / video / photo)
 }
 
-interface FolderInfo {
-	path: string;
+interface FolderPathInfo {
+	folderPath: string;
+	subPath?: string;
+	count: number;
+}
+
+interface FilePathInfo {
+	filePath: string;
 	count: number;
 }
 
@@ -90,7 +96,7 @@ interface SettingState {
 
 // 7. Paging 관련 State
 interface PageState {
-	results: Array<FileInfo | FolderInfo | UserInfo>;
+	results: Array<FileInfo | FolderPathInfo | UserInfo>;
 	take: number;
 	total: number;
 }
@@ -109,7 +115,8 @@ export type {
 	SearchInfo,
 	PreviewState,
 	PathState,
-	FolderInfo,
+	FolderPathInfo,
+	FilePathInfo,
 	UserInfo,
 	FileInfo,
 	FileState,

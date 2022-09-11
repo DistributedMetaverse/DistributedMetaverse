@@ -19,6 +19,14 @@ interface CSRFData {
 	csrfToken: string;
 }
 
+interface SubmitData {
+	fileId: string;
+	filename: string;
+	fileSize: number;
+	mimeType: string;
+	path: string;
+}
+
 interface PageData {
 	page: number;
 	path: string;
@@ -36,12 +44,18 @@ interface SharedData {
 	page: number;
 }
 
+interface IPFSData {
+	arg: string;
+}
+
 export type {
 	LoginData,
 	SignUpData,
 	TokenData,
 	CSRFData,
+	SubmitData,
 	PageData,
 	KeywordData,
 	SharedData,
+	IPFSData,
 };

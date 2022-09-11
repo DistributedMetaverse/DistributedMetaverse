@@ -1,16 +1,10 @@
-import React, {
-	FC,
-	useState,
-	MouseEvent,
-	Dispatch,
-	SetStateAction,
-} from 'react';
-import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
+import React, { FC, useState, MouseEvent } from 'react';
+import { Dispatch, ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
-import { FolderInfo } from '../../../store/types';
+import { connect, useDispatch } from 'react-redux';
+import { FilePathInfo } from '../../../store/types';
 import Api from '../../../services/api';
-import useFolderTabList from '../../../hooks/useFolderTabList';
+import useFilePathTabList from '../../../hooks/useFilePathTabList';
 import {
 	Box,
 	Grid,
@@ -28,13 +22,14 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 interface FolderButtonProps {
 	path: string;
-	setPath: Dispatch<SetStateAction<string>>;
 	status: ActionCreatorsMapObject;
+	setPath: ActionCreatorWithPayload<string, string>;
+	type: 'all' | 'video' | 'photo';
 }
 
 interface FolderTabMenuItemProps {
 	path: string;
-	datas: Array<FolderInfo>;
+	datas: Array<FilePathInfo>;
 	closeClick: (path: string) => void;
 }
 
@@ -46,10 +41,10 @@ const FolderTabMenuItem: FC<FolderTabMenuItemProps> = ({
 	return (
 		<MenuList dense sx={{ pt: 0.5, pb: 0.5 }}>
 			{datas &&
-				datas.map((data: FolderInfo) => (
+				datas.map((data: FilePathInfo) => (
 					<MenuItem
-						key={data.path}
-						onClick={() => closeClick(data.path)}
+						key={data.filePath}
+						onClick={() => closeClick(data.filePath)}
 						dense
 						sx={{ px: 2, pt: 0.5, pb: 0.5, minHeight: 22 }}
 					>
@@ -59,7 +54,7 @@ const FolderTabMenuItem: FC<FolderTabMenuItemProps> = ({
 									primaryTypographyProps={{
 										style: { fontSize: 13, fontWeight: 'bold' },
 									}}
-									primary={data.path}
+									primary={data.filePath}
 								/>
 							</Grid>
 							<Grid item xs={2}>
@@ -72,10 +67,10 @@ const FolderTabMenuItem: FC<FolderTabMenuItemProps> = ({
 								item
 								xs={2}
 								sx={{
-									mb: data.path === path ? -0.5 : 0,
+									mb: data.filePath === path ? -0.5 : 0,
 								}}
 							>
-								{data.path === path && (
+								{data.filePath === path && (
 									<ListItemIcon>
 										<Check
 											sx={{
@@ -92,22 +87,24 @@ const FolderTabMenuItem: FC<FolderTabMenuItemProps> = ({
 	);
 };
 
-const FolderTabButton: FC<FolderButtonProps> = ({
+const FilePathTabButton: FC<FolderButtonProps> = ({
 	path,
-	setPath,
 	status,
+	setPath,
+	type,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
-	const [data, fetchData] = useFolderTabList({ status, type: 'all' });
+	const [data, fetchData] = useFilePathTabList({ status, type });
 	const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
 	const showClick = (event: MouseEvent<HTMLButtonElement>) => {
-		fetchData('all'); // → Refresh
+		fetchData(type); // → Refresh
 		setAnchorEl(open ? null : event.currentTarget);
 		setOpen(!open);
 	};
 	const closeClick = (path: string) => {
-		setPath(path);
+		dispatch(setPath(path));
 		setAnchorEl(null);
 		setOpen(false);
 	};
@@ -127,7 +124,7 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 				open={open}
 				anchorEl={anchorEl}
 				placement="bottom-start"
-				sx={{ zIndex: 1300 }}
+				sx={{ zIndex: 1201 }}
 			>
 				<Paper elevation={3}>
 					<FolderTabMenuItem path={path} datas={data} closeClick={closeClick} />
@@ -137,8 +134,8 @@ const FolderTabButton: FC<FolderButtonProps> = ({
 	);
 };
 
-const mapDispatchToProps = (dispatch: DispatchAction) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
 	status: bindActionCreators(Api.status, dispatch),
 });
 
-export default connect(null, mapDispatchToProps)(FolderTabButton);
+export default connect(null, mapDispatchToProps)(FilePathTabButton);
