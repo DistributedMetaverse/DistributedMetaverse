@@ -17,7 +17,6 @@ import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { isAuthenticated } from './common/middleware/auth.middleware';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { isAdmin } from './common/middleware/registry.middleware';
 import { join } from 'path';
 
 @Module({
@@ -57,9 +56,6 @@ export class AppModule implements NestModule {
     consumer
       .apply(isAuthenticated, LoggerMiddleware)
       .forRoutes(FileController, StatusController, SettingController, UserController);
-    // consumer
-    //   .apply(isAdmin)
-    //   .forRoutes({ path:'/auth/**', method: RequestMethod.ALL });
   }
 }
 

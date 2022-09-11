@@ -1,9 +1,8 @@
 import React, { FC, useState, Dispatch, SetStateAction } from 'react';
 import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
 import { SettingState } from '../../store/types';
 import { menuSwitch, settingSwitch } from '../../store/index';
 import Api from '../../services/api';

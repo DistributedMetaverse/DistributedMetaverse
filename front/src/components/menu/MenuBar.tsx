@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { MenuInfo, MenuState } from '../../store/types';
-import { useDispatch } from 'react-redux';
 import { changeTitle, menuActive, settingSwitch } from '../../store/index';
 import {
 	Box,

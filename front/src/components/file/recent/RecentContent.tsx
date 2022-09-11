@@ -1,6 +1,7 @@
 import React, { FC, ChangeEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { FileInfo } from '../../../store/types';
+import { CSRFData } from '../../../services/types';
 import useFilePathPageList from '../../../hooks/useFilePathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
@@ -9,18 +10,26 @@ import ContentHeader from '../cmmn/ContentHeader';
 import ContentName from '../cmmn/ContentName';
 import ContentAside from '../cmmn/ContentAside';
 import ContentFooder from '../cmmn/ContentFooder';
+import { pagingCount } from '../../../utils/pagination';
 
 interface RecentContentProps {
 	file: ActionCreatorsMapObject;
+	time: number;
 	branch: boolean;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 interface RecentContentDataProps {
 	datas: Array<FileInfo>;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const RecentContentGrid: FC<RecentContentDataProps> = ({
 	datas,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
@@ -31,12 +40,21 @@ const RecentContentGrid: FC<RecentContentDataProps> = ({
 							<ContentHeader
 								fileId={data.fileId}
 								isLike={data.isLike || false}
+								csrfData={csrfData}
+								fetchData={fetchData}
 							/>
 							<DescriptionIcon fontSize="large" />
-							<Typography variant="subtitle2" sx={{ fontSize: '0.8rem' }}>
+							<Typography
+								variant="subtitle2"
+								sx={{ fontSize: '0.8rem', wordBreak: 'break-all' }}
+							>
 								{data.filename}
 							</Typography>
-							<ContentFooder fileSize={data.fileSize} />
+							<ContentFooder
+								fileId={data.fileId}
+								fileSize={data.fileSize}
+								path={data.path}
+							/>
 						</Paper>
 					</Grid>
 				))}
@@ -46,6 +64,8 @@ const RecentContentGrid: FC<RecentContentDataProps> = ({
 
 const RecentContentRow: FC<RecentContentDataProps> = ({
 	datas,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
 	return (
 		<Box>
@@ -65,7 +85,10 @@ const RecentContentRow: FC<RecentContentDataProps> = ({
 						<ContentAside
 							fileId={data.fileId}
 							fileSize={data.fileSize}
+							path={data.path}
 							isLike={data.isLike || false}
+							csrfData={csrfData}
+							fetchData={fetchData}
 						/>
 					</Paper>
 				))}
@@ -75,12 +98,16 @@ const RecentContentRow: FC<RecentContentDataProps> = ({
 
 const RecentContent: FC<RecentContentProps> = ({
 	file,
+	time,
 	branch,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
-	const [data, setPage] = useFilePathPageList({
+	const [page, data, take, total, setPage] = useFilePathPageList({
 		file,
 		path: '/',
-		type: 'download',
+		type: 'recent',
+		time,
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
@@ -91,19 +118,27 @@ const RecentContent: FC<RecentContentProps> = ({
 	return (
 		<Box sx={{ mt: 2 }}>
 			{branch ? (
-				<RecentContentGrid datas={data} />
+				<RecentContentGrid
+					datas={data}
+					csrfData={csrfData}
+					fetchData={fetchData}
+				/>
 			) : (
-				<RecentContentRow datas={data} />
+				<RecentContentRow
+					datas={data}
+					csrfData={csrfData}
+					fetchData={fetchData}
+				/>
 			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={10}
+					count={pagingCount(page, take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}
 					boundaryCount={1}
-					showFirstButton
-					showLastButton
+					hidePrevButton
+					hideNextButton
 					onChange={pageChange}
 					size="small"
 				/>

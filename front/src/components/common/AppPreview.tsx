@@ -1,175 +1,376 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, useState, ChangeEvent } from 'react';
 import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { previewSwitch } from '../../store/index';
-import { PreviewState, UserInfo } from '../../store/types';
+import { connect, useDispatch } from 'react-redux';
+import { PreviewState, DataState, FileInfo, UserInfo } from '../../store/types';
+import { CSRFData } from '../../services/types';
+import { dataSuccess } from '../../store/index';
 import Api from '../../services/api';
+import useCSRFToken from '../../hooks/useCSRFToken';
 import useFileInfoDetails from '../../hooks/useFileInfoDetails';
+import useSharedPageList from '../../hooks/useSharedPageList';
 import {
 	Box,
 	Grid,
 	Paper,
+	Button,
 	Drawer,
-	IconButton,
+	InputBase,
 	Divider,
 	Typography,
+	Pagination,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import SwapCallsIcon from '@mui/icons-material/SwapCalls';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
-import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
-import LoupeOutlinedIcon from '@mui/icons-material/LoupeOutlined';
+import PreviewHeader from './preview/PreviewHeader';
+import PreviewFooter from './preview/PreviewFooter';
 import { fileSizeFormat } from '../../utils/format';
+import { pagingCount } from '../../utils/pagination';
 
 interface UseFileProps {
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	time: number;
 	fileId: string;
 }
 
 interface AppPreviewProps {
-	preview: PreviewState;
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	preview: PreviewState;
+	data: DataState;
 	width: number;
 }
 
-interface PreviewHeaderProps {
-	exist: boolean;
+interface UseSharedContentProps {
+	data?: Array<UserInfo>;
 }
 
-const PreviewHeader: FC<PreviewHeaderProps> = ({ exist }): JSX.Element => {
-	const dispatch = useDispatch();
-	const closeClick = () => {
-		dispatch(previewSwitch(false));
+const UseSharedContent: FC<UseSharedContentProps> = ({ data }): JSX.Element => {
+	return (
+		<>
+			<Typography
+				component="span"
+				variant="h6"
+				sx={{ pt: 2, pb: 2, fontSize: '0.8rem' }}
+			>
+				File Shared With:
+			</Typography>
+			{data &&
+				data.map((user: UserInfo) => (
+					<Box
+						key={user.userId}
+						sx={{ pb: 0, display: 'flex', justifyContent: 'space-between' }}
+					>
+						<Grid container spacing={2}>
+							<Grid item>
+								<AccountBoxIcon fontSize="small" />
+							</Grid>
+							<Grid item sx={{ mt: -0.4 }}>
+								<Typography
+									component="span"
+									variant="h6"
+									sx={{ fontSize: '0.9rem', color: '#626274' }}
+								>
+									{user.username}
+								</Typography>
+							</Grid>
+						</Grid>
+					</Box>
+				))}
+		</>
+	);
+};
+
+interface UseModifyButtonProps {
+	modifyClick: () => void;
+}
+
+const UseModifyButton: FC<UseModifyButtonProps> = ({
+	modifyClick,
+}): JSX.Element => {
+	const modifyButton: SxProps<Theme> = {
+		px: 10,
+		color: 'primary.main',
+		borderColor: 'primary.main',
+		'&:hover': {
+			color: 'text.secondary',
+			backgroundColor: '#626274',
+		},
+		fontSize: '0.7rem',
+		fontWeight: 'bold',
 	};
 	return (
-		<Box
-			sx={{
-				ml: exist ? -2.5 : 3,
-				top: 50,
-				position: 'fixed',
-				width: 160,
-			}}
-		>
-			<Box
-				sx={{
-					ml: -0.5,
-					pb: 0,
-					display: 'flex',
-					justifyContent: 'space-between',
-				}}
-			>
-				<Grid container sx={{ ml: -1 }}>
-					<Grid item>
-						<DescriptionIcon fontSize="small" />
-					</Grid>
-					<Grid item sx={{ ml: -0.5 }}>
-						<Typography
-							variant="subtitle2"
-							color="inherit"
-							sx={{ fontSize: '1rem', fontWeight: 'bold' }}
-						>
-							File Preview
-						</Typography>
-					</Grid>
-				</Grid>
-				<IconButton
-					color="inherit"
-					sx={{
-						mr: -1,
-						mt: -0.5,
-						pt: 0,
-						pb: 0,
-						'&:hover': { color: 'secondary.main' },
-					}}
-					onClick={closeClick}
+		<Box sx={{ pt: 2 }}>
+			<Paper sx={{ width: 160 }}>
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ fontSize: '0.7rem', color: '#626274' }}
 				>
-					<CancelPresentationIcon sx={{ fontSize: '1.3rem' }} />
-				</IconButton>
-			</Box>
-			<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
+					※ 파일명과 세부설명을 수정할 수 있습니다.
+				</Typography>
+			</Paper>
+			<Paper sx={{ pt: 3 }}>
+				<Button
+					variant="outlined"
+					onClick={modifyClick}
+					sx={modifyButton}
+					size="small"
+				>
+					Modify
+				</Button>
+			</Paper>
 		</Box>
 	);
 };
 
-interface UseButtonProps {
-	children?: ReactElement;
+interface UseFileInfoProps {
+	file: ActionCreatorsMapObject;
+	fileId: number;
+	data: FileInfo;
+	modify: boolean;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
-const UseButton: FC<UseButtonProps> = ({ children }): JSX.Element => {
-	return (
-		<Paper
-			sx={{
-				borderRadius: '50%',
-				backgroundColor: 'background.paper',
-			}}
-		>
-			<IconButton sx={{ p: 1, '&:hover': { color: 'secondary.main' } }}>
-				{children}
-			</IconButton>
-		</Paper>
-	);
-};
+const UseFileInfo: FC<UseFileInfoProps> = ({
+	file,
+	fileId,
+	data,
+	modify,
+	csrfData,
+	fetchData,
+}): JSX.Element => {
+	const dispatch = useDispatch();
+	const [filename, setFilename] = useState('');
+	const [description, setDescription] = useState('');
 
-const PreviewFooter: FC = (): JSX.Element => {
-	const grid: SxProps<Theme> = {
-		pl: 0,
-		pr: 0,
+	const filenameOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const text = event.currentTarget.value;
+		setFilename(text);
 	};
-	const font: SxProps<Theme> = {
-		fontSize: '1.6rem',
+	const descriptionOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const text = event.currentTarget.value;
+		setDescription(text);
+	};
+
+	const modifyClick = async (prevFilename: string, prevDescription: string) => {
+		fetchData();
+		if (filename === '' && description !== '') {
+			await file.modify(fileId, prevFilename, description, csrfData);
+			setFilename(prevFilename);
+		} else if (filename !== '' && description === '') {
+			await file.modify(fileId, filename, prevDescription, csrfData);
+			setDescription(prevDescription);
+		} else if (filename === '' && description === '') {
+			await file.modify(fileId, prevFilename, prevDescription, csrfData);
+			setFilename(prevFilename);
+			setDescription(prevDescription);
+		} else {
+			await file.modify(fileId, filename, description, csrfData);
+		}
+		dispatch(dataSuccess(Date.now())); // → fileinfo, filelist 새로고침
 	};
 	return (
 		<Box
 			sx={{
-				ml: -5,
-				bottom: 40,
-				position: 'fixed',
-				borderColor: 'primary.main',
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
 			}}
 		>
-			<Divider
+			<DescriptionIcon fontSize="large" sx={{ fontSize: '5rem' }} />
+			<UseDivider />
+			{modify ? (
+				<InputBase
+					placeholder={data.filename}
+					value={filename}
+					onChange={filenameOnChange}
+					sx={{
+						width: 150,
+						fontSize: '1rem',
+						'.MuiInputBase-input': {
+							pt: 2,
+							pb: 0,
+							textAlign: 'center',
+						},
+					}}
+				/>
+			) : (
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 2, fontSize: '1rem' }}
+				>
+					{data.filename}
+				</Typography>
+			)}
+			<Box
 				sx={{
-					mb: 1,
-					ml: 2,
-					width: 170,
-					borderColor: 'primary.main',
+					mt: 1,
+					display: 'flex',
 				}}
-			/>
-			<Box sx={{ ml: 2.5, pb: 0, display: 'flex' }}>
-				<Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-					<Grid item sx={grid}>
-						<UseButton>
-							<IosShareOutlinedIcon fontSize="large" sx={font} />
-						</UseButton>
+			>
+				<Grid
+					container
+					spacing={2}
+					sx={{
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						'@media (min-width:500px)': {
+							justifyContent: 'center',
+						},
+					}}
+				>
+					<Grid item>
+						<Typography
+							variant="subtitle2"
+							sx={{ fontSize: '0.1rem', color: '#626274' }}
+						>
+							{fileSizeFormat(data.fileSize)}
+						</Typography>
 					</Grid>
-					<Grid item sx={grid}>
-						<Divider
-							sx={{ mt: 1, width: 2, height: 30, borderColor: 'primary.main' }}
-							orientation="vertical"
-						/>
-					</Grid>
-					<Grid item sx={grid}>
-						<UseButton>
-							<DriveFileRenameOutlineOutlinedIcon fontSize="large" sx={font} />
-						</UseButton>
-					</Grid>
-					<Grid item sx={grid}>
-						<Divider
-							sx={{ mt: 1, width: 2, height: 30, borderColor: 'primary.main' }}
-							orientation="vertical"
-						/>
-					</Grid>
-					<Grid item sx={grid}>
-						<UseButton>
-							<LoupeOutlinedIcon fontSize="large" sx={font} />
-						</UseButton>
+					<Grid item>
+						<Typography
+							variant="subtitle2"
+							sx={{ fontSize: '0.1rem', color: '#626274' }}
+						>
+							{data.createdAt}
+						</Typography>
 					</Grid>
 				</Grid>
+			</Box>
+			<Typography
+				component="span"
+				variant="h6"
+				sx={{ pt: 3, fontSize: '0.8rem' }}
+			>
+				File Description
+			</Typography>
+			{modify ? (
+				<InputBase
+					placeholder={data.description}
+					value={description}
+					onChange={descriptionOnChange}
+					sx={{
+						width: 150,
+						fontSize: '0.8rem',
+						'.MuiInputBase-input': {
+							pt: 1,
+							pb: 0,
+							textAlign: 'center',
+						},
+					}}
+				/>
+			) : (
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 1, fontSize: '0.8rem', color: '#626274' }}
+				>
+					{data.description}
+				</Typography>
+			)}
+			<UseDivider />
+			{modify ? (
+				<UseModifyButton
+					modifyClick={() => modifyClick(data.filename, data.description ?? '')}
+				/>
+			) : (
+				<UseSharedContent data={data.shared} />
+			)}
+		</Box>
+	);
+};
+
+interface UseSharedListProps {
+	file: ActionCreatorsMapObject;
+	fileId: number;
+}
+
+const UseSharedList: FC<UseSharedListProps> = ({
+	file,
+	fileId,
+}): JSX.Element => {
+	const [page, data, take, total, setPage] = useSharedPageList({
+		file,
+		fileId,
+	});
+
+	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
+		const value = (event.target as HTMLButtonElement).textContent as any;
+		if (value && value === String(page)) setPage(page);
+	};
+	return (
+		<Box
+			sx={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+			}}
+		>
+			{data && data.length > 0 ? (
+				data.map((user: UserInfo) => (
+					<Paper key={user.userId} sx={{ display: 'flex' }}>
+						<Grid item>
+							<AccountBoxIcon fontSize="small" />
+						</Grid>
+						<Grid item sx={{ mt: -0.4 }}>
+							<Typography
+								component="span"
+								variant="h6"
+								sx={{ fontSize: '0.9rem', color: '#626274' }}
+							>
+								{user.username}
+							</Typography>
+						</Grid>
+						<Grid item sx={{ mt: -0.4 }}>
+							<Typography
+								component="span"
+								variant="h6"
+								sx={{ fontSize: '0.9rem', color: '#626274' }}
+							>
+								{user.email}
+							</Typography>
+						</Grid>
+					</Paper>
+				))
+			) : (
+				<>
+					<SwapCallsIcon fontSize="large" sx={{ fontSize: '5rem' }} />
+					<Typography
+						component="span"
+						variant="h6"
+						sx={{ pt: 2, fontSize: '1rem', width: 160 }}
+					>
+						해당 파일이 공유되지 않았습니다.
+					</Typography>
+					<Typography
+						component="span"
+						variant="h6"
+						sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
+					>
+						해당 파일을 공유받은 사용자가 존재하면, 공유받은 사용자들의 리스트를
+						조회할 수 있습니다.
+					</Typography>
+				</>
+			)}
+			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+				<Pagination
+					count={pagingCount(page, take, total)}
+					variant="outlined"
+					color="primary"
+					siblingCount={0}
+					boundaryCount={1}
+					hidePrevButton
+					hideNextButton
+					onChange={pageChange}
+					size="small"
+				/>
 			</Box>
 		</Box>
 	);
@@ -184,109 +385,49 @@ const UseDivider: FC = (): JSX.Element => {
 	);
 };
 
-const UseFile: FC<UseFileProps> = ({ file, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ file, fileId });
-	const shared = data.shared as Array<UserInfo>;
+const UseFile: FC<UseFileProps> = ({
+	auth,
+	file,
+	time,
+	fileId,
+}): JSX.Element => {
+	const dispatch = useDispatch();
+	const data = useFileInfoDetails({ file, fileId, time });
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
+
+	const [share, setShare] = useState(false);
+	const [modify, setModify] = useState(false);
+
+	const applyClick = async () => {
+		fetchCSRFTokenData();
+		await file.apply(fileId, csrfData);
+		dispatch(dataSuccess(Date.now())); // → fileinfo 새로고침
+	};
 	return (
 		<Box>
-			<PreviewHeader exist={true} />
-			<Box
-				sx={{
-					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'center',
-				}}
-			>
-				<DescriptionIcon fontSize="large" sx={{ fontSize: '5rem' }} />
-				<UseDivider />
-				<Typography
-					component="span"
-					variant="h6"
-					sx={{ pt: 2, fontSize: '1rem' }}
-				>
-					{data.filename}
-				</Typography>
-				<Box
-					sx={{
-						mt: 1,
-						display: 'flex',
-					}}
-				>
-					<Grid
-						container
-						spacing={2}
-						sx={{
-							alignItems: 'center',
-							justifyContent: 'space-between',
-							'@media (min-width:500px)': {
-								justifyContent: 'center',
-							},
-						}}
-					>
-						<Grid item>
-							<Typography
-								variant="subtitle2"
-								sx={{ fontSize: '0.1rem', color: '#626274' }}
-							>
-								{fileSizeFormat(data.fileSize)}
-							</Typography>
-						</Grid>
-						<Grid item>
-							<Typography
-								variant="subtitle2"
-								sx={{ fontSize: '0.1rem', color: '#626274' }}
-							>
-								{data.createdAt}
-							</Typography>
-						</Grid>
-					</Grid>
-				</Box>
-				<Typography
-					component="span"
-					variant="h6"
-					sx={{ pt: 3, fontSize: '0.8rem' }}
-				>
-					File Description
-				</Typography>
-				<Typography
-					component="span"
-					variant="h6"
-					sx={{ pt: 1, fontSize: '0.8rem', color: '#626274' }}
-				>
-					{data.description}
-				</Typography>
-				<UseDivider />
-				<Typography
-					component="span"
-					variant="h6"
-					sx={{ pt: 2, pb: 2, fontSize: '0.8rem' }}
-				>
-					File Shared With:
-				</Typography>
-				{shared &&
-					shared.map((user: UserInfo) => (
-						<Box
-							key={user.userId}
-							sx={{ pb: 0, display: 'flex', justifyContent: 'space-between' }}
-						>
-							<Grid container spacing={2}>
-								<Grid item>
-									<AccountBoxIcon fontSize="small" />
-								</Grid>
-								<Grid item sx={{ mt: -0.4 }}>
-									<Typography
-										component="span"
-										variant="h6"
-										sx={{ fontSize: '0.9rem', color: '#626274' }}
-									>
-										{user.username}
-									</Typography>
-								</Grid>
-							</Grid>
-						</Box>
-					))}
-			</Box>
-			<PreviewFooter />
+			<PreviewHeader />
+			{share ? (
+				<UseSharedList file={file} fileId={data.id} />
+			) : (
+				<UseFileInfo
+					file={file}
+					fileId={data.id}
+					data={data}
+					modify={modify}
+					csrfData={csrfData}
+					fetchData={fetchCSRFTokenData}
+				/>
+			)}
+			<PreviewFooter
+				fileId={data.fileId}
+				path={data.path}
+				download={data.downIPFS}
+				modify={modify}
+				setModify={setModify}
+				share={share}
+				setShare={setShare}
+				applyClick={applyClick}
+			/>
 		</Box>
 	);
 };
@@ -294,7 +435,7 @@ const UseFile: FC<UseFileProps> = ({ file, fileId }): JSX.Element => {
 const NoFile: FC = (): JSX.Element => {
 	return (
 		<Box>
-			<PreviewHeader exist={false} />
+			<PreviewHeader />
 			<Box
 				sx={{
 					display: 'flex',
@@ -323,8 +464,10 @@ const NoFile: FC = (): JSX.Element => {
 };
 
 const AppPreview: FC<AppPreviewProps> = ({
-	preview,
+	auth,
 	file,
+	preview,
+	data,
 	width,
 }): JSX.Element => {
 	const { fileId, isActive } = preview;
@@ -342,16 +485,22 @@ const AppPreview: FC<AppPreviewProps> = ({
 			anchor="right"
 			open={isActive}
 		>
-			{isActive ? <UseFile file={file} fileId={fileId} /> : <NoFile />}
+			{isActive ? (
+				<UseFile auth={auth} file={file} time={data.time} fileId={fileId} />
+			) : (
+				<NoFile />
+			)}
 		</Drawer>
 	);
 };
 
 const mapStateToProps = (state: any) => ({
 	preview: state.preview as PreviewState,
+	data: state.data as DataState,
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
+	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
 });
 

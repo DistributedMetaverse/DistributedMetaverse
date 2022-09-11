@@ -10,9 +10,13 @@ const NavigationPath: FC<NavigationPathProps> = ({ path }): JSX.Element => {
 	return (
 		<Breadcrumbs separator={<NavigateNextIcon fontSize="small" />}>
 			<Typography variant="subtitle2" color="inherit">
-				All Files
+				Path
 			</Typography>
-			<Typography variant="subtitle2" color="inherit">
+			<Typography
+				variant="subtitle2"
+				color="inherit"
+				sx={{ wordBreak: 'break-all' }}
+			>
 				{path}
 			</Typography>
 		</Breadcrumbs>

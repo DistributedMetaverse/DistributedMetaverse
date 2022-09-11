@@ -2,13 +2,15 @@ import React, { FC, Dispatch, SetStateAction } from 'react';
 import { Box, Modal, Divider, Typography } from '@mui/material';
 
 interface AlertModalProps {
-	count: number;
+	title: string;
+	content: string;
 	openAlert: boolean;
 	setOpenAlert: Dispatch<SetStateAction<boolean>>;
 }
 
 const AlertModal: FC<AlertModalProps> = ({
-	count,
+	title,
+	content,
 	openAlert,
 	setOpenAlert,
 }): JSX.Element => {
@@ -29,11 +31,18 @@ const AlertModal: FC<AlertModalProps> = ({
 				}}
 			>
 				<Typography variant="h6" component="h2" sx={{ fontSize: '1rem' }}>
-					현재 다운로드 된 갯수를 표기합니다.
+					{title}
 				</Typography>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
-				<Typography sx={{ mt: 2, fontSize: '0.7rem', fontWeight: 'bold' }}>
-					현재 다운도드 된 갯수는 {count}개 입니다.
+				<Typography
+					sx={{
+						mt: 2,
+						fontSize: '0.7rem',
+						fontWeight: 'bold',
+						wordBreak: 'break-all',
+					}}
+				>
+					{content}
 				</Typography>
 			</Box>
 		</Modal>

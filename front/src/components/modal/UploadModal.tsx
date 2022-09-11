@@ -6,18 +6,22 @@ import React, {
 	SetStateAction,
 } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
+import { useDispatch } from 'react-redux';
 import { UploadInfo } from './upload/types';
-import useCSRFToken from '../../hooks/useCSRFToken';
+import { CSRFData } from '../../services/types';
+import { dataSuccess } from '../../store/index';
 import {
 	Box,
 	Grid,
 	Modal,
 	Alert,
+	Paper,
 	Collapse,
 	IconButton,
 	Divider,
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from '@mui/icons-material/Check';
 import CreateFolder from './upload/CreateFolder';
 import UploadDetail from './upload/UploadDetail';
@@ -29,20 +33,79 @@ interface UseFolderProps {
 	setPath: Dispatch<SetStateAction<string>>;
 	setData: Dispatch<SetStateAction<UploadInfo>>;
 	setFile: Dispatch<SetStateAction<File | null>>;
+	newFolder: string;
+	setFolder: Dispatch<SetStateAction<string>>;
 }
 
 interface UploadModalProps {
-	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
 	openUpload: boolean;
 	setOpenUpload: Dispatch<SetStateAction<boolean>>;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
+
+interface UseExistProps {
+	path: string;
+	setPath: Dispatch<SetStateAction<string>>;
+}
+
+const UseExist: FC<UseExistProps> = ({ path, setPath }): JSX.Element => {
+	return (
+		<Grid container spacing={1} sx={{ width: 350 }}>
+			<Grid item>
+				<FolderTabButton path={path} setPath={setPath} />
+			</Grid>
+			<Grid item sx={{ ml: 1 }}>
+				<NavigationPath path={path} />
+			</Grid>
+		</Grid>
+	);
+};
+
+interface UseCreateProps {
+	path: string;
+	setPath: Dispatch<SetStateAction<string>>;
+	setFolder: Dispatch<SetStateAction<string>>;
+}
+
+const UseCreate: FC<UseCreateProps> = ({
+	path,
+	setPath,
+	setFolder,
+}): JSX.Element => {
+	const cancelClick = () => {
+		setPath('/');
+		setFolder('');
+	};
+	return (
+		<Alert
+			variant="outlined"
+			severity="info"
+			sx={{
+				width: 310,
+				'.MuiAlert-message': {
+					width: '100%',
+				},
+			}}
+		>
+			<Paper sx={{ display: 'flex', justifyContent: 'space-between' }}>
+				<NavigationPath path={path} />
+				<IconButton onClick={cancelClick} sx={{ p: 0, pl: 1, mr: 0 }}>
+					<ClearIcon />
+				</IconButton>
+			</Paper>
+		</Alert>
+	);
+};
 
 const UseFolder: FC<UseFolderProps> = ({
 	path,
 	setPath,
 	setData,
 	setFile,
+	newFolder,
+	setFolder,
 }): JSX.Element => {
 	const [check, setCheck] = useState(false);
 	const handleCapture = (event: ChangeEvent<HTMLInputElement>) => {
@@ -68,14 +131,11 @@ const UseFolder: FC<UseFolderProps> = ({
 	return (
 		<Box>
 			<Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}>
-				<Grid container spacing={1} sx={{ width: 350 }}>
-					<Grid item>
-						<FolderTabButton path={path} setPath={setPath} />
-					</Grid>
-					<Grid item sx={{ ml: 1 }}>
-						<NavigationPath path={path} />
-					</Grid>
-				</Grid>
+				{newFolder === '' ? (
+					<UseExist path={path} setPath={setPath} />
+				) : (
+					<UseCreate path={path} setPath={setPath} setFolder={setFolder} />
+				)}
 				<IconButton
 					component="label"
 					sx={{ p: 0, '&:hover': { color: 'secondary.main' } }}
@@ -86,7 +146,7 @@ const UseFolder: FC<UseFolderProps> = ({
 			</Box>
 			<Collapse in={check}>
 				<Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-					This file is update ready — button click!
+					File upload is ready. Click the button.
 				</Alert>
 			</Collapse>
 		</Box>
@@ -94,12 +154,15 @@ const UseFolder: FC<UseFolderProps> = ({
 };
 
 const UploadModal: FC<UploadModalProps> = ({
-	auth,
 	file,
 	openUpload,
 	setOpenUpload,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const [path, setPath] = useState('/');
+	const [newFolder, setFolder] = useState('');
 	const [fileinfo, setFile] = useState<File | null>(null);
 	const [data, setData] = useState<UploadInfo>({
 		name: '',
@@ -107,14 +170,14 @@ const UploadModal: FC<UploadModalProps> = ({
 		type: '',
 		lastModified: 0,
 	});
-	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
-	const uploadSubmit = () => {
+	const uploadSubmit = async () => {
 		if (fileinfo) {
-			fetchCSRFTokenData();
+			fetchData();
 			const formData = new FormData();
 			formData.append('path', path);
 			formData.append('file', fileinfo);
-			file.upload(formData, csrfData);
+			await file.upload(formData, csrfData);
+			dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		}
 	};
 	const uploadClose = () => setOpenUpload(false);
@@ -138,9 +201,13 @@ const UploadModal: FC<UploadModalProps> = ({
 					setPath={setPath}
 					setData={setData}
 					setFile={setFile}
+					newFolder={newFolder}
+					setFolder={setFolder}
 				/>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
-				<CreateFolder />
+				{newFolder === '' && (
+					<CreateFolder path={path} setPath={setPath} setFolder={setFolder} />
+				)}
 				{data.size > 0 && (
 					<UploadDetail data={data} uploadSubmit={uploadSubmit} />
 				)}

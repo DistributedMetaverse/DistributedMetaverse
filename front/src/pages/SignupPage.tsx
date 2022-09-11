@@ -2,10 +2,10 @@ import React, { FC, BaseSyntheticEvent } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
-import Api from '../../services/api';
-import useCSRFToken from '../../hooks/useCSRFToken';
-import SignupForm from '../../components/form/SignupForm';
-import { SignupFormValues } from '../../components/form/types';
+import Api from '../services/api';
+import useCSRFToken from '../hooks/useCSRFToken';
+import SignupForm from '../components/form/SignupForm';
+import { SignupFormValues } from '../components/form/types';
 
 interface SignupDispatchProps {
 	auth: ActionCreatorsMapObject;

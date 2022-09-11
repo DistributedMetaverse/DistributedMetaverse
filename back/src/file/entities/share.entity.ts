@@ -1,5 +1,4 @@
 import {
-    //Index,
     Column,
     Entity,
     PrimaryGeneratedColumn,
@@ -11,16 +10,29 @@ import {
     BeforeUpdate,
 } from "typeorm";
 import { User } from "../../user/entities/user.entity"
+import { File } from "./file.entity"
 
 @Entity()
-export class File {
+export class Share {
     @PrimaryGeneratedColumn()
     id: number;
 
     /**
      * 1 : M 관계 설정
-     * @ManyToOne -> 해당 엔티티(User) To 대상 엔티티(File)
-     *               여러 파일은 하나의 유저에 소속
+     * @ManyToOne -> 해당 엔티티(File) To 대상 엔티티(Share)
+     *               여러 공유받은 파일은 하나의 파일 속성에 소속
+     */
+    @ManyToOne(
+        () => File,
+        (file) => file.id,
+    )
+    @JoinColumn()
+    file: File;
+
+    /**
+     * 1 : M 관계 설정
+     * @ManyToOne -> 해당 엔티티(User) To 대상 엔티티(Share)
+     *               여러 공유받은 파일은 하나의 유저에 소속
      */
     @ManyToOne(
         () => User,
@@ -28,34 +40,12 @@ export class File {
     )
     @JoinColumn()
     user: User;
-  
+
     @Column()
-    //@Index({ unique: true })
-    fileId: string; // → nodeId
-  
-    @Column({ type: "text" })
-    filename: string;
-  
-    @Column({ type: "double precision", default: 0 })
-    fileSize: number;
-
-    @Column({ type: "text" })
-    mimeType: string;
-
-    @Column({ type: "text", nullable: true })
-    description: string;
-
-    @Column({ type: "text" })
-    path: string;
+    nodeId: string;
 
     @Column({ type: "boolean", default: false })
-    isLike: boolean;
-
-    @Column({ type: "boolean", default: false })
-    isDel: boolean;
-
-    @Column({ type: "boolean", default: false })
-    downIPFS: boolean;
+    isDown: boolean;
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;

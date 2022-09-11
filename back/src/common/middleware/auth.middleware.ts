@@ -1,6 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/user.service';
 import {
   UnAuthorizedException,
@@ -11,7 +12,7 @@ import {
 import { jwtConstants } from '../../common/config/constants';
 
 interface UserRequest extends Request {
-    user: any
+    user: User
 }
 
 @Injectable()

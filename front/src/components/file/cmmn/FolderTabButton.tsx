@@ -1,9 +1,8 @@
 import React, { FC, useState, MouseEvent } from 'react';
 import { Dispatch, ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { FolderInfo } from '../../../store/types';
-import { useDispatch } from 'react-redux';
 import Api from '../../../services/api';
 import useFolderTabList from '../../../hooks/useFolderTabList';
 import {

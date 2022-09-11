@@ -5,16 +5,23 @@ import useFolderPathPageList from '../../../hooks/useFolderPathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 import FolderIcon from '@mui/icons-material/Folder';
+import { pagingCount } from '../../../utils/pagination';
 
 interface FolderContentProps {
 	file: ActionCreatorsMapObject;
+	path: string;
+	type: string;
 }
 
-const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
-	const [data, setPage] = useFolderPathPageList({
+const FolderContent: FC<FolderContentProps> = ({
+	file,
+	path,
+	type,
+}): JSX.Element => {
+	const [page, data, take, total, setPage] = useFolderPathPageList({
 		file,
-		path: '/',
-		type: 'download',
+		path: path,
+		type: type,
 	});
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {
@@ -42,7 +49,7 @@ const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
 								}}
 							>
 								<FolderIcon />
-								<Typography variant="subtitle2">
+								<Typography variant="subtitle2" sx={{ wordBreak: 'break-all' }}>
 									{endOfSplit(data.path)}
 								</Typography>
 								<Typography variant="subtitle2" sx={{ color: '#626274' }}>
@@ -54,13 +61,13 @@ const FolderContent: FC<FolderContentProps> = ({ file }): JSX.Element => {
 			</Grid>
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={10}
+					count={pagingCount(page, take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}
 					boundaryCount={1}
-					showFirstButton
-					showLastButton
+					hidePrevButton
+					hideNextButton
 					onChange={pageChange}
 					size="small"
 				/>

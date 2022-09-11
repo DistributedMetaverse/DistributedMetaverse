@@ -72,6 +72,7 @@ const setInterceptors = (instance: AxiosInstance) => {
 				clearSessionStorage(JWT_USERNAME);
 				clearSessionStorage(JWT_ACCESS_TOKEN);
 				clearSessionStorage(JWT_REFRESH_TOKEN);
+				window.location.href = '/auth/login';
 				return axios(config);
 			}
 
@@ -80,6 +81,7 @@ const setInterceptors = (instance: AxiosInstance) => {
 				clearSessionStorage(JWT_USERNAME);
 				clearSessionStorage(JWT_ACCESS_TOKEN);
 				clearSessionStorage(JWT_REFRESH_TOKEN);
+				window.location.href = '/auth/login';
 				return axios(config);
 			}
 

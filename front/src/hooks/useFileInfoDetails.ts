@@ -5,19 +5,23 @@ import { FileInfo } from '../store/types';
 interface FileInfoDetailsProps {
 	file: ActionCreatorsMapObject;
 	fileId: string;
+	time: number;
 }
 
 const useFileInfoDetails = ({
 	file,
 	fileId,
+	time,
 }: FileInfoDetailsProps): FileInfo => {
 	const [data, setData] = useState<FileInfo>({
 		id: 0,
 		fileId: '',
 		filename: '',
 		fileSize: 0,
-		createdAt: '2022-01-23',
+		path: '/',
 		isLike: false,
+		downIPFS: false,
+		createdAt: '2022-01-23',
 	});
 
 	const fetchAndSetData = useCallback(
@@ -25,7 +29,7 @@ const useFileInfoDetails = ({
 			const data = await file.info(fileId);
 			setData(data);
 		},
-		[fileId]
+		[fileId, time]
 	);
 
 	useEffect(() => {

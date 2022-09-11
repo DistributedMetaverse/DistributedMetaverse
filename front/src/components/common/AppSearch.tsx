@@ -41,24 +41,25 @@ const AppSearchItems: FC<AppSearchItemsProps> = ({
 }): JSX.Element => {
 	return (
 		<MenuList sx={{ px: 0.5, pt: 0.2, pb: 0.2 }}>
-			{datas.map((data: FileInfo) => (
-				<MenuItem
-					key={data.id}
-					onClick={() => searchClick(data.filename)}
-					dense
-					sx={{
-						px: 1,
-						minHeight: 20,
-					}}
-				>
-					<ListItemText
-						primaryTypographyProps={{
-							style: { fontSize: 13 },
+			{datas &&
+				datas.map((data: FileInfo) => (
+					<MenuItem
+						key={data.id}
+						onClick={() => searchClick(data.filename)}
+						dense
+						sx={{
+							px: 1,
+							minHeight: 20,
 						}}
-						primary={data.filename}
-					/>
-				</MenuItem>
-			))}
+					>
+						<ListItemText
+							primaryTypographyProps={{
+								style: { fontSize: 13 },
+							}}
+							primary={data.filename}
+						/>
+					</MenuItem>
+				))}
 		</MenuList>
 	);
 };

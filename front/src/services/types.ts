@@ -31,6 +31,11 @@ interface KeywordData {
 	keyword: string;
 }
 
+interface SharedData {
+	fileId: number;
+	page: number;
+}
+
 export type {
 	LoginData,
 	SignUpData,
@@ -38,4 +43,5 @@ export type {
 	CSRFData,
 	PageData,
 	KeywordData,
+	SharedData,
 };

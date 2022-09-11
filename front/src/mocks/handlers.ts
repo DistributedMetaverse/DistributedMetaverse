@@ -5,7 +5,13 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { TokenData } from '../services/types';
-import { FileInfo, FolderInfo, SearchInfo, SettingInfo } from '../store/types';
+import {
+	FileInfo,
+	FolderInfo,
+	PageState,
+	SearchInfo,
+	SettingInfo,
+} from '../store/types';
 
 const fileinfo: FileInfo = {
 	id: 1,
@@ -13,58 +19,95 @@ const fileinfo: FileInfo = {
 	filename: 'test1.png',
 	fileSize: 1000000,
 	description: 'the file is sample',
-	createdAt: '2022-01-23',
+	path: '/',
 	isLike: false,
+	downIPFS: true,
+	createdAt: '2022-01-23',
 	shared: [
 		{
 			userId: 1,
 			username: 'bbj',
-			email: 'bbj@naver.conm',
+			email: 'bbj@naver.com',
 		},
 		{
 			userId: 2,
 			username: 'test',
-			email: 'test@naver.conm',
+			email: 'test@naver.com',
 		},
 	],
 };
 
-const filelist: Array<FileInfo> = [
-	{
-		id: 1,
-		fileId: 'test1',
-		filename: 'test1.png',
-		fileSize: 100000,
-		createdAt: '2022-01-23',
-		isLike: true,
-	},
-	{
-		id: 2,
-		fileId: 'test2',
-		filename: 'test2.png',
-		fileSize: 2000000,
-		createdAt: '2022-01-23',
-		isLike: false,
-	},
-	{
-		id: 3,
-		fileId: 'test3',
-		filename: 'test3.png',
-		fileSize: 3000000,
-		createdAt: '2022-01-23',
-		isLike: false,
-	},
-	{
-		id: 4,
-		fileId: 'test4',
-		filename: 'test4.png',
-		fileSize: 4000000,
-		createdAt: '2022-01-23',
-		isLike: false,
-	},
-];
+const filelist: PageState = {
+	results: [
+		{
+			id: 1,
+			fileId: 'test1',
+			filename: 'test1.png',
+			fileSize: 100000,
+			path: '/',
+			isLike: true,
+			downIPFS: false,
+			createdAt: '2022-01-23',
+		},
+		{
+			id: 2,
+			fileId: 'test2',
+			filename: 'test2.png',
+			fileSize: 2000000,
+			path: '/',
+			isLike: false,
+			downIPFS: false,
+			createdAt: '2022-01-23',
+		},
+		{
+			id: 3,
+			fileId: 'test3',
+			filename: 'test3.png',
+			fileSize: 3000000,
+			path: '/test/test',
+			isLike: false,
+			downIPFS: false,
+			createdAt: '2022-01-23',
+		},
+		{
+			id: 4,
+			fileId: 'test4',
+			filename: 'test4.png',
+			fileSize: 4000000,
+			path: '/aaaa',
+			isLike: false,
+			downIPFS: false,
+			createdAt: '2022-01-23',
+		},
+	],
+	take: 10,
+	total: 4,
+};
 
-const folderlist: Array<FolderInfo> = [
+const folderlist: PageState = {
+	results: [
+		{
+			path: '/',
+			count: 2,
+		},
+		{
+			path: '/data/data1',
+			count: 10,
+		},
+		{
+			path: '/test1/folder',
+			count: 23,
+		},
+		{
+			path: '/test2',
+			count: 4,
+		},
+	],
+	take: 10,
+	total: 4,
+};
+
+const folderTablist: Array<FolderInfo> = [
 	{
 		path: '/',
 		count: 2,
@@ -82,6 +125,23 @@ const folderlist: Array<FolderInfo> = [
 		count: 4,
 	},
 ];
+
+const sharedlist: PageState = {
+	results: [
+		{
+			userId: 1,
+			username: 'bbj',
+			email: 'bbj@naver.com',
+		},
+		{
+			userId: 2,
+			username: 'test',
+			email: 'codequwdn@naver.com',
+		},
+	],
+	take: 10,
+	total: 4,
+};
 
 const settinginfo: SettingInfo = {
 	id: 1,
@@ -158,6 +218,11 @@ export const handlers = [
 		return res(ctx.status(200), ctx.json({ searchData, ...fileinfo }));
 	}),
 
+	// 파일 공유된 사용자 리스트
+	rest.get('/api/file/shared/:fileId', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(sharedlist));
+	}),
+
 	// 특정경로 파일 ↔ 폴더 리스트 검색
 	rest.get('/api/file/list', (req, res, ctx) => {
 		const file = req.url.searchParams.get('file');
@@ -178,7 +243,7 @@ export const handlers = [
 
 	// 현재 확인된 폴더 리스트 확인
 	rest.get('/api/status/folder', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(folderlist));
+		return res(ctx.status(200), ctx.json(folderTablist));
 	}),
 
 	// Setting 세부정보
