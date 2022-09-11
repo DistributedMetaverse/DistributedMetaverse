@@ -1,7 +1,9 @@
 import React, { FC, useState } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { CSRFData } from '../../../services/types';
+import { dataSuccess } from '../../../store/index';
 import Api from '../../../services/api';
 import { Box, Grid, IconButton, Divider, Typography } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
@@ -17,6 +19,8 @@ interface ContentAsideProps {
 	fileSize: number;
 	path: string;
 	isLike: boolean;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const ContentAside: FC<ContentAsideProps> = ({
@@ -25,12 +29,17 @@ const ContentAside: FC<ContentAsideProps> = ({
 	fileSize,
 	path,
 	isLike,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const [link, setLink] = useState('');
 	const [openAlert, setOpenAlert] = useState(false);
 
-	const likeClick = () => {
-		file.like(fileId);
+	const likeClick = async () => {
+		fetchData();
+		await file.like(fileId, csrfData);
+		dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 	};
 
 	const alertOpen = (fileId: string, path: string) => {
@@ -74,7 +83,12 @@ const ContentAside: FC<ContentAsideProps> = ({
 					</IconButton>
 				</Grid>
 				<Grid item>
-					<ContentTabButton file={file} fileId={fileId} />
+					<ContentTabButton
+						file={file}
+						fileId={fileId}
+						csrfData={csrfData}
+						fetchData={fetchData}
+					/>
 				</Grid>
 			</Grid>
 			<AlertModal

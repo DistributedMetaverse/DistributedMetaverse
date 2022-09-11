@@ -4,6 +4,7 @@ import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
 import { TitleState } from '../../store/types';
 import Api from '../../services/api';
+import useCSRFToken from '../../hooks/useCSRFToken';
 import useDownloadCount from '../../hooks/useDownloadCount';
 import useKeywordPageList from '../../hooks/useKeywordPageList';
 import { Box, Button, IconButton, Badge, Divider } from '@mui/material';
@@ -33,8 +34,9 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 	const [openAlert, setOpenAlert] = useState(false);
 	const [openSearch, setOpenSearch] = useState(false);
 	const [openUpload, setOpenUpload] = useState(false);
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	const [count, fetchDownloadData] = useDownloadCount({ status });
-	const [data, fetchKeywordData] = useKeywordPageList({ file, keyword });
+	const [data, total, fetchKeywordData] = useKeywordPageList({ file, keyword });
 
 	const alertOpen = () => {
 		setOpenAlert(true);
@@ -87,18 +89,23 @@ const AppSubHeader: FC<AppSubHeaderProps> = ({
 				setOpenAlert={setOpenAlert}
 			/>
 			<SearchModal
+				file={file}
 				keyword={keyword}
 				setKeyword={setKeyword}
 				openSearch={openSearch}
 				setOpenSearch={setOpenSearch}
 				data={data}
-				fetchData={fetchKeywordData}
+				total={total}
+				fetchKeywordData={fetchKeywordData}
+				csrfData={csrfData}
+				fetchCSRFData={fetchCSRFTokenData}
 			/>
 			<UploadModal
-				auth={auth}
 				file={file}
 				openUpload={openUpload}
 				setOpenUpload={setOpenUpload}
+				csrfData={csrfData}
+				fetchData={fetchCSRFTokenData}
 			/>
 			<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
 		</Box>

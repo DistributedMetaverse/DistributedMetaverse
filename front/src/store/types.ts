@@ -65,6 +65,7 @@ interface FileInfo extends SearchInfo {
 	description?: string;
 	path: string;
 	isLike?: boolean;
+	downIPFS: boolean;
 	createdAt: string;
 	shared?: Array<UserInfo>;
 }
@@ -94,6 +95,11 @@ interface PageState {
 	total: number;
 }
 
+// 8. Data Sync 관련 State
+interface DataState {
+	time: number;
+}
+
 export type {
 	AuthState,
 	TokenState,
@@ -110,4 +116,5 @@ export type {
 	SettingInfo,
 	SettingState,
 	PageState,
+	DataState,
 };

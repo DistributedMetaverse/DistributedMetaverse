@@ -1,8 +1,10 @@
 import React, { FC } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import Api from '../../../services/api';
+import { CSRFData } from '../../../services/types';
+import { dataSuccess } from '../../../store/index';
 import { Box, Grid, IconButton } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
@@ -12,15 +14,22 @@ interface ContentHeaderProps {
 	file: ActionCreatorsMapObject;
 	fileId: string;
 	isLike: boolean;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const ContentHeader: FC<ContentHeaderProps> = ({
 	file,
 	fileId,
 	isLike,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
-	const likeClick = () => {
-		file.like(fileId);
+	const dispatch = useDispatch();
+	const likeClick = async () => {
+		fetchData();
+		await file.like(fileId, csrfData);
+		dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 	};
 	return (
 		<Box sx={{ pb: 1, display: 'flex' }}>
@@ -38,7 +47,12 @@ const ContentHeader: FC<ContentHeaderProps> = ({
 					</IconButton>
 				</Grid>
 				<Grid item>
-					<ContentTabButton file={file} fileId={fileId} />
+					<ContentTabButton
+						file={file}
+						fileId={fileId}
+						csrfData={csrfData}
+						fetchData={fetchData}
+					/>
 				</Grid>
 			</Grid>
 		</Box>

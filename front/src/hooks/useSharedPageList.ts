@@ -18,12 +18,13 @@ const useSharedPageList = ({
 	file,
 	fileId,
 }: SharedPageListProps): [
+	number,
 	Array<UserInfo>,
 	number,
 	number,
 	Dispatch<SetStateAction<number>>
 ] => {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState(1);
 	const [take, setTake] = useState(10);
 	const [total, setTotal] = useState(0);
 	const [data, setData] = useState<Array<UserInfo>>([]);
@@ -47,7 +48,7 @@ const useSharedPageList = ({
 		fetchAndSetData(page);
 	}, [fetchAndSetData]);
 
-	return [data, take, total, setPage];
+	return [page, data, take, total, setPage];
 };
 
 export default useSharedPageList;

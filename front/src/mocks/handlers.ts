@@ -21,17 +21,18 @@ const fileinfo: FileInfo = {
 	description: 'the file is sample',
 	path: '/',
 	isLike: false,
+	downIPFS: true,
 	createdAt: '2022-01-23',
 	shared: [
 		{
 			userId: 1,
 			username: 'bbj',
-			email: 'bbj@naver.conm',
+			email: 'bbj@naver.com',
 		},
 		{
 			userId: 2,
 			username: 'test',
-			email: 'test@naver.conm',
+			email: 'test@naver.com',
 		},
 	],
 };
@@ -45,6 +46,7 @@ const filelist: PageState = {
 			fileSize: 100000,
 			path: '/',
 			isLike: true,
+			downIPFS: false,
 			createdAt: '2022-01-23',
 		},
 		{
@@ -52,8 +54,9 @@ const filelist: PageState = {
 			fileId: 'test2',
 			filename: 'test2.png',
 			fileSize: 2000000,
-			isLike: false,
 			path: '/',
+			isLike: false,
+			downIPFS: false,
 			createdAt: '2022-01-23',
 		},
 		{
@@ -63,6 +66,7 @@ const filelist: PageState = {
 			fileSize: 3000000,
 			path: '/test/test',
 			isLike: false,
+			downIPFS: false,
 			createdAt: '2022-01-23',
 		},
 		{
@@ -72,6 +76,7 @@ const filelist: PageState = {
 			fileSize: 4000000,
 			path: '/aaaa',
 			isLike: false,
+			downIPFS: false,
 			createdAt: '2022-01-23',
 		},
 	],
@@ -126,12 +131,12 @@ const sharedlist: PageState = {
 		{
 			userId: 1,
 			username: 'bbj',
-			email: 'bbj@naver.conm',
+			email: 'bbj@naver.com',
 		},
 		{
 			userId: 2,
 			username: 'test',
-			email: 'test@naver.conm',
+			email: 'codequwdn@naver.com',
 		},
 	],
 	take: 10,

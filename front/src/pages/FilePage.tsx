@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect } from 'react-redux';
-import { PathState } from '../store/types';
+import { PathState, DataState } from '../store/types';
 import Api from '../services/api';
+import useCSRFToken from '../hooks/useCSRFToken';
 import { Box } from '@mui/material';
 import FolderHeader from '../components/file/all/FolderHeader';
 import FolderContent from '../components/file/all/FolderContent';
@@ -11,11 +12,19 @@ import FileHeader from '../components/file/all/FileHeader';
 import FileContent from '../components/file/all/FileContent';
 
 interface FilePageProps {
-	path?: PathState;
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	path: PathState;
+	time: number;
 }
 
-const FilePage: FC<FilePageProps> = ({ path, file }): JSX.Element => {
+const FilePage: FC<FilePageProps> = ({
+	auth,
+	file,
+	path,
+	time,
+}): JSX.Element => {
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	const { folderPath, filePath, folderType, fileType } = path as {
 		folderPath: string;
 		filePath: string;
@@ -27,16 +36,25 @@ const FilePage: FC<FilePageProps> = ({ path, file }): JSX.Element => {
 			<FolderHeader path={folderPath} type={folderType} />
 			<FolderContent file={file} path={folderPath} type={folderType} />
 			<FileHeader path={filePath} type={fileType} />
-			<FileContent file={file} path={filePath} type={fileType} />
+			<FileContent
+				file={file}
+				time={time}
+				path={filePath}
+				type={fileType}
+				csrfData={csrfData}
+				fetchData={fetchCSRFTokenData}
+			/>
 		</Box>
 	);
 };
 
 const mapStateToProps = (state: any) => ({
 	path: state.path as PathState,
+	time: (state.data as DataState).time,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
 });
 

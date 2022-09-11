@@ -9,6 +9,7 @@ import {
 	fileProgress,
 	pageSuccess,
 } from '../store/index';
+import { FileInfo } from '../store/types';
 import {
 	JWT_USERNAME,
 	JWT_ACCESS_TOKEN,
@@ -24,6 +25,7 @@ import {
 	CSRFData,
 	PageData,
 	KeywordData,
+	SharedData,
 } from './types';
 
 // 인스턴스 API 생성
@@ -103,9 +105,13 @@ const auth = {
 				}
 			}),
 	// Access 토큰 재생성 API : <baseURL>/auth/refresh
-	refresh: (tokenData: TokenData) => (dispatch: Dispatch) =>
+	refresh: (tokenData: TokenData, csrfData: CSRFData) => (dispatch: Dispatch) =>
 		instance
-			.patch('auth/refresh', tokenData)
+			.patch('auth/refresh', tokenData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
 			.then((response: AxiosResponse) => {
 				dispatch(tokenSuccess(response.data));
 				return response.data;
@@ -128,10 +134,14 @@ const auth = {
 };
 
 const file = {
-	// 파일 다운로드 API : <baseURL>/file/download/{fileId}
-	download: (fileId: number) => (dispatch: Dispatch) =>
+	// 파일 다운로드 API : <baseURL>/file/download
+	download: (fileInfo: FileInfo, csrfData: CSRFData) => (dispatch: Dispatch) =>
 		instance
-			.get(`file/download/${fileId}`)
+			.post(`file/download`, fileInfo, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
 			.then((response: AxiosResponse) => {
 				dispatch(fileSuccess(response.data));
 			})
@@ -177,38 +187,83 @@ const file = {
 			return response.data;
 		}),
 	// 파일 공유된 사용자 리스트 API : <baseURL>/file/shared/{fileId}?page={page}
-	shared: (fileId: number, page: number) => (dispatch: Dispatch) =>
+	shared: (sharedData: SharedData) => (dispatch: Dispatch) =>
 		instance
-			.get(`file/shared/${fileId}?page=${page}`)
+			.get(`file/shared/${sharedData.fileId}?page=${sharedData.page}`)
 			.then((response: AxiosResponse) => {
 				dispatch(fileSuccess(response.data));
 				return response.data;
 			}),
 	// 파일 수정 API : <baseURL>/file/modify/{fileId}
 	modify:
-		(fileId: number, filename: string, description: string) =>
+		(
+			fileId: number,
+			filename: string,
+			description: string,
+			csrfData: CSRFData
+		) =>
 		(dispatch: Dispatch) =>
 			instance
-				.patch(`file/modify/${fileId}`, {
-					filename: filename,
-					description: description,
-				})
+				.patch(
+					`file/modify/${fileId}`,
+					{
+						filename: filename,
+						description: description,
+					},
+					{
+						headers: {
+							'CSRF-Token': csrfData.csrfToken,
+						},
+					}
+				)
 				.then((response: AxiosResponse) => {
 					dispatch(fileSuccess(response.data));
 					return response.data;
 				}),
 	// 파일 삭제 API : <baseURL>/file/delete/{fileId}
-	delete: (fileId: string) => (dispatch: Dispatch) =>
+	delete: (fileId: string, csrfData: CSRFData) => (dispatch: Dispatch) =>
 		instance
-			.patch(`file/delete`, { fileId: fileId })
+			.patch(
+				`file/delete`,
+				{ fileId: fileId },
+				{
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+					},
+				}
+			)
 			.then((response: AxiosResponse) => {
 				dispatch(fileSuccess(response.data));
 				return response.data;
 			}),
 	// 파일 즐겨찾기 API : <baseURL>/file/like/{fileId}
-	like: (fileId: string) => (dispatch: Dispatch) =>
+	like: (fileId: string, csrfData: CSRFData) => (dispatch: Dispatch) =>
 		instance
-			.patch(`file/like`, { fileId: fileId })
+			.patch(
+				`file/like`,
+				{ fileId: fileId },
+				{
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+					},
+				}
+			)
+			.then((response: AxiosResponse) => {
+				dispatch(fileSuccess(response.data));
+				return response.data;
+			}),
+	// 파일 적용하기 API : <baseURL>/file/apply/{fileId}
+	apply: (fileId: string, csrfData: CSRFData) => (dispatch: Dispatch) =>
+		instance
+			.patch(
+				`file/apply`,
+				{ fileId: fileId },
+				{
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+					},
+				}
+			)
 			.then((response: AxiosResponse) => {
 				dispatch(fileSuccess(response.data));
 				return response.data;

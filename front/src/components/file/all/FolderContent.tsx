@@ -18,7 +18,7 @@ const FolderContent: FC<FolderContentProps> = ({
 	path,
 	type,
 }): JSX.Element => {
-	const [data, take, total, setPage] = useFolderPathPageList({
+	const [page, data, take, total, setPage] = useFolderPathPageList({
 		file,
 		path: path,
 		type: type,
@@ -49,7 +49,7 @@ const FolderContent: FC<FolderContentProps> = ({
 								}}
 							>
 								<FolderIcon />
-								<Typography variant="subtitle2">
+								<Typography variant="subtitle2" sx={{ wordBreak: 'break-all' }}>
 									{endOfSplit(data.path)}
 								</Typography>
 								<Typography variant="subtitle2" sx={{ color: '#626274' }}>
@@ -61,13 +61,13 @@ const FolderContent: FC<FolderContentProps> = ({
 			</Grid>
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={pagingCount(take, total)}
+					count={pagingCount(page, take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}
 					boundaryCount={1}
-					showFirstButton
-					showLastButton
+					hidePrevButton
+					hideNextButton
 					onChange={pageChange}
 					size="small"
 				/>

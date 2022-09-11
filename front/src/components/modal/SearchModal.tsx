@@ -3,9 +3,14 @@ import React, {
 	useState,
 	Dispatch,
 	SetStateAction,
+	MouseEvent,
 	ChangeEvent,
 } from 'react';
+import { ActionCreatorsMapObject } from 'redux';
+import { useDispatch } from 'react-redux';
+import { CSRFData } from '../../services/types';
 import { FileInfo } from '../../store/types';
+import { dataSuccess } from '../../store/index';
 import {
 	Box,
 	Paper,
@@ -30,43 +35,59 @@ import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 
 interface SearchModalProps {
+	file: ActionCreatorsMapObject;
 	keyword: string;
 	setKeyword: Dispatch<SetStateAction<string>>;
 	openSearch: boolean;
 	setOpenSearch: Dispatch<SetStateAction<boolean>>;
 	data: Array<FileInfo>;
-	fetchData: (page: number, keyword: string) => Promise<void>;
+	total: number;
+	fetchKeywordData: (page: number, keyword: string) => Promise<void>;
+	csrfData: CSRFData;
+	fetchCSRFData: () => Promise<void>;
 }
 
 interface UseKeywordProps {
+	file: ActionCreatorsMapObject;
 	page: number;
 	datas: Array<FileInfo>;
+	total: number;
 	changePage: (newPage: number) => void;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const UseKeyword: FC<UseKeywordProps> = ({
+	file,
 	page,
 	datas,
+	total,
 	changePage,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const [check, setCheck] = useState(false);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 
-	const handleChangePage = (event: unknown, newPage: number) => {
-		console.log(event);
-		changePage(newPage);
+	const handleChangePage = (
+		event: MouseEvent<HTMLButtonElement> | null,
+		newPage: number
+	) => {
+		if (event) changePage(newPage);
 	};
 	const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
 		setRowsPerPage(+event.target.value);
-		changePage(0);
 	};
 
-	const downloadClick = (fileId: string) => {
+	const downloadClick = async (data: FileInfo) => {
+		fetchData();
+		await file.download(data, csrfData);
+		dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		setCheck(true);
 		setTimeout(() => {
 			setCheck(false);
 		}, 2000);
-		console.log(fileId);
 	};
 	return (
 		<Box>
@@ -88,7 +109,7 @@ const UseKeyword: FC<UseKeywordProps> = ({
 									<TableCell align="center">
 										<IconButton
 											sx={{ p: 0, '&:hover': { color: 'secondary.main' } }}
-											onClick={() => downloadClick(data.fileId)}
+											onClick={() => downloadClick(data)}
 										>
 											<FileDownloadIcon />
 										</IconButton>
@@ -101,7 +122,7 @@ const UseKeyword: FC<UseKeywordProps> = ({
 			<TablePagination
 				rowsPerPageOptions={[]} // → Disabled
 				component="div"
-				count={datas.length}
+				count={total}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}
@@ -133,23 +154,27 @@ const NoKeyword: FC = (): JSX.Element => {
 };
 
 const SearchModal: FC<SearchModalProps> = ({
+	file,
 	keyword,
 	setKeyword,
 	openSearch,
 	setOpenSearch,
 	data,
-	fetchData,
+	total,
+	fetchKeywordData,
+	csrfData,
+	fetchCSRFData,
 }): JSX.Element => {
 	const [page, setPage] = useState(0);
 	const searchClose = () => setOpenSearch(false);
 	const searchOnChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const text = event.currentTarget.value;
-		fetchData(0, text); // 초기화
+		fetchKeywordData(0, text); // 초기화
 		setKeyword(text);
 	};
 	const changePage = (newPage: number) => {
 		setPage(newPage);
-		fetchData(newPage, keyword);
+		fetchKeywordData(newPage, keyword);
 	};
 
 	const cancelClick = () => {
@@ -193,7 +218,15 @@ const SearchModal: FC<SearchModalProps> = ({
 				</Paper>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
 				{keyword !== '' ? (
-					<UseKeyword page={page} datas={data} changePage={changePage} />
+					<UseKeyword
+						file={file}
+						page={page}
+						datas={data}
+						total={total}
+						changePage={changePage}
+						csrfData={csrfData}
+						fetchData={fetchCSRFData}
+					/>
 				) : (
 					<NoKeyword />
 				)}

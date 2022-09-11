@@ -34,7 +34,14 @@ const AlertModal: FC<AlertModalProps> = ({
 					{title}
 				</Typography>
 				<Divider sx={{ mt: 1, borderColor: 'primary.main' }} />
-				<Typography sx={{ mt: 2, fontSize: '0.7rem', fontWeight: 'bold' }}>
+				<Typography
+					sx={{
+						mt: 2,
+						fontSize: '0.7rem',
+						fontWeight: 'bold',
+						wordBreak: 'break-all',
+					}}
+				>
 					{content}
 				</Typography>
 			</Box>

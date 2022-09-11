@@ -7,6 +7,7 @@ import NotStartedIcon from '@mui/icons-material/NotStarted';
 interface VideoPlayProps {
 	file: ActionCreatorsMapObject;
 	fileId: string;
+	time: number;
 }
 
 interface UseVideoProps {
@@ -57,8 +58,8 @@ const NoVideo: FC = (): JSX.Element => {
 	);
 };
 
-const VideoPlay: FC<VideoPlayProps> = ({ file, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ file, fileId });
+const VideoPlay: FC<VideoPlayProps> = ({ file, fileId, time }): JSX.Element => {
+	const data = useFileInfoDetails({ file, fileId, time });
 	const filename = data.filename;
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>

@@ -1,14 +1,18 @@
 import React, { FC, useState, ChangeEvent } from 'react';
 import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
-import { PreviewState, FileInfo, UserInfo } from '../../store/types';
+import { connect, useDispatch } from 'react-redux';
+import { PreviewState, DataState, FileInfo, UserInfo } from '../../store/types';
+import { CSRFData } from '../../services/types';
+import { dataSuccess } from '../../store/index';
 import Api from '../../services/api';
+import useCSRFToken from '../../hooks/useCSRFToken';
 import useFileInfoDetails from '../../hooks/useFileInfoDetails';
 import useSharedPageList from '../../hooks/useSharedPageList';
 import {
 	Box,
 	Grid,
+	Paper,
 	Button,
 	Drawer,
 	InputBase,
@@ -17,6 +21,7 @@ import {
 	Pagination,
 } from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
+import SwapCallsIcon from '@mui/icons-material/SwapCalls';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
@@ -26,13 +31,17 @@ import { fileSizeFormat } from '../../utils/format';
 import { pagingCount } from '../../utils/pagination';
 
 interface UseFileProps {
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	time: number;
 	fileId: string;
 }
 
 interface AppPreviewProps {
-	preview: PreviewState;
+	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	preview: PreviewState;
+	data: DataState;
 	width: number;
 }
 
@@ -83,26 +92,38 @@ interface UseModifyButtonProps {
 const UseModifyButton: FC<UseModifyButtonProps> = ({
 	modifyClick,
 }): JSX.Element => {
-	const uploadButton: SxProps<Theme> = {
+	const modifyButton: SxProps<Theme> = {
+		px: 10,
 		color: 'primary.main',
 		borderColor: 'primary.main',
 		'&:hover': {
 			color: 'text.secondary',
-			backgroundColor: 'background.paper',
+			backgroundColor: '#626274',
 		},
 		fontSize: '0.7rem',
 		fontWeight: 'bold',
 	};
 	return (
-		<Box sx={{ pt: 3 }}>
-			<Button
-				variant="outlined"
-				onClick={modifyClick}
-				sx={uploadButton}
-				size="small"
-			>
-				Modify
-			</Button>
+		<Box sx={{ pt: 2 }}>
+			<Paper sx={{ width: 160 }}>
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ fontSize: '0.7rem', color: '#626274' }}
+				>
+					※ 파일명과 세부설명을 수정할 수 있습니다.
+				</Typography>
+			</Paper>
+			<Paper sx={{ pt: 3 }}>
+				<Button
+					variant="outlined"
+					onClick={modifyClick}
+					sx={modifyButton}
+					size="small"
+				>
+					Modify
+				</Button>
+			</Paper>
 		</Box>
 	);
 };
@@ -112,6 +133,8 @@ interface UseFileInfoProps {
 	fileId: number;
 	data: FileInfo;
 	modify: boolean;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const UseFileInfo: FC<UseFileInfoProps> = ({
@@ -119,7 +142,10 @@ const UseFileInfo: FC<UseFileInfoProps> = ({
 	fileId,
 	data,
 	modify,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const [filename, setFilename] = useState('');
 	const [description, setDescription] = useState('');
 
@@ -132,8 +158,22 @@ const UseFileInfo: FC<UseFileInfoProps> = ({
 		setDescription(text);
 	};
 
-	const modifyClick = () => {
-		file.modify(fileId, filename, description);
+	const modifyClick = async (prevFilename: string, prevDescription: string) => {
+		fetchData();
+		if (filename === '' && description !== '') {
+			await file.modify(fileId, prevFilename, description, csrfData);
+			setFilename(prevFilename);
+		} else if (filename !== '' && description === '') {
+			await file.modify(fileId, filename, prevDescription, csrfData);
+			setDescription(prevDescription);
+		} else if (filename === '' && description === '') {
+			await file.modify(fileId, prevFilename, prevDescription, csrfData);
+			setFilename(prevFilename);
+			setDescription(prevDescription);
+		} else {
+			await file.modify(fileId, filename, description, csrfData);
+		}
+		dispatch(dataSuccess(Date.now())); // → fileinfo, filelist 새로고침
 	};
 	return (
 		<Box
@@ -151,7 +191,7 @@ const UseFileInfo: FC<UseFileInfoProps> = ({
 					value={filename}
 					onChange={filenameOnChange}
 					sx={{
-						width: '120px',
+						width: 150,
 						fontSize: '1rem',
 						'.MuiInputBase-input': {
 							pt: 2,
@@ -217,7 +257,7 @@ const UseFileInfo: FC<UseFileInfoProps> = ({
 					value={description}
 					onChange={descriptionOnChange}
 					sx={{
-						width: '120px',
+						width: 150,
 						fontSize: '0.8rem',
 						'.MuiInputBase-input': {
 							pt: 1,
@@ -237,7 +277,9 @@ const UseFileInfo: FC<UseFileInfoProps> = ({
 			)}
 			<UseDivider />
 			{modify ? (
-				<UseModifyButton modifyClick={modifyClick} />
+				<UseModifyButton
+					modifyClick={() => modifyClick(data.filename, data.description ?? '')}
+				/>
 			) : (
 				<UseSharedContent data={data.shared} />
 			)}
@@ -254,7 +296,7 @@ const UseSharedList: FC<UseSharedListProps> = ({
 	file,
 	fileId,
 }): JSX.Element => {
-	const [data, take, total, setPage] = useSharedPageList({
+	const [page, data, take, total, setPage] = useSharedPageList({
 		file,
 		fileId,
 	});
@@ -271,37 +313,61 @@ const UseSharedList: FC<UseSharedListProps> = ({
 				alignItems: 'center',
 			}}
 		>
-			{data &&
+			{data && data.length > 0 ? (
 				data.map((user: UserInfo) => (
-					<Box
-						key={user.userId}
-						sx={{ pb: 0, display: 'flex', justifyContent: 'space-between' }}
-					>
-						<Grid container spacing={2}>
-							<Grid item>
-								<AccountBoxIcon fontSize="small" />
-							</Grid>
-							<Grid item sx={{ mt: -0.4 }}>
-								<Typography
-									component="span"
-									variant="h6"
-									sx={{ fontSize: '0.9rem', color: '#626274' }}
-								>
-									{user.username}
-								</Typography>
-							</Grid>
+					<Paper key={user.userId} sx={{ display: 'flex' }}>
+						<Grid item>
+							<AccountBoxIcon fontSize="small" />
 						</Grid>
-					</Box>
-				))}
+						<Grid item sx={{ mt: -0.4 }}>
+							<Typography
+								component="span"
+								variant="h6"
+								sx={{ fontSize: '0.9rem', color: '#626274' }}
+							>
+								{user.username}
+							</Typography>
+						</Grid>
+						<Grid item sx={{ mt: -0.4 }}>
+							<Typography
+								component="span"
+								variant="h6"
+								sx={{ fontSize: '0.9rem', color: '#626274' }}
+							>
+								{user.email}
+							</Typography>
+						</Grid>
+					</Paper>
+				))
+			) : (
+				<>
+					<SwapCallsIcon fontSize="large" sx={{ fontSize: '5rem' }} />
+					<Typography
+						component="span"
+						variant="h6"
+						sx={{ pt: 2, fontSize: '1rem', width: 160 }}
+					>
+						해당 파일이 공유되지 않았습니다.
+					</Typography>
+					<Typography
+						component="span"
+						variant="h6"
+						sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
+					>
+						해당 파일을 공유받은 사용자가 존재하면, 공유받은 사용자들의 리스트를
+						조회할 수 있습니다.
+					</Typography>
+				</>
+			)}
 			<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
 				<Pagination
-					count={pagingCount(take, total)}
+					count={pagingCount(page, take, total)}
 					variant="outlined"
 					color="primary"
 					siblingCount={0}
 					boundaryCount={1}
-					showFirstButton
-					showLastButton
+					hidePrevButton
+					hideNextButton
 					onChange={pageChange}
 					size="small"
 				/>
@@ -319,26 +385,48 @@ const UseDivider: FC = (): JSX.Element => {
 	);
 };
 
-const UseFile: FC<UseFileProps> = ({ file, fileId }): JSX.Element => {
-	const data = useFileInfoDetails({ file, fileId });
+const UseFile: FC<UseFileProps> = ({
+	auth,
+	file,
+	time,
+	fileId,
+}): JSX.Element => {
+	const dispatch = useDispatch();
+	const data = useFileInfoDetails({ file, fileId, time });
+	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 
 	const [share, setShare] = useState(false);
 	const [modify, setModify] = useState(false);
+
+	const applyClick = async () => {
+		fetchCSRFTokenData();
+		await file.apply(fileId, csrfData);
+		dispatch(dataSuccess(Date.now())); // → fileinfo 새로고침
+	};
 	return (
 		<Box>
-			<PreviewHeader exist={true} />
+			<PreviewHeader />
 			{share ? (
 				<UseSharedList file={file} fileId={data.id} />
 			) : (
-				<UseFileInfo file={file} fileId={data.id} data={data} modify={modify} />
+				<UseFileInfo
+					file={file}
+					fileId={data.id}
+					data={data}
+					modify={modify}
+					csrfData={csrfData}
+					fetchData={fetchCSRFTokenData}
+				/>
 			)}
 			<PreviewFooter
 				fileId={data.fileId}
 				path={data.path}
+				download={data.downIPFS}
 				modify={modify}
 				setModify={setModify}
 				share={share}
 				setShare={setShare}
+				applyClick={applyClick}
 			/>
 		</Box>
 	);
@@ -347,7 +435,7 @@ const UseFile: FC<UseFileProps> = ({ file, fileId }): JSX.Element => {
 const NoFile: FC = (): JSX.Element => {
 	return (
 		<Box>
-			<PreviewHeader exist={false} />
+			<PreviewHeader />
 			<Box
 				sx={{
 					display: 'flex',
@@ -376,8 +464,10 @@ const NoFile: FC = (): JSX.Element => {
 };
 
 const AppPreview: FC<AppPreviewProps> = ({
-	preview,
+	auth,
 	file,
+	preview,
+	data,
 	width,
 }): JSX.Element => {
 	const { fileId, isActive } = preview;
@@ -395,16 +485,22 @@ const AppPreview: FC<AppPreviewProps> = ({
 			anchor="right"
 			open={isActive}
 		>
-			{isActive ? <UseFile file={file} fileId={fileId} /> : <NoFile />}
+			{isActive ? (
+				<UseFile auth={auth} file={file} time={data.time} fileId={fileId} />
+			) : (
+				<NoFile />
+			)}
 		</Drawer>
 	);
 };
 
 const mapStateToProps = (state: any) => ({
 	preview: state.preview as PreviewState,
+	data: state.data as DataState,
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({
+	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
 });
 

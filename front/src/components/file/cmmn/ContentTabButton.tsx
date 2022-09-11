@@ -2,6 +2,8 @@ import React, { FC, useState, MouseEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { useDispatch } from 'react-redux';
 import { previewInfo } from '../../../store/index';
+import { CSRFData } from '../../../services/types';
+import { dataSuccess } from '../../../store/index';
 import {
 	Box,
 	Paper,
@@ -16,11 +18,15 @@ import MenuIcon from '@mui/icons-material/Menu';
 interface ContentTabButtonProps {
 	file: ActionCreatorsMapObject;
 	fileId: string;
+	csrfData: CSRFData;
+	fetchData: () => Promise<void>;
 }
 
 const ContentTabButton: FC<ContentTabButtonProps> = ({
 	file,
 	fileId,
+	csrfData,
+	fetchData,
 }): JSX.Element => {
 	const dispatch = useDispatch();
 	const [open, setOpen] = useState(false);
@@ -32,11 +38,14 @@ const ContentTabButton: FC<ContentTabButtonProps> = ({
 	};
 	const previewClick = (fileId: string) => {
 		dispatch(previewInfo(fileId));
+		dispatch(dataSuccess(Date.now())); // → fileinfo 새로고침
 		setAnchorEl(null);
 		setOpen(false);
 	};
-	const removeClick = () => {
-		file.delete(fileId);
+	const removeClick = async () => {
+		fetchData();
+		await file.delete(fileId, csrfData);
+		dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		setAnchorEl(null);
 		setOpen(false);
 	};

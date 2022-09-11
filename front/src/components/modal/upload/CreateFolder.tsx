@@ -1,4 +1,10 @@
-import React, { FC, useState, ChangeEvent } from 'react';
+import React, {
+	FC,
+	useState,
+	ChangeEvent,
+	Dispatch,
+	SetStateAction,
+} from 'react';
 import {
 	Box,
 	Paper,
@@ -8,8 +14,19 @@ import {
 	IconButton,
 } from '@mui/material';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import { folderFormat } from '../../../utils/format';
 
-const CreateFolder: FC = (): JSX.Element => {
+interface CreateFolderProps {
+	path: string;
+	setPath: Dispatch<SetStateAction<string>>;
+	setFolder: Dispatch<SetStateAction<string>>;
+}
+
+const CreateFolder: FC<CreateFolderProps> = ({
+	path,
+	setPath,
+	setFolder,
+}): JSX.Element => {
 	const [text, setText] = useState('');
 	const [trueCheck, setTrueCheck] = useState(false);
 	const [falseCheck, setFalseCheck] = useState(false);
@@ -23,6 +40,8 @@ const CreateFolder: FC = (): JSX.Element => {
 			setTimeout(() => {
 				setTrueCheck(false);
 			}, 2000);
+			setFolder(text);
+			setPath(folderFormat(path, text));
 		} else {
 			setFalseCheck(true);
 			setTimeout(() => {
@@ -41,7 +60,7 @@ const CreateFolder: FC = (): JSX.Element => {
 				}}
 			>
 				<InputBase
-					placeholder="Please name the New Folder"
+					placeholder="You can create and upload folders yourself...!"
 					onChange={handleOnChange}
 					sx={{
 						ml: 1,
@@ -59,14 +78,10 @@ const CreateFolder: FC = (): JSX.Element => {
 				</IconButton>
 			</Paper>
 			<Collapse in={trueCheck}>
-				<Alert severity="success">
-					This folder is create success — check it out!
-				</Alert>
+				<Alert severity="success">Upload path added successfully.</Alert>
 			</Collapse>
 			<Collapse in={falseCheck}>
-				<Alert severity="error">
-					This folder is create fail — check it out!
-				</Alert>
+				<Alert severity="error">Please fill out the folder name !</Alert>
 			</Collapse>
 		</Box>
 	);

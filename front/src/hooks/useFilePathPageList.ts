@@ -13,19 +13,22 @@ interface FilePathPageListProps {
 	file: ActionCreatorsMapObject;
 	path: string;
 	type: string;
+	time: number;
 }
 
 const useFilePathPageList = ({
 	file,
 	path,
 	type,
+	time,
 }: FilePathPageListProps): [
+	number,
 	Array<FileInfo>,
 	number,
 	number,
 	Dispatch<SetStateAction<number>>
 ] => {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState(1);
 	const [take, setTake] = useState(10);
 	const [total, setTotal] = useState(0);
 	const [data, setData] = useState<Array<FileInfo>>([]);
@@ -44,14 +47,14 @@ const useFilePathPageList = ({
 			setTotal(total);
 			setData(results);
 		},
-		[page, path, type]
+		[page, path, type, time]
 	);
 
 	useEffect(() => {
 		fetchAndSetData(page, path, type);
 	}, [fetchAndSetData]);
 
-	return [data, take, total, setPage];
+	return [page, data, take, total, setPage];
 };
 
 export default useFilePathPageList;

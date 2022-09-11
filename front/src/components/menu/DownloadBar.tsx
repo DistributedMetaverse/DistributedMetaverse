@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
 import { Dispatch } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { FileInfo, PreviewState } from '../../store/types';
-import { previewInfo, previewSwitch } from '../../store/index';
+import { connect, useDispatch } from 'react-redux';
+import { FileInfo, PreviewState, DataState } from '../../store/types';
+import { previewInfo, previewSwitch, dataSuccess } from '../../store/index';
 import Api from '../../services/api';
 import useFilePathPageList from '../../hooks/useFilePathPageList';
 import {
@@ -21,31 +20,34 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 
 interface DownloadProps {
-	preview: PreviewState;
-	branch: boolean;
 	file: ActionCreatorsMapObject;
+	preview: PreviewState;
+	time: number;
+	branch: boolean;
 }
 
 const DownloadBar: FC<DownloadProps> = ({
-	preview,
-	branch,
 	file,
+	preview,
+	time,
+	branch,
 }): JSX.Element => {
 	const dispatch = useDispatch();
-	const page = 1; // default
 	const { fileId, isActive } = preview;
-	const [data, take, total, setPage] = useFilePathPageList({
+	const [page, data, take, total, setPage] = useFilePathPageList({
 		file,
 		path: '/',
 		type: 'download',
+		time,
 	});
 
 	const previewClick = (id: string) => {
 		dispatch(previewInfo(id));
 		if (fileId === id) dispatch(previewSwitch(!isActive));
+		dispatch(dataSuccess(Date.now())); // → fileinfo 새로고침
 	};
 	const prevClick = () => {
-		if (page > 0) setPage(page - 1);
+		if (page > 1) setPage(page - 1);
 	};
 	const nextClick = () => {
 		setPage(page + 1);
@@ -63,7 +65,7 @@ const DownloadBar: FC<DownloadProps> = ({
 			<Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
 				{data &&
 					data.map((data: FileInfo) => (
-						<Grow key={data.id} in={branch} timeout={data.id * 300}>
+						<Grow key={data.id} in={branch} timeout={300}>
 							<Grid item xs={6}>
 								<Button
 									variant="outlined"
@@ -135,6 +137,7 @@ const DownloadBar: FC<DownloadProps> = ({
 
 const mapStateToProps = (state: any) => ({
 	preview: state.preview as PreviewState,
+	time: (state.data as DataState).time,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

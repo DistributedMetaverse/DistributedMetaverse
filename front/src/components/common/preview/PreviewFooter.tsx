@@ -5,7 +5,17 @@ import React, {
 	Dispatch,
 	SetStateAction,
 } from 'react';
-import { Box, Grid, Paper, IconButton, Divider } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { dataSuccess } from '../../../store/index';
+import {
+	Box,
+	Grid,
+	Paper,
+	Button,
+	IconButton,
+	Divider,
+	Typography,
+} from '@mui/material';
 import { SxProps, Theme } from '@mui/material/styles';
 import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined';
 import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined';
@@ -16,10 +26,12 @@ import { linkFormat } from '../../../utils/format';
 interface PreviewFooterProps {
 	fileId: string;
 	path: string;
+	download: boolean;
 	modify: boolean;
 	setModify: Dispatch<SetStateAction<boolean>>;
 	share: boolean;
 	setShare: Dispatch<SetStateAction<boolean>>;
+	applyClick: () => void;
 }
 
 interface UseLinkButtonProps {
@@ -74,8 +86,10 @@ const UseButton: FC<UseButtonProps> = ({
 	setState,
 	children,
 }): JSX.Element => {
+	const dispatch = useDispatch();
 	const handleClick = () => {
 		setState(!state);
+		dispatch(dataSuccess(Date.now())); // → fileinfo 새로고침
 	};
 	return (
 		<Paper
@@ -94,13 +108,58 @@ const UseButton: FC<UseButtonProps> = ({
 	);
 };
 
+interface UseApplyButtonProps {
+	applyClick: () => void;
+}
+
+const UseApplyButton: FC<UseApplyButtonProps> = ({
+	applyClick,
+}): JSX.Element => {
+	const applyButton: SxProps<Theme> = {
+		px: 10,
+		color: 'primary.main',
+		borderColor: 'primary.main',
+		'&:hover': {
+			color: 'text.secondary',
+			backgroundColor: '#626274',
+		},
+		fontSize: '0.7rem',
+		fontWeight: 'bold',
+	};
+	return (
+		<Box sx={{ pt: 2, width: 163 }}>
+			<Paper sx={{ width: 160 }}>
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ fontSize: '0.7rem', color: '#626274' }}
+				>
+					※ 아래의 버튼을 누르면 파일을 가져올 수 있습니다.
+				</Typography>
+			</Paper>
+			<Paper sx={{ pt: 3 }}>
+				<Button
+					variant="outlined"
+					onClick={applyClick}
+					sx={applyButton}
+					size="small"
+				>
+					Apply
+				</Button>
+			</Paper>
+		</Box>
+	);
+};
+
 const PreviewFooter: FC<PreviewFooterProps> = ({
 	fileId,
 	path,
+	download,
 	modify,
 	setModify,
 	share,
 	setShare,
+	applyClick,
 }): JSX.Element => {
 	const grid: SxProps<Theme> = {
 		pl: 0,
@@ -112,63 +171,76 @@ const PreviewFooter: FC<PreviewFooterProps> = ({
 	return (
 		<Box
 			sx={{
-				ml: -5,
+				right: 17,
 				bottom: 40,
 				position: 'fixed',
 				borderColor: 'primary.main',
 			}}
 		>
-			<Divider
-				sx={{
-					mb: 1,
-					ml: 2,
-					width: 170,
-					borderColor: 'primary.main',
-				}}
-			/>
-			<Box sx={{ ml: 2.5, pb: 0, display: 'flex' }}>
-				<Grid container spacing={3} sx={{ justifyContent: 'center' }}>
-					<Grid item sx={grid}>
-						<UseLinkButton fileId={fileId} path={path}>
-							<IosShareOutlinedIcon fontSize="large" sx={font} />
-						</UseLinkButton>
-					</Grid>
-					<Grid item sx={grid}>
-						<Divider
-							sx={{ mt: 1, width: 2, height: 30, borderColor: 'primary.main' }}
-							orientation="vertical"
-						/>
-					</Grid>
-					{!share && (
-						<Grid item sx={grid}>
-							<UseButton state={modify} setState={setModify}>
-								<DriveFileRenameOutlineOutlinedIcon
-									fontSize="large"
-									sx={font}
+			{download ? (
+				<Box sx={{ ml: 2.5, pb: 0, display: 'flex' }}>
+					<UseApplyButton applyClick={applyClick} />
+				</Box>
+			) : (
+				<>
+					<Divider
+						sx={{
+							mb: 1,
+							ml: 2,
+							width: 170,
+							borderColor: 'primary.main',
+						}}
+					/>
+					<Box sx={{ ml: 2.5, pb: 0, display: 'flex' }}>
+						<Grid container spacing={3} sx={{ justifyContent: 'center' }}>
+							<Grid item sx={grid}>
+								<UseLinkButton fileId={fileId} path={path}>
+									<IosShareOutlinedIcon fontSize="large" sx={font} />
+								</UseLinkButton>
+							</Grid>
+							<Grid item sx={grid}>
+								<Divider
+									sx={{
+										mt: 1,
+										width: 2,
+										height: 30,
+										borderColor: 'primary.main',
+									}}
+									orientation="vertical"
 								/>
-							</UseButton>
+							</Grid>
+							{!share && (
+								<Grid item sx={grid}>
+									<UseButton state={modify} setState={setModify}>
+										<DriveFileRenameOutlineOutlinedIcon
+											fontSize="large"
+											sx={font}
+										/>
+									</UseButton>
+								</Grid>
+							)}
+							{!share && (
+								<Grid item sx={grid}>
+									<Divider
+										sx={{
+											mt: 1,
+											width: 2,
+											height: 30,
+											borderColor: 'primary.main',
+										}}
+										orientation="vertical"
+									/>
+								</Grid>
+							)}
+							<Grid item sx={grid}>
+								<UseButton state={share} setState={setShare}>
+									<LoupeOutlinedIcon fontSize="large" sx={font} />
+								</UseButton>
+							</Grid>
 						</Grid>
-					)}
-					{!share && (
-						<Grid item sx={grid}>
-							<Divider
-								sx={{
-									mt: 1,
-									width: 2,
-									height: 30,
-									borderColor: 'primary.main',
-								}}
-								orientation="vertical"
-							/>
-						</Grid>
-					)}
-					<Grid item sx={grid}>
-						<UseButton state={share} setState={setShare}>
-							<LoupeOutlinedIcon fontSize="large" sx={font} />
-						</UseButton>
-					</Grid>
-				</Grid>
-			</Box>
+					</Box>
+				</>
+			)}
 		</Box>
 	);
 };

@@ -5,11 +5,7 @@ import { Box, Grid, IconButton, Divider, Typography } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 
-interface PreviewHeaderProps {
-	exist: boolean;
-}
-
-const PreviewHeader: FC<PreviewHeaderProps> = ({ exist }): JSX.Element => {
+const PreviewHeader: FC = (): JSX.Element => {
 	const dispatch = useDispatch();
 	const closeClick = () => {
 		dispatch(previewSwitch(false));
@@ -17,7 +13,7 @@ const PreviewHeader: FC<PreviewHeaderProps> = ({ exist }): JSX.Element => {
 	return (
 		<Box
 			sx={{
-				ml: exist ? -2.5 : 3,
+				right: 17,
 				top: 50,
 				position: 'fixed',
 				width: 160,

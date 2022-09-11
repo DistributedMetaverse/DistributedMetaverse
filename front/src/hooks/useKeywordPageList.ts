@@ -13,8 +13,10 @@ const useKeywordPageList = ({
 	keyword,
 }: FilePathPageListProps): [
 	Array<FileInfo>,
+	number,
 	(page: number, keyword: string) => Promise<void>
 ] => {
+	const [total, setTotal] = useState(0);
 	const [data, setData] = useState<Array<FileInfo>>([]);
 
 	const fetchAndSetData = useCallback(
@@ -24,7 +26,8 @@ const useKeywordPageList = ({
 				keyword: keyword,
 			};
 			const data = await file.search(keywordData);
-			const { results } = data;
+			const { results, total } = data;
+			setTotal(total);
 			setData(results);
 		},
 		[keyword]
@@ -34,7 +37,7 @@ const useKeywordPageList = ({
 		fetchAndSetData(0, keyword);
 	}, [fetchAndSetData]);
 
-	return [data, fetchAndSetData];
+	return [data, total, fetchAndSetData];
 };
 
 export default useKeywordPageList;

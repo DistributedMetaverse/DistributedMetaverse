@@ -30,6 +30,13 @@ class UserMisMatchException extends HttpException {
   constructor() { super(ErrorCode.USER04, HttpStatus.FORBIDDEN); }
 }
 
+class FileNotFoundException extends HttpException {
+  constructor() { super(ErrorCode.FILE01, HttpStatus.NOT_FOUND); }
+}
+class FileAlreadyExistException extends HttpException {
+  constructor() { super(ErrorCode.FILE02, HttpStatus.FORBIDDEN); }
+}
+
 export {
   UnAuthorizedException,
   AccessTokenNotFoundException,
@@ -40,4 +47,6 @@ export {
   UserNotFounException,
   PasswordMisMatchException,
   UserMisMatchException,
+  FileNotFoundException,
+  FileAlreadyExistException,
 }

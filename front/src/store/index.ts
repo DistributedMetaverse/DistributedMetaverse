@@ -9,6 +9,7 @@ import {
 	FileState,
 	PageState,
 	SettingState,
+	DataState,
 } from './types';
 
 // 1.1. 인증 관련 State
@@ -252,7 +253,7 @@ const pageinitialState: PageState = {
 	total: 0,
 };
 
-// 6.2. pageSlice : action + reducer → slice
+// 7.2. pageSlice : action + reducer → slice
 const pageSlice = createSlice({
 	name: 'page',
 	initialState: pageinitialState,
@@ -261,6 +262,22 @@ const pageSlice = createSlice({
 			state.results = action.payload.results;
 			state.take = action.payload.take;
 			state.total = action.payload.total;
+		},
+	},
+});
+
+// 8.1. Data Sync 관련 State
+const datainitialState: DataState = {
+	time: 0,
+};
+
+// 8.2. dataSlice : action + reducer → slice
+const dataSlice = createSlice({
+	name: 'data',
+	initialState: datainitialState,
+	reducers: {
+		dataSuccess: (state: DataState, action: PayloadAction<number>) => {
+			state.time = action.payload;
 		},
 	},
 });
@@ -275,6 +292,7 @@ const rootReducer = combineReducers({
 	file: fileSlice.reducer,
 	setting: settingSlice.reducer,
 	page: pageSlice.reducer,
+	data: dataSlice.reducer,
 });
 
 const { loginSuccess, loginFailure, logoutSuccess } = authSlice.actions;
@@ -287,6 +305,7 @@ const { setFolderPath, setFilePath, setFolderType, setFileType } =
 const { fileSuccess, fileProgress } = fileSlice.actions;
 const { settingSwitch } = settingSlice.actions;
 const { pageSuccess } = pageSlice.actions;
+const { dataSuccess } = dataSlice.actions;
 
 export {
 	loginSuccess,
@@ -306,6 +325,7 @@ export {
 	fileProgress,
 	settingSwitch,
 	pageSuccess,
+	dataSuccess,
 };
 
 export type RootState = ReturnType<typeof rootReducer>;

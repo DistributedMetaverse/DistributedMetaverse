@@ -20,12 +20,13 @@ const useFolderPathPageList = ({
 	path,
 	type,
 }: FolderPathPageList): [
+	number,
 	Array<FolderInfo>,
 	number,
 	number,
 	Dispatch<SetStateAction<number>>
 ] => {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState(1);
 	const [take, setTake] = useState(10);
 	const [total, setTotal] = useState(0);
 	const [data, setData] = useState<Array<FolderInfo>>([]);
@@ -51,7 +52,7 @@ const useFolderPathPageList = ({
 		fetchAndSetData(page, path, type);
 	}, [fetchAndSetData]);
 
-	return [data, take, total, setPage];
+	return [page, data, take, total, setPage];
 };
 
 export default useFolderPathPageList;

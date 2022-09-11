@@ -18,7 +18,7 @@ const useSettingPageList = ({
 	Array<SettingInfo>,
 	Dispatch<SetStateAction<number>>
 ] => {
-	const [page, setPage] = useState(0);
+	const [page, setPage] = useState(1);
 	const [data, setData] = useState<Array<SettingInfo>>([]);
 
 	const fetchAndSetData = useCallback(
