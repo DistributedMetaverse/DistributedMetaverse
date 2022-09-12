@@ -16,6 +16,7 @@ async function bootstrap() {
   const PORT = configService.get<number>('PORT');
   const environment = configService.get<string>('NODE_ENV');
   const IPFS_SERVICE_URL = "https://ipfs.catswords.com";
+  const OFFCHAIN_SERVICE_URL = "http://154.12.242.48:1323"
   
   app.useStaticAssets(join(__dirname, '..', '..', 'front/build'));
   app.setViewEngine('html');
@@ -33,15 +34,23 @@ async function bootstrap() {
 
   // Proxy endpoints
   app.enableCors({
-    origin: true,
+    allowedHeaders: ['Accept', 'Content-Type', 'Origin', 'Authorization'],
+    origin: ['https://ipfs.catswords.com', 'http://localhost:4000'],
     methods: 'POST',
     credentials: true,
   });
   app.use('/ipfs', createProxyMiddleware({
     target: IPFS_SERVICE_URL,
-    changeOrigin: true,  // → Target URL을 변경하는 옵션
+    changeOrigin: true,  // → IPFS Target URL을 변경하는 옵션
     pathRewrite: {
         [`^/ipfs`]: '/api/v0',
+    }
+  }));
+  app.use('/offchain', createProxyMiddleware({
+    target: OFFCHAIN_SERVICE_URL,
+    changeOrigin: true,  // → OffChain Target URL을 변경하는 옵션
+    pathRewrite: {
+        [`^/offchain`]: '',
     }
   }));
   await app.listen(PORT);

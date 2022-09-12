@@ -1,6 +1,7 @@
 import React, { FC, BaseSyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
+import { ToastContainer } from 'react-toastify';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import {
@@ -22,6 +23,7 @@ import RenderField from '../validate/TextField';
 import { LoginFormValues } from './types';
 import { defaultTheme } from '../../utils/theme';
 import { validateEmail } from '../../utils/validation';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme(defaultTheme);
 
@@ -56,6 +58,16 @@ const LoginForm: FC<LoginProp> = ({ onSubmit }): JSX.Element => {
 		<ThemeProvider theme={theme}>
 			<Container component="main" maxWidth="xs">
 				<CssBaseline />
+				<ToastContainer
+					theme="light" // light <-> dark <-> colored
+					position="top-right"
+					autoClose={5000}
+					hideProgressBar={false}
+					closeOnClick
+					pauseOnFocusLoss
+					draggable
+					pauseOnHover
+				/>
 				<Paper
 					sx={{
 						mt: 12, // margin-top : 6 * 12 px

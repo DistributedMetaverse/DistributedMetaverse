@@ -81,16 +81,8 @@ interface FileState {
 	size: number;
 }
 
-// 6. Setting 관련 State
-interface SettingInfo {
-	id: number;
-	host: string;
-	port: number;
-	size: number;
-	limit?: number;
-}
-
-interface SettingState {
+// 6. Monitor 관련 State
+interface MonitorState {
 	isActive: boolean;
 }
 
@@ -120,8 +112,7 @@ export type {
 	UserInfo,
 	FileInfo,
 	FileState,
-	SettingInfo,
-	SettingState,
+	MonitorState,
 	PageState,
 	DataState,
 };

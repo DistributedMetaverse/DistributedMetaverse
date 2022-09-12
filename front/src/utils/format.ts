@@ -14,9 +14,12 @@ const timeFormat = (createtime: number): string => {
 	return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
+const ipfsHostname = 'https://ipfs.io/ipfs/';
+
 const linkFormat = (fileId: string, path: string): string => {
-	if (path === '/') return 'https://ipfs.io/ipfs/' + fileId;
-	return 'https://ipfs.io/ipfs' + path + '/' + fileId;
+	if (path === '/') return ipfsHostname + fileId;
+	// return ipfsHostname + path + '/' + fileId;
+	return ipfsHostname + '/' + fileId;
 };
 
 const folderFormat = (path: string, folderName: string): string => {

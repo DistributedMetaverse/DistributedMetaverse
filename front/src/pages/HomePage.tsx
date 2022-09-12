@@ -1,42 +1,37 @@
 import React, { FC } from 'react';
 import { Grid, Paper } from '@mui/material';
-import Chart from '../components/chart/Chart';
-import Deposits from '../components/deposit/Deposits';
-import Orders from '../components/order/Orders';
+import PieMultiLineChart from '../components/chart/PieMultiLineChart';
+import LineGradientChart from '../components/chart/LineGradientChart';
+import RadarCustomChart from '../components/chart/RadarCustomChart';
 
 const HomePage: FC = (): JSX.Element => {
 	return (
 		<Grid container spacing={3}>
-			{/* Chart */}
-			<Grid item xs={12} md={8} lg={6}>
-				<Paper
-					sx={{
-						p: 2,
-						display: 'flex',
-						flexDirection: 'column',
-						height: 240,
-					}}
-				>
-					<Chart />
-				</Paper>
-			</Grid>
-			{/* Recent Deposits */}
-			<Grid item xs={12} md={4} lg={3}>
-				<Paper
-					sx={{
-						p: 2,
-						display: 'flex',
-						flexDirection: 'column',
-						height: 240,
-					}}
-				>
-					<Deposits />
-				</Paper>
-			</Grid>
-			{/* Recent Orders */}
 			<Grid item xs={12}>
-				<Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-					<Orders />
+				<Paper sx={{ p: 2 }}>
+					<PieMultiLineChart />
+				</Paper>
+			</Grid>
+			<Grid item xs={12} md={8} lg={8}>
+				<Paper
+					sx={{
+						p: 2,
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+				>
+					<LineGradientChart />
+				</Paper>
+			</Grid>
+			<Grid item xs={12} md={4} lg={4}>
+				<Paper
+					sx={{
+						p: 2,
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+				>
+					<RadarCustomChart />
 				</Paper>
 			</Grid>
 		</Grid>

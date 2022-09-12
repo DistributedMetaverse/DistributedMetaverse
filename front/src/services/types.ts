@@ -44,8 +44,51 @@ interface SharedData {
 	page: number;
 }
 
-interface IPFSData {
+interface IPFSUploadData {
+	Name: string;
+	Hash: string;
+	Size: number;
+}
+
+interface IPFSDownloadData {
 	arg: string;
+}
+
+interface PublishData {
+	qmhash: string;
+	mimetype: string;
+	filename: string;
+}
+
+interface TransactionData {
+	id: number;
+	data: string;
+	datetime: string;
+}
+
+interface TransactionResponseData {
+	data: TransactionData;
+	success: boolean;
+	status: string;
+	url?: string;
+}
+
+interface BlockData {
+	previousHash: string;
+	transactions: Array<TransactionData>;
+	hash: string;
+	datetime: string;
+	proof: number;
+	lastTransactionId: number;
+}
+
+interface BlockResponseData {
+	data: BlockData;
+	success: boolean;
+}
+
+interface ChainData {
+	blocks: Array<BlockData>;
 }
 
 export type {
@@ -57,5 +100,12 @@ export type {
 	PageData,
 	KeywordData,
 	SharedData,
-	IPFSData,
+	IPFSUploadData,
+	IPFSDownloadData,
+	PublishData,
+	TransactionData,
+	TransactionResponseData,
+	BlockData,
+	BlockResponseData,
+	ChainData,
 };

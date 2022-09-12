@@ -27,20 +27,24 @@ import {
 	PageData,
 	KeywordData,
 	SharedData,
-	IPFSData,
+	IPFSDownloadData,
+	PublishData,
 } from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
 	const instance = axios.create({
-		baseURL: '/api', // proxy: process.env.REACT_APP_API_URL
+		baseURL: '/api',
 	});
 
 	return setInterceptors(instance);
 };
 const instance = createInstance();
 const ipfs = axios.create({
-	baseURL: '/ipfs', // proxy: process.env.REACT_APP_IPFS_URL
+	baseURL: '/ipfs',
+});
+const offchain = axios.create({
+	baseURL: '/offchain',
 });
 
 const auth = {
@@ -67,12 +71,10 @@ const auth = {
 			})
 			.catch((error: AxiosError) => {
 				const { status, data } = error.response as AxiosResponse;
-				if (status === 400) {
-					toastMessage('올바르지 않은 로그인 형식입니다', 'info');
-				} else if (status === 401) {
+				if (status === 403) {
 					toastMessage(data.message, 'warn');
-				} else if (status === 504) {
-					toastMessage('서버가 닫혀있습니다', 'error');
+				} else if (status === 500) {
+					toastMessage(data.message, 'error');
 				} else {
 					toastMessage(data, 'error');
 				}
@@ -99,12 +101,10 @@ const auth = {
 			})
 			.catch((error: AxiosError) => {
 				const { status, data } = error.response as AxiosResponse;
-				if (status === 400) {
-					toastMessage('올바르지 않은 회원가입 형식입니다', 'info');
-				} else if (status === 409) {
+				if (status === 403) {
 					toastMessage(data.message, 'warn');
-				} else if (status === 504) {
-					toastMessage('서버가 닫혀있습니다', 'error');
+				} else if (status === 500) {
+					toastMessage(data.message, 'error');
 				} else {
 					toastMessage(data, 'error');
 				}
@@ -317,25 +317,8 @@ const status = {
 		}),
 };
 
-const setting = {
-	// Setting 세부정보 확인 API : <baseURL>/setting/info?id={serverId}
-	info: (serverId: number) => (dispatch: Dispatch) =>
-		instance
-			.get(`setting/info?id=${serverId}`)
-			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
-				return response.data;
-			}),
-	// Setting 정보 리스트 API : <baseURL>/setting/list/:page
-	list: (page: number) => (dispatch: Dispatch) =>
-		instance.get(`setting/list/${page}`).then((response: AxiosResponse) => {
-			dispatch(fileSuccess(response.data));
-			return response.data;
-		}),
-};
-
 const infra = {
-	// 파일 업로드 API : <ipfsURL>/ipfs/api/v0/add
+	// 파일 업로드 API : <ipfs URL>/ipfs/api/v0/add
 	upload:
 		(formData: HTMLFormElement, csrfData: CSRFData) => (dispatch: Dispatch) =>
 			ipfs
@@ -351,21 +334,73 @@ const infra = {
 				})
 				.then((response: AxiosResponse) => {
 					dispatch(fileSuccess(response.data));
+					return response.data;
 				})
 				.catch((error: AxiosError) => {
 					const { data } = error.response as AxiosResponse;
 					toastMessage(data.message, 'warn');
 				}),
-	// 파일 다운로드 API : <ipfsURL>/ipfs/api/v0/cat
-	download: (ipfsData: IPFSData, csrfData: CSRFData) => (dispatch: Dispatch) =>
+	// 파일 다운로드 API : <ipfs URL>/ipfs/api/v0/cat
+	download: (ipfsData: IPFSDownloadData, csrfData: CSRFData) => () =>
 		ipfs
-			.post(`cat`, ipfsData, {
+			.post('cat', ipfsData, {
 				headers: {
 					'CSRF-Token': csrfData.csrfToken,
 				},
 			})
 			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+};
+
+const block = {
+	// 트랜젝션 추가 API : <off-chain URL>/offchain/transaction/publish
+	publish: (publishData: PublishData, csrfData: CSRFData) => () =>
+		offchain
+			.post('transaction/publish', publishData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 최근 블록 조회 API : <off-chain URL>/offchain/chain/:depth
+	chain: (depth: number) => () =>
+		offchain
+			.get(`chain/${depth}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 블록 정보 조회 API : <off-chain URL>/offchain/chain/:hash
+	block: (hash: string) => () =>
+		offchain
+			.get(`block/${hash}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 트랜젝션 정보 조회 API : <off-chain URL>/offchain/transaction/:id
+	transaction: (id: number) => () =>
+		offchain
+			.get(`transaction/${id}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
 			})
 			.catch((error: AxiosError) => {
 				const { data } = error.response as AxiosResponse;
@@ -377,8 +412,8 @@ const api = {
 	auth,
 	file,
 	status,
-	setting,
 	infra,
+	block,
 };
 
 export default { ...api };

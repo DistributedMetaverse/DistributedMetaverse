@@ -5,192 +5,19 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { TokenData } from '../services/types';
+import { SearchInfo } from '../store/types';
 import {
-	FileInfo,
-	FolderPathInfo,
-	FilePathInfo,
-	PageState,
-	SearchInfo,
-	SettingInfo,
-} from '../store/types';
-
-const fileinfo: FileInfo = {
-	id: 1,
-	fileId: 'test1',
-	filename: 'test1.png',
-	fileSize: 1000000,
-	description: 'the file is sample',
-	path: '/',
-	isLike: false,
-	downIPFS: true,
-	createdAt: '2022-01-23',
-	shared: [
-		{
-			userId: 1,
-			username: 'bbj',
-			email: 'bbj@naver.com',
-		},
-		{
-			userId: 2,
-			username: 'test',
-			email: 'test@naver.com',
-		},
-	],
-};
-
-const filelist: PageState = {
-	results: [
-		{
-			id: 1,
-			fileId: 'test1',
-			filename: 'test1.png',
-			fileSize: 100000,
-			path: '/',
-			isLike: true,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 2,
-			fileId: 'test2',
-			filename: 'test2.png',
-			fileSize: 2000000,
-			path: '/',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 3,
-			fileId: 'test3',
-			filename: 'test3.png',
-			fileSize: 3000000,
-			path: '/test/test',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 4,
-			fileId: 'test4',
-			filename: 'test4.png',
-			fileSize: 4000000,
-			path: '/aaaa',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const folderlist: PageState = {
-	results: [
-		{
-			folderPath: '/',
-			count: 2,
-		},
-		{
-			folderPath: '/data/data1',
-			count: 10,
-		},
-		{
-			folderPath: '/test1/folder',
-			count: 23,
-		},
-		{
-			folderPath: '/test2',
-			count: 4,
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const folderPathTablist: Array<FolderPathInfo> = [
-	{
-		folderPath: '/',
-		count: 2,
-	},
-	{
-		folderPath: '/data/data1',
-		count: 10,
-	},
-	{
-		folderPath: '/test1/folder',
-		count: 23,
-	},
-	{
-		folderPath: '/test2',
-		count: 4,
-	},
-];
-
-const filePathTablist: Array<FilePathInfo> = [
-	{
-		filePath: '/',
-		count: 2,
-	},
-	{
-		filePath: '/data/data1',
-		count: 10,
-	},
-	{
-		filePath: '/test1/folder',
-		count: 23,
-	},
-	{
-		filePath: '/test2',
-		count: 4,
-	},
-];
-
-const sharedlist: PageState = {
-	results: [
-		{
-			userId: 1,
-			username: 'bbj',
-			email: 'bbj@naver.com',
-		},
-		{
-			userId: 2,
-			username: 'test',
-			email: 'codequwdn@naver.com',
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const settinginfo: SettingInfo = {
-	id: 1,
-	host: 'https://docs.ipfs.tech/',
-	port: 4001,
-	size: 10000000,
-	limit: 100000000,
-};
-
-const settinglist: Array<SettingInfo> = [
-	{
-		id: 1,
-		host: '127.0.0.1',
-		port: 4001,
-		size: 10000000,
-	},
-	{
-		id: 2,
-		host: 'https://docs.ipfs.tech/',
-		port: 4002,
-		size: 10000000,
-	},
-	{
-		id: 3,
-		host: '192.168.0.11',
-		port: 4003,
-		size: 10000000,
-	},
-];
+	fileinfo,
+	filelist,
+	folderlist,
+	folderPathTablist,
+	filePathTablist,
+	sharedlist,
+	ipfsData,
+	chainData,
+	blockData,
+	transactionData,
+} from './data';
 
 const secret = 'S-dV7@1SS#AGd#%^';
 const csrfToken = {
@@ -273,18 +100,33 @@ export const handlers = [
 		return res(ctx.status(200), ctx.json(filePathTablist));
 	}),
 
-	// Setting 세부정보
-	rest.get(prifix + '/setting/info', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(settinginfo));
-	}),
-
-	// Setting 리스트
-	rest.get(prifix + '/setting/list/:page', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(settinglist));
-	}),
-
 	// IPFS 파일 업로드
 	rest.post('/ipfs/add', (req, res, ctx) => {
+		return res(ctx.status(201), ctx.json(ipfsData));
+	}),
+
+	// IPFS 파일 다운로드
+	rest.post('/ipfs/cat', (req, res, ctx) => {
 		return res(ctx.status(201));
+	}),
+
+	// OffChain 트랜젝션 추가
+	rest.post('/offchain/transaction/publish', (req, res, ctx) => {
+		return res(ctx.status(201));
+	}),
+
+	// OffChain 최근 블록 조회
+	rest.get('/offchain/chain/:depth', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(chainData));
+	}),
+
+	// OffChain 블록 정보 조회
+	rest.get('/offchain/block/:hash', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(blockData));
+	}),
+
+	// OffChain 트랜젝션 정보 조회
+	rest.get('/offchain/transaction/:id', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(transactionData));
 	}),
 ];

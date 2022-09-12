@@ -120,7 +120,7 @@ export class FileService {
         { id: user.id, isDel: Number(false), downIPFS: Number(false), path: '/%' }
       )
       .groupBy('folderPath');
-    const resultsAll = await queryBuilder.getRawMany();
+    const count = await queryBuilder.getCount();
     const results = await queryBuilder
       .take(10)
       .skip(10 * (page - 1))
@@ -130,7 +130,7 @@ export class FileService {
     return {
       results: results,
       take: results.length,
-      total: resultsAll.length,
+      total: count,
     }
   }
 
@@ -157,7 +157,7 @@ export class FileService {
         { id: user.id, isDel: Number(false), downIPFS: Number(false), path: `${path}%` }
       )
       .groupBy('subPath');
-    const resultsAll = await queryBuilder.getRawMany();
+    const count = await queryBuilder.getCount();
     const results = await queryBuilder
       .take(10)
       .skip(10 * (page - 1))
@@ -167,7 +167,7 @@ export class FileService {
     return {
       results: results,
       take: results.length,
-      total: resultsAll.length,
+      total: count,
     }
   }
 

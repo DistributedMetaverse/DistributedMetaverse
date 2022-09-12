@@ -6,7 +6,7 @@ import File from './FilePage';
 import Video from './VideoPage';
 import Photo from './PhotoPage';
 import Recent from './RecentPage';
-import Setting from './SettingPage';
+import Motitor from './MonitorPage';
 import NotFound from './NotFound';
 
-export { Home, Login, Signup, File, Video, Photo, Recent, Setting, NotFound };
+export { Home, Login, Signup, File, Video, Photo, Recent, Motitor, NotFound };
