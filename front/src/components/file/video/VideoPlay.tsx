@@ -3,6 +3,8 @@ import { ActionCreatorsMapObject } from 'redux';
 import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
 import { Box, Paper, Typography } from '@mui/material';
 import NotStartedIcon from '@mui/icons-material/NotStarted';
+import ReactPlayer from 'react-player';
+import { linkFormat } from '../../../utils/format';
 
 interface VideoPlayProps {
 	file: ActionCreatorsMapObject;
@@ -11,10 +13,10 @@ interface VideoPlayProps {
 }
 
 interface UseVideoProps {
-	filename: string;
+	fileId: string;
 }
 
-const UseVideo: FC<UseVideoProps> = ({ filename }): JSX.Element => {
+const UseVideo: FC<UseVideoProps> = ({ fileId }): JSX.Element => {
 	return (
 		<Box>
 			<Typography
@@ -22,7 +24,12 @@ const UseVideo: FC<UseVideoProps> = ({ filename }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				{filename}
+				<ReactPlayer
+					url={linkFormat(fileId, '/')}
+					width="100%"
+					height="100%"
+					controls={true}
+				/>
 			</Typography>
 		</Box>
 	);
@@ -60,10 +67,9 @@ const NoVideo: FC = (): JSX.Element => {
 
 const VideoPlay: FC<VideoPlayProps> = ({ file, fileId, time }): JSX.Element => {
 	const data = useFileInfoDetails({ file, fileId, time });
-	const filename = data.filename;
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>
-			{fileId === '' ? <NoVideo /> : <UseVideo filename={filename} />}
+			{fileId === '' ? <NoVideo /> : <UseVideo fileId={data.fileId} />}
 		</Paper>
 	);
 };

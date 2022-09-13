@@ -14,8 +14,9 @@ interface MonitorPageProps {
 }
 
 const MonitorPage: FC<MonitorPageProps> = ({ offchain }): JSX.Element => {
-	const data = useBlockChain({ offchain });
-	const transactions = data.transactions;
+	const [chain, block] = useBlockChain({ offchain });
+	console.log(chain);
+	const transactions = block.transactions;
 	return (
 		<Grid container spacing={3}>
 			<Grid item xs={12} md={8} lg={8}>
@@ -26,7 +27,7 @@ const MonitorPage: FC<MonitorPageProps> = ({ offchain }): JSX.Element => {
 						flexDirection: 'column',
 					}}
 				>
-					<BarLineGradientChart />
+					<BarLineGradientChart datas={chain.data} />
 				</Paper>
 			</Grid>
 			<Grid item xs={12} md={4} lg={4}>

@@ -68,6 +68,7 @@ interface FileInfo extends SearchInfo {
 	id: number;
 	filename: string;
 	fileSize: number;
+	mimeType: string;
 	description?: string;
 	path: string;
 	isLike?: boolean;

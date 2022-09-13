@@ -105,19 +105,21 @@ export class FileService {
   /**
    * Root 폴더 별 갯수 요청 Service
    * @param user - 해당 유저의 정보를 확인합니다.
+   * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
    * @param page - 리스트를 요청할 폴더의 페이지 정보를 확인합니다.
    * @returns 
    */
   async findFolderRoot(
     user: User,
+    mimeType: string,
     page: number,
   ) {
     const queryBuilder = this.fileRepository.createQueryBuilder('file')
       .select("SUBSTRING_INDEX(file.path, '/', 2) AS folderPath")
       .addSelect('COUNT(file.path) AS count')
       .where(
-        'file.user_id = :id AND file.is_del = :isDel AND file.down_ipfs = :downIPFS AND path LIKE :path',
-        { id: user.id, isDel: Number(false), downIPFS: Number(false), path: '/%' }
+        'file.user_id = :id AND path LIKE :path AND mime_type LIKE :mimeType AND file.is_del = :isDel AND file.down_ipfs = :downIPFS',
+        { id: user.id, path: '/%', mimeType: `%${mimeType}%`, isDel: Number(false), downIPFS: Number(false) }
       )
       .groupBy('folderPath');
     const count = await queryBuilder.getCount();
@@ -138,12 +140,14 @@ export class FileService {
    * (Root 폴더 이외의) 폴더 별 갯수 요청 Service
    * @param user - 해당 유저의 정보를 확인합니다.
    * @param path - 리스트를 요청할 폴더 경로를 확인합니다.
+   * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
    * @param page - 리스트를 요청할 폴더의 페이지 정보를 확인합니다.
    * @returns 
    */
   async findFolderCommon(
     user: User,
     path: string,
+    mimeType: string,
     page: number,
   ) {
     const index = path.length + 1
@@ -153,8 +157,8 @@ export class FileService {
       )
       .addSelect('COUNT(file.path) AS count')
       .where(
-        'file.user_id = :id AND file.is_del = :isDel AND file.down_ipfs = :downIPFS AND path LIKE :path',
-        { id: user.id, isDel: Number(false), downIPFS: Number(false), path: `${path}%` }
+        'file.user_id = :id AND path LIKE :path AND mime_type LIKE :mimeType AND file.is_del = :isDel AND file.down_ipfs = :downIPFS',
+        { id: user.id, path: `${path}%`, mimeType: `%${mimeType}%`, isDel: Number(false), downIPFS: Number(false) }
       )
       .groupBy('subPath');
     const count = await queryBuilder.getCount();
@@ -192,7 +196,7 @@ export class FileService {
     order: boolean,
   ) {
     const [results, total] = await this.fileRepository.findAndCount({
-      select: ['id', 'fileId', 'filename', 'fileSize', 'path', 'isLike', 'createdAt'],
+      select: ['id', 'fileId', 'filename', 'fileSize', 'mimeType', 'path', 'isLike', 'createdAt'],
       where:
         mimeType !== ''
         ? {
@@ -240,9 +244,19 @@ export class FileService {
         default: return this.findFileType(user, filePath, '', page, 10, false, false)
       }
     }
-    switch(folderPath) {
-      case '/': return this.findFolderRoot(user, page)
-      default: return this.findFolderCommon(user, folderPath, page)
+    if (folderPath === '/') {
+      switch(type) {
+        case 'all': return this.findFolderRoot(user, '', page)
+        case 'photo': return this.findFolderRoot(user, 'image', page)
+        case 'video': return this.findFolderRoot(user, 'video', page)
+        default: return this.findFolderRoot(user, '', page)
+      }
+    }
+    switch(type) {
+      case 'all': return this.findFolderCommon(user, folderPath, '', page)
+      case 'photo': return this.findFolderCommon(user, folderPath, 'image', page)
+      case 'video': return this.findFolderCommon(user, folderPath, 'video', page)
+      default: return this.findFolderCommon(user, folderPath, '', page)
     }
   }
 
@@ -417,7 +431,7 @@ export class FileService {
   ) {
     if (keyword !== '') {
       const [results, total] = await this.fileRepository.findAndCount({
-        select: ['id', 'fileId', 'filename', 'fileSize', 'createdAt'],
+        select: ['id', 'fileId', 'filename', 'fileSize', 'mimeType', 'createdAt'],
         where: { user: { id: Not(user.id) }, filename: Like(`%${keyword}%`) },
         take: 10, // → Default
         skip: 10 * page,

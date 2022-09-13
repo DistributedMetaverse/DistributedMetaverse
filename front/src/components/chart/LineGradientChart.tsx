@@ -1,19 +1,22 @@
 import React, { FC } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import { DailyData } from '../../services/types';
 
-const LineGradientChart: FC = (): JSX.Element => {
-	const category = [];
-	let dottedBase = +new Date();
-	const lineData = [];
+interface LineGradientChartProps {
+	datas: Array<DailyData>;
+}
+
+const LineGradientChart: FC<LineGradientChartProps> = ({
+	datas,
+}): JSX.Element => {
+	const category: Array<string> = [];
+	const lineData: Array<number> = [];
 
 	//Array of names for legend in {options}
-	for (let i = 0; i < 20; i++) {
-		const date = new Date((dottedBase += 3600 * 24 * 1000));
-		category.push(
-			[date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
-		);
-		lineData.push(Math.ceil((Math.cos(i / 5) * (i / 5) + i / 6) * 5) + 10);
-	}
+	datas.map((data: DailyData) => {
+		category.push(data.date);
+		lineData.push(data.count);
+	});
 
 	//Chart style
 	const style = {

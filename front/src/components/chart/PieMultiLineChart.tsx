@@ -1,90 +1,20 @@
 import React, { FC } from 'react';
 import ReactEcharts from 'echarts-for-react';
+import { CategoryData } from '../../services/types';
 
-const PieMultiLineChart: FC = (): JSX.Element => {
-	const data = [
-		{
-			value: 600.58,
-			name: 'Data Point 1',
-			itemStyle: {
-				normal: {
-					color: '#f845f1',
-				},
-			},
-		},
-		{
-			value: 1100.58,
-			name: 'Data Point 2',
-			itemStyle: {
-				normal: {
-					color: '#ad46f3',
-				},
-			},
-		},
-		{
-			value: 1200.58,
-			name: 'Data Point 3',
-			itemStyle: {
-				normal: {
-					color: '#5045f6',
-				},
-			},
-		},
-		{
-			value: 1300.58,
-			name: 'Data Point 4',
-			itemStyle: {
-				normal: {
-					color: '#4777f5',
-				},
-			},
-		},
-		{
-			value: 1400.58,
-			name: 'Data Point 5',
-			itemStyle: {
-				normal: {
-					color: '#44aff0',
-				},
-			},
-		},
-		{
-			value: 1500.58,
-			name: 'Data Point 6',
-			itemStyle: {
-				normal: {
-					color: '#45dbf7',
-				},
-			},
-		},
-		{
-			value: 1500.58,
-			name: 'Data Point 7',
-			itemStyle: {
-				normal: {
-					color: '#f6d54a',
-				},
-			},
-		},
-		{
-			value: 1600.58,
-			name: 'Data Point 8',
-			itemStyle: {
-				normal: {
-					color: '#f69846',
-				},
-			},
-		},
-		{
-			value: 1800,
-			name: 'Data Point 9',
-			itemStyle: {
-				normal: {
-					color: '#ff4343',
-				},
-			},
-		},
-	];
+interface PieMultiLineChartProps {
+	datas: Array<CategoryData>;
+}
+
+const PieMultiLineChart: FC<PieMultiLineChartProps> = ({
+	datas,
+}): JSX.Element => {
+	const data: Array<{ name: string; value: number }> = [];
+
+	//Array of names for legend in {options}
+	datas.map((category: CategoryData) => {
+		data.push({ name: category.fileType, value: category.count });
+	});
 
 	//Array of names for legend in {options}
 	const dataNames = data.map((i) => i.name);

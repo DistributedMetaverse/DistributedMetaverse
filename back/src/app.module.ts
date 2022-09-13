@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -11,8 +11,6 @@ import { FileController } from './file/file.controller';
 import { FileModule } from './file/file.module';
 import { StatusController } from './status/status.controller';
 import { StatusModule } from './status/status.module';
-import { SettingController } from './setting/setting.controller';
-import { SettingModule } from './setting/setting.module';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
 import { isAuthenticated } from './common/middleware/auth.middleware';
@@ -45,7 +43,6 @@ import { join } from 'path';
     AuthModule,
     FileModule,
     StatusModule,
-    SettingModule,
     UserModule
   ],
   controllers: [AppController],
@@ -55,7 +52,7 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(isAuthenticated, LoggerMiddleware)
-      .forRoutes(FileController, StatusController, SettingController, UserController);
+      .forRoutes(FileController, StatusController, UserController);
   }
 }
 

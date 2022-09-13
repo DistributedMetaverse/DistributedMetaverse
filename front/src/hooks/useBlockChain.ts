@@ -1,12 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { BlockData } from '../services/types';
+import { ChainData, BlockData } from '../services/types';
 
 interface BlockChainProps {
 	offchain: ActionCreatorsMapObject;
 }
 
-const useBlockChain = ({ offchain }: BlockChainProps): BlockData => {
+const useBlockChain = ({
+	offchain,
+}: BlockChainProps): [ChainData, BlockData] => {
+	const [chain, setChain] = useState<ChainData>({ data: [] });
 	// const [transaction, setTransaction] = useState<TransactionResponseData>({
 	// 	data: {
 	// 		id: 0,
@@ -26,15 +29,18 @@ const useBlockChain = ({ offchain }: BlockChainProps): BlockData => {
 	});
 
 	const fetchAndSetData = useCallback(async () => {
-		const data = await offchain.chain(1);
-		if (data && data.blocks.length > 0) setBlock(data.blocks[0]);
+		const data = await offchain.chain(10);
+		if (data && data.data.length > 0) {
+			setChain(data);
+			setBlock(data.data[0]);
+		}
 	}, []);
 
 	useEffect(() => {
 		fetchAndSetData();
 	}, [fetchAndSetData]);
 
-	return block;
+	return [chain, block];
 };
 
 export default useBlockChain;

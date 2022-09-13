@@ -44,6 +44,21 @@ interface SharedData {
 	page: number;
 }
 
+interface CategoryData {
+	fileType: string;
+	count: number;
+}
+
+interface DailyData {
+	date: string;
+	count: number;
+}
+
+interface IndicatorData {
+	all: Array<number>;
+	user: Array<number>;
+}
+
 interface IPFSUploadData {
 	Name: string;
 	Hash: string;
@@ -88,7 +103,7 @@ interface BlockResponseData {
 }
 
 interface ChainData {
-	blocks: Array<BlockData>;
+	data: Array<BlockData>;
 }
 
 export type {
@@ -100,6 +115,9 @@ export type {
 	PageData,
 	KeywordData,
 	SharedData,
+	CategoryData,
+	DailyData,
+	IndicatorData,
 	IPFSUploadData,
 	IPFSDownloadData,
 	PublishData,

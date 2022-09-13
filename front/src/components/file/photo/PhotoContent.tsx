@@ -18,13 +18,14 @@ interface PhotoContentProps {
 	time: number;
 	branch: boolean;
 	setFileId: Dispatch<SetStateAction<string>>;
+	setType: Dispatch<SetStateAction<string>>;
 	csrfData: CSRFData;
 	fetchData: () => Promise<void>;
 }
 
 interface PhotoContentDataProps {
 	datas: Array<FileInfo>;
-	photoClick: (fileId: string) => void;
+	photoClick: (fileId: string, mimeType: string) => void;
 	csrfData: CSRFData;
 	fetchData: () => Promise<void>;
 }
@@ -48,7 +49,7 @@ const PhotoContentGrid: FC<PhotoContentDataProps> = ({
 									backgroundColor: 'action.hover',
 								},
 							}}
-							onClick={() => photoClick(data.fileId)}
+							onClick={() => photoClick(data.fileId, data.mimeType)}
 						>
 							<ContentHeader
 								fileId={data.fileId}
@@ -98,7 +99,7 @@ const PhotoContentRow: FC<PhotoContentDataProps> = ({
 							display: 'flex',
 							justifyContent: 'space-between',
 						}}
-						onClick={() => photoClick(data.fileId)}
+						onClick={() => photoClick(data.fileId, data.mimeType)}
 					>
 						<ContentName filename={data.filename} />
 						<ContentAside
@@ -121,6 +122,7 @@ const PhotoContent: FC<PhotoContentProps> = ({
 	time,
 	branch,
 	setFileId,
+	setType,
 	csrfData,
 	fetchData,
 }): JSX.Element => {
@@ -131,8 +133,9 @@ const PhotoContent: FC<PhotoContentProps> = ({
 		time,
 	});
 
-	const photoClick = (fileId: string) => {
+	const photoClick = (fileId: string, mimeType: string) => {
 		setFileId(fileId);
+		setType(mimeType);
 	};
 
 	const pageChange = (event: ChangeEvent<unknown>, page: number) => {

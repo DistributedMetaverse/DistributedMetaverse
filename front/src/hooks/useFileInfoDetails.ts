@@ -18,6 +18,7 @@ const useFileInfoDetails = ({
 		fileId: '',
 		filename: '',
 		fileSize: 0,
+		mimeType: '',
 		path: '/',
 		isLike: false,
 		downIPFS: false,

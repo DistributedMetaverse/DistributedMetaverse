@@ -8,20 +8,35 @@ export class StatusController {
   constructor(private readonly statusService: StatusService) {}
 
   @Get('download')
-  findDownload(@AuthToken() user: User) {
+  download(@AuthToken() user: User) {
     return this.statusService.findDownloadCount(user);
   }
 
   @Get('folder')
-  findFolderPath(@AuthToken() user: User) {
+  folderPath(@AuthToken() user: User) {
     return this.statusService.findFolder(user);
   }
 
   @Get('file')
-  findFilePath(
+  filePath(
     @AuthToken() user: User,
     @Query('type') type: string
   ) {
     return this.statusService.findFile(user, type);
+  }
+
+  @Get('category')
+  category(@AuthToken() user: User) {
+    return this.statusService.findCategory(user);
+  }
+
+  @Get('daliy')
+  daliy(@AuthToken() user: User) {
+    return this.statusService.findDaliy(user);
+  }
+
+  @Get('indicator')
+  indicator(@AuthToken() user: User) {
+    return this.statusService.findIndicator(user);
   }
 }

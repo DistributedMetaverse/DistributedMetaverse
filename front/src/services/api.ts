@@ -315,6 +315,21 @@ const status = {
 		instance.get(`status/file?type=${type}`).then((response: AxiosResponse) => {
 			return response.data;
 		}),
+	// 파일 카테고리 갯수 확인 API : <baseURL>/status/category
+	category: () => () =>
+		instance.get(`status/category`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
+	// 파일 일일 갯수 확인 API : <baseURL>/status/daliy
+	daliy: () => () =>
+		instance.get(`status/daliy`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
+	// 전체 대비 파일 갯수 확인 API : <baseURL>/status/indicator
+	indicator: () => () =>
+		instance.get(`status/indicator`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
 };
 
 const infra = {

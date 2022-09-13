@@ -13,6 +13,9 @@ import {
 	folderPathTablist,
 	filePathTablist,
 	sharedlist,
+	categorylist,
+	daliylist,
+	indicatorData,
 	ipfsData,
 	chainData,
 	blockData,
@@ -98,6 +101,21 @@ export const handlers = [
 	// 현재 확인된 파일 경로 리스트 확인
 	rest.get(prifix + '/status/file', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(filePathTablist));
+	}),
+
+	// 현재 확인된 파일 카테고리 갯수 확인
+	rest.get(prifix + '/status/category', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(categorylist));
+	}),
+
+	// 현재 확인된 파일 일일 갯수 확인
+	rest.get(prifix + '/status/daliy', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(daliylist));
+	}),
+
+	// 전체 파일 개수 대비 사용자가 소유한 파일 갯수 확인
+	rest.get(prifix + '/status/indicator', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(indicatorData));
 	}),
 
 	// IPFS 파일 업로드

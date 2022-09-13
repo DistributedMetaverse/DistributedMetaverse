@@ -1,24 +1,25 @@
 import React, { FC } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import * as echarts from 'echarts';
+import { BlockData } from '../../services/types';
 
-const BarLineGradientChart: FC = (): JSX.Element => {
-	const category = [];
-	let dottedBase = +new Date();
-	const lineData = [];
-	const barData = [];
+interface BarLineGradientChartProps {
+	datas: Array<BlockData>;
+}
+
+const BarLineGradientChart: FC<BarLineGradientChartProps> = ({
+	datas,
+}): JSX.Element => {
+	const category: Array<string> = [];
+	const barData: Array<number> = [];
+	const lineData: Array<number> = [];
 
 	//Array of names for legend in {options}
-	for (let i = 0; i < 20; i++) {
-		const date = new Date((dottedBase += 3600 * 24 * 1000));
-		category.push(
-			[date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-')
-		);
-		const b = Math.random() * 200;
-		const d = Math.random() * 200;
-		barData.push(b); // → Block ID
-		lineData.push(b + d); // → Transaction ID
-	}
+	datas.map((data: BlockData) => {
+		category.push(data.datetime.split(' ')[0]);
+		barData.push(data.lastTransactionId);
+		lineData.push(data.proof);
+	});
 
 	//Chart style
 	const style = {
@@ -36,7 +37,7 @@ const BarLineGradientChart: FC = (): JSX.Element => {
 			},
 		},
 		legend: {
-			data: ['transaction', 'block'],
+			data: ['proof', 'lastTransactionId'],
 			textStyle: {
 				color: '#ccc',
 			},
@@ -59,7 +60,7 @@ const BarLineGradientChart: FC = (): JSX.Element => {
 		},
 		series: [
 			{
-				name: 'transaction',
+				name: 'proof',
 				type: 'line',
 				smooth: true,
 				showAllSymbol: true,
@@ -68,7 +69,7 @@ const BarLineGradientChart: FC = (): JSX.Element => {
 				data: lineData,
 			},
 			{
-				name: 'block',
+				name: 'lastTransactionId',
 				type: 'bar',
 				barWidth: 10,
 				itemStyle: {

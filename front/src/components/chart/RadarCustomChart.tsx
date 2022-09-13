@@ -1,8 +1,13 @@
 import React, { FC } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import * as echarts from 'echarts';
+import { IndicatorData } from '../../services/types';
 
-const RadarCustomChart: FC = (): JSX.Element => {
+interface RadarCustomChartProps {
+	data: IndicatorData;
+}
+
+const RadarCustomChart: FC<RadarCustomChartProps> = ({ data }): JSX.Element => {
 	//Chart style
 	const style = {
 		height: '70vh',
@@ -28,12 +33,11 @@ const RadarCustomChart: FC = (): JSX.Element => {
 		},
 		radar: {
 			indicator: [
-				{ text: 'Indicator1', max: 150 },
-				{ text: 'Indicator2', max: 150 },
-				{ text: 'Indicator3', max: 150 },
-				{ text: 'Indicator4', max: 120 },
-				{ text: 'Indicator5', max: 108 },
-				{ text: 'Indicator6', max: 72 },
+				{ text: 'text', max: 50 },
+				{ text: 'image', max: 50 },
+				{ text: 'audio', max: 50 },
+				{ text: 'video', max: 50 },
+				{ text: 'application', max: 50 },
 			],
 			radius: 120,
 			axisName: {
@@ -48,7 +52,7 @@ const RadarCustomChart: FC = (): JSX.Element => {
 				type: 'radar',
 				data: [
 					{
-						value: [120, 118, 130, 100, 99, 70],
+						value: data.all,
 						name: 'All User',
 						symbol: 'rect',
 						symbolSize: 12,
@@ -63,7 +67,7 @@ const RadarCustomChart: FC = (): JSX.Element => {
 						},
 					},
 					{
-						value: [100, 93, 50, 90, 70, 60],
+						value: data.user,
 						name: 'My',
 						areaStyle: {
 							color: new echarts.graphic.RadialGradient(0.1, 0.6, 1, [

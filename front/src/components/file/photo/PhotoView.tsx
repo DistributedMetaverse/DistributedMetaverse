@@ -1,20 +1,31 @@
 import React, { FC } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
+import useIPFSCat from '../../../hooks/useIPFSCat';
 import { Box, Paper, Typography } from '@mui/material';
 import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual';
 
 interface PhotoViewProps {
-	file: ActionCreatorsMapObject;
+	infra: ActionCreatorsMapObject;
 	fileId: string;
-	time: number;
+	type: string;
 }
 
 interface UsePhotoProps {
-	filename: string;
+	data: Blob;
+	type: string;
 }
 
-const UsePhoto: FC<UsePhotoProps> = ({ filename }): JSX.Element => {
+const UsePhoto: FC<UsePhotoProps> = ({ data, type }): JSX.Element => {
+	const getBase64 = (file: Blob) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = function () {
+			console.log(reader.result);
+		};
+		reader.onerror = function (error) {
+			console.log('Error: ', error);
+		};
+	};
 	return (
 		<Box>
 			<Typography
@@ -22,7 +33,7 @@ const UsePhoto: FC<UsePhotoProps> = ({ filename }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				{filename}
+				<img src={'data:' + type + ';base64,' + getBase64(data)} />
 			</Typography>
 		</Box>
 	);
@@ -58,12 +69,15 @@ const NoPhoto: FC = (): JSX.Element => {
 	);
 };
 
-const PhotoView: FC<PhotoViewProps> = ({ file, fileId, time }): JSX.Element => {
-	const data = useFileInfoDetails({ file, fileId, time });
-	const filename = data.filename;
+const PhotoView: FC<PhotoViewProps> = ({
+	infra,
+	fileId,
+	type,
+}): JSX.Element => {
+	const data = useIPFSCat({ infra, fileId });
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>
-			{fileId === '' ? <NoPhoto /> : <UsePhoto filename={filename} />}
+			{fileId === '' ? <NoPhoto /> : <UsePhoto data={data} type={type} />}
 		</Paper>
 	);
 };

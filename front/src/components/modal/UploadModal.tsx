@@ -40,6 +40,7 @@ interface UseFolderProps {
 interface UploadModalProps {
 	file: ActionCreatorsMapObject;
 	infra: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	openUpload: boolean;
 	setOpenUpload: Dispatch<SetStateAction<boolean>>;
 	csrfData: CSRFData;
@@ -157,6 +158,7 @@ const UseFolder: FC<UseFolderProps> = ({
 const UploadModal: FC<UploadModalProps> = ({
 	file,
 	infra,
+	block,
 	openUpload,
 	setOpenUpload,
 	csrfData,
@@ -180,6 +182,11 @@ const UploadModal: FC<UploadModalProps> = ({
 			formData.append('file', fileinfo);
 			//await file.upload(formData, csrfData);	// → Disabled
 			const data = await infra.upload(formData, csrfData);
+			const publishData = {
+				qmhash: data.Hash,
+				mimetype: fileinfo.type,
+				filename: fileinfo.name,
+			};
 			const submitData = {
 				fileId: data.Hash,
 				filename: fileinfo.name,
@@ -187,6 +194,7 @@ const UploadModal: FC<UploadModalProps> = ({
 				mimeType: fileinfo.type,
 				path: path,
 			};
+			await block.publish(publishData, csrfData);
 			await file.submit(submitData, csrfData);
 			dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		}

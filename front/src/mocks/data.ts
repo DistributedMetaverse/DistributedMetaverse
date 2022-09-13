@@ -5,6 +5,9 @@ import {
 	PageState,
 } from '../store/types';
 import {
+	CategoryData,
+	DailyData,
+	IndicatorData,
 	TransactionResponseData,
 	BlockData,
 	BlockResponseData,
@@ -17,6 +20,7 @@ const fileinfo: FileInfo = {
 	fileId: 'test1',
 	filename: 'test1.png',
 	fileSize: 1000000,
+	mimeType: 'image/png',
 	description: 'the file is sample',
 	path: '/',
 	isLike: false,
@@ -43,6 +47,7 @@ const filelist: PageState = {
 			fileId: 'test1',
 			filename: 'test1.png',
 			fileSize: 100000,
+			mimeType: 'image/png',
 			path: '/',
 			isLike: true,
 			downIPFS: false,
@@ -53,6 +58,7 @@ const filelist: PageState = {
 			fileId: 'test2',
 			filename: 'test2.png',
 			fileSize: 2000000,
+			mimeType: 'image/png',
 			path: '/',
 			isLike: false,
 			downIPFS: false,
@@ -63,6 +69,7 @@ const filelist: PageState = {
 			fileId: 'test3',
 			filename: 'test3.png',
 			fileSize: 3000000,
+			mimeType: 'image/png',
 			path: '/test/test',
 			isLike: false,
 			downIPFS: false,
@@ -73,6 +80,7 @@ const filelist: PageState = {
 			fileId: 'test4',
 			filename: 'test4.png',
 			fileSize: 4000000,
+			mimeType: 'image/png',
 			path: '/aaaa',
 			isLike: false,
 			downIPFS: false,
@@ -161,6 +169,41 @@ const sharedlist: PageState = {
 	total: 4,
 };
 
+const categorylist: Array<CategoryData> = [
+	{
+		fileType: 'image',
+		count: 2,
+	},
+	{
+		fileType: 'video',
+		count: 10,
+	},
+	{
+		fileType: 'file',
+		count: 13,
+	},
+];
+
+const daliylist: Array<DailyData> = [
+	{
+		date: '2022-09-10',
+		count: 1,
+	},
+	{
+		date: '2022-09-11',
+		count: 8,
+	},
+	{
+		date: '2022-09-12',
+		count: 2,
+	},
+];
+
+const indicatorData: IndicatorData = {
+	all: [120, 118, 130, 100, 99],
+	user: [100, 93, 50, 90, 70],
+};
+
 const ipfsData: IPFSUploadData = {
 	Name: 'test',
 	Hash: 'QmVnqyXNURMWdk4pnMfW5CM1htKVfJVgKFHY2oKSa1ntN2',
@@ -220,7 +263,7 @@ const blockData: BlockResponseData = {
 };
 
 const chainData: ChainData = {
-	blocks: [blockinfo, blockinfo],
+	data: [blockinfo, blockinfo],
 };
 
 export {
@@ -230,6 +273,9 @@ export {
 	folderPathTablist,
 	filePathTablist,
 	sharedlist,
+	categorylist,
+	daliylist,
+	indicatorData,
 	ipfsData,
 	transactionData,
 	blockData,
