@@ -13,6 +13,7 @@ import VideoContent from '../components/file/video/VideoContent';
 interface VideoPageProps {
 	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	path: string;
 	time: number;
 }
@@ -20,6 +21,7 @@ interface VideoPageProps {
 const VideoPage: FC<VideoPageProps> = ({
 	auth,
 	file,
+	block,
 	path,
 	time,
 }): JSX.Element => {
@@ -29,7 +31,7 @@ const VideoPage: FC<VideoPageProps> = ({
 	return (
 		<Box>
 			<VideoHeader path={path} branch={branch} setSwitch={setSwitch} />
-			<VideoPlay file={file} fileId={fileId} time={time} />
+			<VideoPlay file={file} block={block} fileId={fileId} time={time} />
 			<VideoContent
 				file={file}
 				path={path}
@@ -51,6 +53,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
+	block: bindActionCreators(Api.block, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(VideoPage);

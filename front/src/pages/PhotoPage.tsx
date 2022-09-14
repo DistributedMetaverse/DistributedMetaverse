@@ -13,7 +13,7 @@ import PhotoContent from '../components/file/photo/PhotoContent';
 interface PhotoPageProps {
 	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
-	infra: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	path: string;
 	time: number;
 }
@@ -21,25 +21,23 @@ interface PhotoPageProps {
 const PhotoPage: FC<PhotoPageProps> = ({
 	auth,
 	file,
-	infra,
+	block,
 	path,
 	time,
 }): JSX.Element => {
 	const [branch, setSwitch] = useState(true);
 	const [fileId, setFileId] = useState('');
-	const [type, setType] = useState('');
 	const [csrfData, fetchCSRFTokenData] = useCSRFToken({ auth });
 	return (
 		<Box>
 			<PhotoHeader path={path} branch={branch} setSwitch={setSwitch} />
-			<PhotoView infra={infra} fileId={fileId} type={type} />
+			<PhotoView file={file} block={block} fileId={fileId} time={time} />
 			<PhotoContent
 				file={file}
 				path={path}
 				time={time}
 				branch={branch}
 				setFileId={setFileId}
-				setType={setType}
 				csrfData={csrfData}
 				fetchData={fetchCSRFTokenData}
 			/>
@@ -55,7 +53,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
-	infra: bindActionCreators(Api.infra, dispatch),
+	block: bindActionCreators(Api.block, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PhotoPage);

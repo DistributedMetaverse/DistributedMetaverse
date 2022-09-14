@@ -25,6 +25,7 @@ interface SubmitData {
 	fileSize: number;
 	mimeType: string;
 	path: string;
+	trainsactionId: number;
 }
 
 interface PageData {
@@ -106,6 +107,12 @@ interface ChainData {
 	data: Array<BlockData>;
 }
 
+interface StatData {
+	lastBlockHash: string;
+	lastBlocksCount: number;
+	lastTransactionId: number;
+}
+
 export type {
 	LoginData,
 	SignUpData,
@@ -126,4 +133,5 @@ export type {
 	BlockData,
 	BlockResponseData,
 	ChainData,
+	StatData,
 };

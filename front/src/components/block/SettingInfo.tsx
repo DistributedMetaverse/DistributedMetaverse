@@ -4,6 +4,11 @@ import { SxProps, Theme } from '@mui/material/styles';
 //import StorageIcon from '@mui/icons-material/Storage';
 import CurrencyBitcoinRoundedIcon from '@mui/icons-material/CurrencyBitcoinRounded';
 //import PrecisionManufacturingOutlinedIcon from '@mui/icons-material/PrecisionManufacturingOutlined';
+import { StatData } from '../../services/types';
+
+interface SettingInfoProps {
+	stat: StatData;
+}
 
 interface SettingItemsProps {
 	title: string;
@@ -126,13 +131,13 @@ const SettingFooter: FC<SettingFooterProps> = ({
 	);
 };
 
-const SettingInfo: FC = (): JSX.Element => {
+const SettingInfo: FC<SettingInfoProps> = ({ stat }): JSX.Element => {
 	const data = {
 		ip: '112.252.112.111',
 		port: 3821,
 		host: '112.252.112.111:3821', // 헤더에서 가져오기
-		block: 12,
-		transaction: 122,
+		block: stat.lastBlocksCount,
+		transaction: stat.lastTransactionId,
 	};
 	return (
 		<Paper sx={{ p: 2 }}>

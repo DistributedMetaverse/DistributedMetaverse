@@ -421,6 +421,17 @@ const block = {
 				const { data } = error.response as AxiosResponse;
 				toastMessage(data.message, 'warn');
 			}),
+	// 블록 및 트랜젝션 Count 정보 조회 API : <off-chain URL>/offchain/stat
+	stat: () => () =>
+		offchain
+			.get('stat')
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
 };
 
 const api = {

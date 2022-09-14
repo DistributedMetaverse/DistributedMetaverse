@@ -14,7 +14,7 @@ interface MonitorPageProps {
 }
 
 const MonitorPage: FC<MonitorPageProps> = ({ offchain }): JSX.Element => {
-	const [chain, block] = useBlockChain({ offchain });
+	const [chain, block, stat] = useBlockChain({ offchain });
 	console.log(chain);
 	const transactions = block.transactions;
 	return (
@@ -38,7 +38,7 @@ const MonitorPage: FC<MonitorPageProps> = ({ offchain }): JSX.Element => {
 						flexDirection: 'column',
 					}}
 				>
-					<SettingInfo />
+					<SettingInfo stat={stat} />
 				</Paper>
 			</Grid>
 			<Grid item xs={12}>

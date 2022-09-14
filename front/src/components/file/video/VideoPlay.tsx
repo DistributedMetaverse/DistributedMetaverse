@@ -1,22 +1,23 @@
 import React, { FC } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
+import useTransactionID from '../../../hooks/useTransactionID';
 import { Box, Paper, Typography } from '@mui/material';
 import NotStartedIcon from '@mui/icons-material/NotStarted';
 import ReactPlayer from 'react-player';
-import { linkFormat } from '../../../utils/format';
 
 interface VideoPlayProps {
 	file: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	fileId: string;
 	time: number;
 }
 
 interface UseVideoProps {
-	fileId: string;
+	url: string;
 }
 
-const UseVideo: FC<UseVideoProps> = ({ fileId }): JSX.Element => {
+const UseVideo: FC<UseVideoProps> = ({ url }): JSX.Element => {
 	return (
 		<Box>
 			<Typography
@@ -24,12 +25,7 @@ const UseVideo: FC<UseVideoProps> = ({ fileId }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				<ReactPlayer
-					url={linkFormat(fileId, '/')}
-					width="100%"
-					height="100%"
-					controls={true}
-				/>
+				<ReactPlayer url={url} width="100%" height="100%" controls={true} />
 			</Typography>
 		</Box>
 	);
@@ -65,11 +61,20 @@ const NoVideo: FC = (): JSX.Element => {
 	);
 };
 
-const VideoPlay: FC<VideoPlayProps> = ({ file, fileId, time }): JSX.Element => {
+const VideoPlay: FC<VideoPlayProps> = ({
+	file,
+	block,
+	fileId,
+	time,
+}): JSX.Element => {
 	const data = useFileInfoDetails({ file, fileId, time });
+	const transaction = useTransactionID({
+		block,
+		transactionId: data.transactionId,
+	});
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>
-			{fileId === '' ? <NoVideo /> : <UseVideo fileId={data.fileId} />}
+			{fileId === '' ? <NoVideo /> : <UseVideo url={transaction.url ?? ''} />}
 		</Paper>
 	);
 };

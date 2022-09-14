@@ -66,6 +66,7 @@ interface UserInfo {
 
 interface FileInfo extends SearchInfo {
 	id: number;
+	transactionId: number;
 	filename: string;
 	fileSize: number;
 	mimeType: string;

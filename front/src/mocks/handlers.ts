@@ -20,6 +20,7 @@ import {
 	chainData,
 	blockData,
 	transactionData,
+	statData,
 } from './data';
 
 const secret = 'S-dV7@1SS#AGd#%^';
@@ -146,5 +147,10 @@ export const handlers = [
 	// OffChain 트랜젝션 정보 조회
 	rest.get('/offchain/transaction/:id', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(transactionData));
+	}),
+
+	// OffChain 블록 및 트랜젝션 Count 정보 조회
+	rest.get('/offchain/stat', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(statData));
 	}),
 ];

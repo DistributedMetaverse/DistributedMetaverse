@@ -13,11 +13,13 @@ import {
 	BlockResponseData,
 	IPFSUploadData,
 	ChainData,
+	StatData,
 } from '../services/types';
 
 const fileinfo: FileInfo = {
 	id: 1,
 	fileId: 'test1',
+	transactionId: 1,
 	filename: 'test1.png',
 	fileSize: 1000000,
 	mimeType: 'image/png',
@@ -45,6 +47,7 @@ const filelist: PageState = {
 		{
 			id: 1,
 			fileId: 'test1',
+			transactionId: 1,
 			filename: 'test1.png',
 			fileSize: 100000,
 			mimeType: 'image/png',
@@ -56,6 +59,7 @@ const filelist: PageState = {
 		{
 			id: 2,
 			fileId: 'test2',
+			transactionId: 2,
 			filename: 'test2.png',
 			fileSize: 2000000,
 			mimeType: 'image/png',
@@ -67,6 +71,7 @@ const filelist: PageState = {
 		{
 			id: 3,
 			fileId: 'test3',
+			transactionId: 3,
 			filename: 'test3.png',
 			fileSize: 3000000,
 			mimeType: 'image/png',
@@ -78,6 +83,7 @@ const filelist: PageState = {
 		{
 			id: 4,
 			fileId: 'test4',
+			transactionId: 4,
 			filename: 'test4.png',
 			fileSize: 4000000,
 			mimeType: 'image/png',
@@ -266,6 +272,13 @@ const chainData: ChainData = {
 	data: [blockinfo, blockinfo],
 };
 
+const statData: StatData = {
+	lastBlockHash:
+		'4a4b1764b356dddb18ab4a3a2d4932eba4b25c366d3c5f8724ded74a0f153f59',
+	lastBlocksCount: 36,
+	lastTransactionId: 137,
+};
+
 export {
 	fileinfo,
 	filelist,
@@ -280,4 +293,5 @@ export {
 	transactionData,
 	blockData,
 	chainData,
+	statData,
 };
