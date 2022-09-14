@@ -8,7 +8,7 @@ import {
 	PathState,
 	FileState,
 	PageState,
-	SettingState,
+	MonitorState,
 	DataState,
 } from './types';
 
@@ -126,16 +126,6 @@ const menuinitialState: MenuState = {
 			isActive: false,
 			isShow: true,
 		},
-		{
-			index: 6,
-			name: 'SETTINGS',
-			path: '/setting',
-			title: 'Setting',
-			description: '설정 화면',
-			position: -2.3,
-			isActive: false,
-			isShow: false,
-		},
 	],
 };
 
@@ -230,17 +220,17 @@ const fileSlice = createSlice({
 	},
 });
 
-// 6.1. Setting 관련 State
-const settinginitialState: SettingState = {
+// 6.1. Monitor 관련 State
+const monitorinitialState: MonitorState = {
 	isActive: false,
 };
 
-// 6.2. settingSlice : action + reducer → slice
-const settingSlice = createSlice({
-	name: 'setting',
-	initialState: settinginitialState,
+// 6.2. monitorSlice : action + reducer → slice
+const monitorSlice = createSlice({
+	name: 'monitor',
+	initialState: monitorinitialState,
 	reducers: {
-		settingSwitch: (state: SettingState, action: PayloadAction<boolean>) => {
+		monitorSwitch: (state: MonitorState, action: PayloadAction<boolean>) => {
 			state.isActive = action.payload;
 		},
 	},
@@ -290,7 +280,7 @@ const rootReducer = combineReducers({
 	preview: previewSlice.reducer,
 	path: pathSlice.reducer,
 	file: fileSlice.reducer,
-	setting: settingSlice.reducer,
+	monitor: monitorSlice.reducer,
 	page: pageSlice.reducer,
 	data: dataSlice.reducer,
 });
@@ -303,7 +293,7 @@ const { previewInfo, previewSwitch } = previewSlice.actions;
 const { setFolderPath, setFilePath, setFolderType, setFileType } =
 	pathSlice.actions;
 const { fileSuccess, fileProgress } = fileSlice.actions;
-const { settingSwitch } = settingSlice.actions;
+const { monitorSwitch } = monitorSlice.actions;
 const { pageSuccess } = pageSlice.actions;
 const { dataSuccess } = dataSlice.actions;
 
@@ -323,7 +313,7 @@ export {
 	setFileType,
 	fileSuccess,
 	fileProgress,
-	settingSwitch,
+	monitorSwitch,
 	pageSuccess,
 	dataSuccess,
 };

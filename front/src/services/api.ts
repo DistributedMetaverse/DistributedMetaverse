@@ -23,20 +23,29 @@ import {
 	SignUpData,
 	TokenData,
 	CSRFData,
+	SubmitData,
 	PageData,
 	KeywordData,
 	SharedData,
+	IPFSDownloadData,
+	PublishData,
 } from './types';
 
 // 인스턴스 API 생성
 const createInstance = () => {
 	const instance = axios.create({
-		baseURL: '/api', // proxy: process.env.REACT_APP_API_URL
+		baseURL: '/api',
 	});
 
 	return setInterceptors(instance);
 };
 const instance = createInstance();
+const ipfs = axios.create({
+	baseURL: '/ipfs',
+});
+const offchain = axios.create({
+	baseURL: '/offchain',
+});
 
 const auth = {
 	// 로그인 API : <baseURL>/auth/login
@@ -62,12 +71,10 @@ const auth = {
 			})
 			.catch((error: AxiosError) => {
 				const { status, data } = error.response as AxiosResponse;
-				if (status === 400) {
-					toastMessage('올바르지 않은 로그인 형식입니다', 'info');
-				} else if (status === 401) {
+				if (status === 403) {
 					toastMessage(data.message, 'warn');
-				} else if (status === 504) {
-					toastMessage('서버가 닫혀있습니다', 'error');
+				} else if (status === 500) {
+					toastMessage(data.message, 'error');
 				} else {
 					toastMessage(data, 'error');
 				}
@@ -94,12 +101,10 @@ const auth = {
 			})
 			.catch((error: AxiosError) => {
 				const { status, data } = error.response as AxiosResponse;
-				if (status === 400) {
-					toastMessage('올바르지 않은 회원가입 형식입니다', 'info');
-				} else if (status === 409) {
+				if (status === 403) {
 					toastMessage(data.message, 'warn');
-				} else if (status === 504) {
-					toastMessage('서버가 닫혀있습니다', 'error');
+				} else if (status === 500) {
+					toastMessage(data.message, 'error');
 				} else {
 					toastMessage(data, 'error');
 				}
@@ -169,6 +174,18 @@ const file = {
 				.catch((error: AxiosError) => {
 					const { data } = error.response as AxiosResponse;
 					toastMessage(data.message, 'warn');
+				}),
+	// 파일 업로드 완료 API : <baseURL>/file/upload/submit
+	submit:
+		(submitData: SubmitData, csrfData: CSRFData) => (dispatch: Dispatch) =>
+			instance
+				.post('file/upload/submit', submitData, {
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+					},
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
 				}),
 	// 특정경로 파일 리스트 API : <baseURL>/file/list?{file,folder}={path}&type={type}&page={page}
 	list: (pageData: PageData) => (dispatch: Dispatch) =>
@@ -286,37 +303,143 @@ const status = {
 		instance.get(`status/download`).then((response: AxiosResponse) => {
 			return response.data;
 		}),
-	// 폴더 리스트 검색 API : <baseURL>/status/folder?type={type}
+	// 폴더 경로 리스트 검색 API : <baseURL>/status/folder?type={type}
 	folder: (type: string) => () =>
 		instance
 			.get(`status/folder?type=${type}`)
 			.then((response: AxiosResponse) => {
 				return response.data;
 			}),
-};
-
-const setting = {
-	// Setting 세부정보 확인 API : <baseURL>/setting/info?id={serverId}
-	info: (serverId: number) => (dispatch: Dispatch) =>
-		instance
-			.get(`setting/info?id=${serverId}`)
-			.then((response: AxiosResponse) => {
-				dispatch(fileSuccess(response.data));
-				return response.data;
-			}),
-	// Setting 정보 리스트 API : <baseURL>/setting/list/:page
-	list: (page: number) => (dispatch: Dispatch) =>
-		instance.get(`setting/list/${page}`).then((response: AxiosResponse) => {
-			dispatch(fileSuccess(response.data));
+	// 파일 경로 리스트 검색 API : <baseURL>/status/file?type={type}
+	file: (type: string) => () =>
+		instance.get(`status/file?type=${type}`).then((response: AxiosResponse) => {
 			return response.data;
 		}),
+	// 파일 카테고리 갯수 확인 API : <baseURL>/status/category
+	category: () => () =>
+		instance.get(`status/category`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
+	// 파일 일일 갯수 확인 API : <baseURL>/status/daliy
+	daliy: () => () =>
+		instance.get(`status/daliy`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
+	// 전체 대비 파일 갯수 확인 API : <baseURL>/status/indicator
+	indicator: () => () =>
+		instance.get(`status/indicator`).then((response: AxiosResponse) => {
+			return response.data;
+		}),
+};
+
+const infra = {
+	// 파일 업로드 API : <ipfs URL>/ipfs/api/v0/add
+	upload:
+		(formData: HTMLFormElement, csrfData: CSRFData) => (dispatch: Dispatch) =>
+			ipfs
+				.post('add', formData, {
+					headers: {
+						'CSRF-Token': csrfData.csrfToken,
+						'Content-Type': 'multipart/form-data',
+					},
+					onUploadProgress: (progressEvent: ProgressEvent) => {
+						const { loaded, total } = progressEvent;
+						dispatch(fileProgress(Math.round((loaded / total) * 100)));
+					},
+				})
+				.then((response: AxiosResponse) => {
+					dispatch(fileSuccess(response.data));
+					return response.data;
+				})
+				.catch((error: AxiosError) => {
+					const { data } = error.response as AxiosResponse;
+					toastMessage(data.message, 'warn');
+				}),
+	// 파일 다운로드 API : <ipfs URL>/ipfs/api/v0/cat
+	download: (ipfsData: IPFSDownloadData, csrfData: CSRFData) => () =>
+		ipfs
+			.post('cat', ipfsData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+};
+
+const block = {
+	// 트랜젝션 추가 API : <off-chain URL>/offchain/transaction/publish
+	publish: (publishData: PublishData, csrfData: CSRFData) => () =>
+		offchain
+			.post('transaction/publish', publishData, {
+				headers: {
+					'CSRF-Token': csrfData.csrfToken,
+				},
+			})
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 최근 블록 조회 API : <off-chain URL>/offchain/chain/:depth
+	chain: (depth: number) => () =>
+		offchain
+			.get(`chain/${depth}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 블록 정보 조회 API : <off-chain URL>/offchain/chain/:hash
+	block: (hash: string) => () =>
+		offchain
+			.get(`block/${hash}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 트랜젝션 정보 조회 API : <off-chain URL>/offchain/transaction/:id
+	transaction: (id: number) => () =>
+		offchain
+			.get(`transaction/${id}`)
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
+	// 블록 및 트랜젝션 Count 정보 조회 API : <off-chain URL>/offchain/stat
+	stat: () => () =>
+		offchain
+			.get('stat')
+			.then((response: AxiosResponse) => {
+				return response.data;
+			})
+			.catch((error: AxiosError) => {
+				const { data } = error.response as AxiosResponse;
+				toastMessage(data.message, 'warn');
+			}),
 };
 
 const api = {
 	auth,
 	file,
 	status,
-	setting,
+	infra,
+	block,
 };
 
 export default { ...api };

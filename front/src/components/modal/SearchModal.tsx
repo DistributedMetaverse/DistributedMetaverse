@@ -138,7 +138,7 @@ const UseKeyword: FC<UseKeywordProps> = ({
 			/>
 			<Collapse in={check}>
 				<Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-					This file is download success — check it out!
+					File download success. Check it out!
 				</Alert>
 			</Collapse>
 		</Box>

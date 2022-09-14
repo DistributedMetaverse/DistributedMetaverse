@@ -16,8 +16,10 @@ const useFileInfoDetails = ({
 	const [data, setData] = useState<FileInfo>({
 		id: 0,
 		fileId: '',
+		transactionId: 0,
 		filename: '',
 		fileSize: 0,
+		mimeType: '',
 		path: '/',
 		isLike: false,
 		downIPFS: false,

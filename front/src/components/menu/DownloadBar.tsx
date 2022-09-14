@@ -64,8 +64,8 @@ const DownloadBar: FC<DownloadProps> = ({
 		>
 			<Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
 				{data &&
-					data.map((data: FileInfo) => (
-						<Grow key={data.id} in={branch} timeout={300}>
+					data.map((data: FileInfo, index: number) => (
+						<Grow key={data.id} in={branch} timeout={(index + 1) * 300}>
 							<Grid item xs={6}>
 								<Button
 									variant="outlined"

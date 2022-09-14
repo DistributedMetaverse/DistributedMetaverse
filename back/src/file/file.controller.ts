@@ -13,6 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { UploadSubmitFileDto } from './dto/upload.submit-file.dto';
 import { ModifyFileDto } from './dto/modify-file.dto';
 import { SearchFileDto } from './dto/search-file.dto';
 import { User } from '../user/entities/user.entity';
@@ -40,6 +41,14 @@ export class FileController {
     @Body() uploadFileDto: UploadFileDto
   ) {
     return this.fileService.uploadFile(user, file, uploadFileDto);
+  }
+
+  @Post('upload/submit')
+  uploadSubmit(
+    @AuthToken() user: User,
+    @Body() uploadSubmitFileDto: UploadSubmitFileDto
+  ) {
+    return this.fileService.uploadSubmitFile(user, uploadSubmitFileDto);
   }
 
   @Get('list')

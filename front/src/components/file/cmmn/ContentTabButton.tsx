@@ -1,7 +1,7 @@
 import React, { FC, useState, MouseEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import { useDispatch } from 'react-redux';
-import { previewInfo } from '../../../store/index';
+import { previewInfo, setFilePath } from '../../../store/index';
 import { CSRFData } from '../../../services/types';
 import { dataSuccess } from '../../../store/index';
 import {
@@ -45,6 +45,7 @@ const ContentTabButton: FC<ContentTabButtonProps> = ({
 	const removeClick = async () => {
 		fetchData();
 		await file.delete(fileId, csrfData);
+		dispatch(setFilePath('/')); // → filepath 초기화
 		dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		setAnchorEl(null);
 		setOpen(false);

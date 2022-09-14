@@ -6,6 +6,7 @@ import { Share } from './entities/share.entity';
 import { User } from '../user/entities/user.entity';
 import { DownloadFileDto } from './dto/download-file.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { UploadSubmitFileDto } from './dto/upload.submit-file.dto';
 import { ModifyFileDto } from './dto/modify-file.dto';
 import { SearchFileDto } from './dto/search-file.dto';
 import { Pagination } from '../common/pagination/paginate';
@@ -87,12 +88,102 @@ export class FileService {
     return await this.fileRepository.save(newFile);
   }
 
+  async uploadSubmitFile(
+    user: User,
+    uploadSubmitFileDto: UploadSubmitFileDto
+  ) {
+    const newFile = new File();
+    newFile.user = user;
+    newFile.fileId = uploadSubmitFileDto.fileId;
+    newFile.filename = uploadSubmitFileDto.filename;
+    newFile.fileSize = uploadSubmitFileDto.fileSize;
+    newFile.mimeType = uploadSubmitFileDto.mimeType;
+    newFile.path = uploadSubmitFileDto.path;
+    return await this.fileRepository.save(newFile);
+  }
+
   /**
-   * 파일 타입 정보 리스트 요청 Service - 2
+   * Root 폴더 별 갯수 요청 Service
    * @param user - 해당 유저의 정보를 확인합니다.
+   * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
+   * @param page - 리스트를 요청할 폴더의 페이지 정보를 확인합니다.
+   * @returns 
+   */
+  async findFolderRoot(
+    user: User,
+    mimeType: string,
+    page: number,
+  ) {
+    const queryBuilder = this.fileRepository.createQueryBuilder('file')
+      .select("SUBSTRING_INDEX(file.path, '/', 2) AS folderPath")
+      .addSelect('COUNT(file.path) AS count')
+      .where(
+        'file.user_id = :id AND path LIKE :path AND mime_type LIKE :mimeType AND file.is_del = :isDel AND file.down_ipfs = :downIPFS',
+        { id: user.id, path: '/%', mimeType: `%${mimeType}%`, isDel: Number(false), downIPFS: Number(false) }
+      )
+      .groupBy('folderPath');
+    const count = await queryBuilder.getCount();
+    const results = await queryBuilder
+      .take(10)
+      .skip(10 * (page - 1))
+      .orderBy("file.createdAt", "DESC")
+      .getRawMany();
+
+    return {
+      results: results,
+      take: results.length,
+      total: count,
+    }
+  }
+
+  /**
+   * (Root 폴더 이외의) 폴더 별 갯수 요청 Service
+   * @param user - 해당 유저의 정보를 확인합니다.
+   * @param path - 리스트를 요청할 폴더 경로를 확인합니다.
+   * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
+   * @param page - 리스트를 요청할 폴더의 페이지 정보를 확인합니다.
+   * @returns 
+   */
+  async findFolderCommon(
+    user: User,
+    path: string,
+    mimeType: string,
+    page: number,
+  ) {
+    const index = path.length + 1
+    const queryBuilder = this.fileRepository.createQueryBuilder('file')
+      .select(
+        "CONCAT('" + path + "', SUBSTRING_INDEX(SUBSTR(path, " + index + "), '/', 2)) AS folderPath, SUBSTRING_INDEX(SUBSTR(path, " + index + "), '/', 2) AS subPath"
+      )
+      .addSelect('COUNT(file.path) AS count')
+      .where(
+        'file.user_id = :id AND path LIKE :path AND mime_type LIKE :mimeType AND file.is_del = :isDel AND file.down_ipfs = :downIPFS',
+        { id: user.id, path: `${path}%`, mimeType: `%${mimeType}%`, isDel: Number(false), downIPFS: Number(false) }
+      )
+      .groupBy('subPath');
+    const count = await queryBuilder.getCount();
+    const results = await queryBuilder
+      .take(10)
+      .skip(10 * (page - 1))
+      .orderBy("file.createdAt", "DESC")
+      .getRawMany();
+
+    return {
+      results: results,
+      take: results.length,
+      total: count,
+    }
+  }
+
+  /**
+   * 파일 타입 정보 리스트 요청 Service
+   * @param user - 해당 유저의 정보를 확인합니다.
+   * @param path - 리스트를 요청할 파일 경로를 확인합니다.
    * @param mimeType - 리스트를 요청할 파일 타입을 확인합니다.
    * @param page - 리스트를 요청할 파일 타입의 페이지 정보를 확인합니다.
    * @param take - 페이징을 요청할 최대 갯수를 확인합니다.
+   * @param downIPFS - IPFS에서 다운받았는지 여부를 확인합니다.
+   * @param order - 내림차순(DESC) / 오름차순(ASC)을 확인합니다.
    * @returns 
    */
   async findFileType (
@@ -105,7 +196,7 @@ export class FileService {
     order: boolean,
   ) {
     const [results, total] = await this.fileRepository.findAndCount({
-      select: ['id', 'fileId', 'filename', 'fileSize', 'path', 'isLike', 'createdAt'],
+      select: ['id', 'fileId', 'filename', 'fileSize', 'mimeType', 'path', 'isLike', 'createdAt'],
       where:
         mimeType !== ''
         ? {
@@ -128,7 +219,7 @@ export class FileService {
   }
 
   /**
-   * 파일 타입 정보 리스트 요청 Service - 1
+   * 폴더 / 파일 타입 정보 리스트 요청 Service
    * @param user - 해당 유저의 정보를 확인합니다.
    * @param filePath - 리스트를 요청할 파일 경로를 확인합니다.
    * @param folderPath - 리스트를 요청할 폴더 경로를 확인합니다.
@@ -153,7 +244,20 @@ export class FileService {
         default: return this.findFileType(user, filePath, '', page, 10, false, false)
       }
     }
-    return [];
+    if (folderPath === '/') {
+      switch(type) {
+        case 'all': return this.findFolderRoot(user, '', page)
+        case 'photo': return this.findFolderRoot(user, 'image', page)
+        case 'video': return this.findFolderRoot(user, 'video', page)
+        default: return this.findFolderRoot(user, '', page)
+      }
+    }
+    switch(type) {
+      case 'all': return this.findFolderCommon(user, folderPath, '', page)
+      case 'photo': return this.findFolderCommon(user, folderPath, 'image', page)
+      case 'video': return this.findFolderCommon(user, folderPath, 'video', page)
+      default: return this.findFolderCommon(user, folderPath, '', page)
+    }
   }
 
   /**
@@ -327,7 +431,7 @@ export class FileService {
   ) {
     if (keyword !== '') {
       const [results, total] = await this.fileRepository.findAndCount({
-        select: ['id', 'fileId', 'filename', 'fileSize', 'createdAt'],
+        select: ['id', 'fileId', 'filename', 'fileSize', 'mimeType', 'createdAt'],
         where: { user: { id: Not(user.id) }, filename: Like(`%${keyword}%`) },
         take: 10, // → Default
         skip: 10 * page,

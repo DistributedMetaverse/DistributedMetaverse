@@ -13,6 +13,7 @@ import PhotoContent from '../components/file/photo/PhotoContent';
 interface PhotoPageProps {
 	auth: ActionCreatorsMapObject;
 	file: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	path: string;
 	time: number;
 }
@@ -20,6 +21,7 @@ interface PhotoPageProps {
 const PhotoPage: FC<PhotoPageProps> = ({
 	auth,
 	file,
+	block,
 	path,
 	time,
 }): JSX.Element => {
@@ -29,7 +31,7 @@ const PhotoPage: FC<PhotoPageProps> = ({
 	return (
 		<Box>
 			<PhotoHeader path={path} branch={branch} setSwitch={setSwitch} />
-			<PhotoView file={file} fileId={fileId} time={time} />
+			<PhotoView file={file} block={block} fileId={fileId} time={time} />
 			<PhotoContent
 				file={file}
 				path={path}
@@ -51,6 +53,7 @@ const mapStateToProps = (state: any) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
 	auth: bindActionCreators(Api.auth, dispatch),
 	file: bindActionCreators(Api.file, dispatch),
+	block: bindActionCreators(Api.block, dispatch),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PhotoPage);

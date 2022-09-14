@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { setFilePath, setFileType } from '../../../store/index';
 import { Box, Grid } from '@mui/material';
-import FolderTabButton from '../cmmn/FolderTabButton';
+import FilePathTabButton from '../cmmn/FilePathTabButton';
 import FileTypeTabButton from '../cmmn/FileTypeTabButton';
 import NavigationPath from '../NavigationPath';
 
@@ -16,7 +16,7 @@ const FileHeader: FC<FileHeaderProps> = ({ path, type }): JSX.Element => {
 			<Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}>
 				<Grid container spacing={1} sx={{ width: 350 }}>
 					<Grid item>
-						<FolderTabButton path={path} setPath={setFilePath} type={'all'} />
+						<FilePathTabButton path={path} setPath={setFilePath} type={'all'} />
 					</Grid>
 					<Grid item sx={{ ml: 1 }}>
 						<NavigationPath path={path} />

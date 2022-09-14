@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import { MenuInfo, MenuState } from '../../store/types';
-import { changeTitle, menuActive, settingSwitch } from '../../store/index';
+import { changeTitle, menuActive, monitorSwitch } from '../../store/index';
 import {
 	Box,
 	Grow, // Transitions
@@ -17,7 +17,6 @@ import AccessTimeIcon from '@mui/icons-material/AccessTimeOutlined';
 import FolderCopyIcon from '@mui/icons-material/FolderCopyOutlined';
 import VideocamIcon from '@mui/icons-material/VideocamOutlined';
 import PhotoIcon from '@mui/icons-material/PhotoOutlined';
-import SettingsIcon from '@mui/icons-material/SettingsOutlined';
 
 const AppIcon = [
 	HomeIcon,
@@ -25,7 +24,6 @@ const AppIcon = [
 	FolderCopyIcon,
 	VideocamIcon,
 	PhotoIcon,
-	SettingsIcon,
 ];
 
 interface MenuBarProps {
@@ -39,7 +37,7 @@ const MenuBar: FC<MenuBarProps> = ({ branch, menus }): JSX.Element => {
 	const menuClick = (title: string, path: string) => {
 		dispatch(changeTitle(title));
 		dispatch(menuActive(path));
-		dispatch(settingSwitch(false));
+		dispatch(monitorSwitch(false));
 		navigate(path);
 	};
 	return (

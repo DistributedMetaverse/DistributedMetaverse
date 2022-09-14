@@ -3,8 +3,8 @@ import { Dispatch as DispatchAction } from '@reduxjs/toolkit';
 import { bindActionCreators, ActionCreatorsMapObject } from 'redux';
 import { connect, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { SettingState } from '../../store/types';
-import { menuSwitch, settingSwitch } from '../../store/index';
+import { MonitorState } from '../../store/types';
+import { changeTitle, menuSwitch, monitorSwitch } from '../../store/index';
 import Api from '../../services/api';
 import {
 	Box,
@@ -22,7 +22,7 @@ import { styled, SxProps, Theme } from '@mui/material/styles';
 import ListIcon from '@mui/icons-material/List'; // Sub Icon
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import SettingsIcon from '@mui/icons-material/SettingsOutlined';
+import DisplaySettingsSharpIcon from '@mui/icons-material/DisplaySettingsSharp';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuBar from '../menu/MenuBar';
 import DownloadBar from '../menu/DownloadBar';
@@ -34,7 +34,7 @@ interface DrawerProps extends MuiDrawerProps {
 
 interface AppMenuProps {
 	auth: ActionCreatorsMapObject;
-	setting: boolean;
+	monitor: boolean;
 	open?: boolean;
 	setOpen: Dispatch<SetStateAction<boolean>>;
 	width: number;
@@ -42,7 +42,7 @@ interface AppMenuProps {
 
 interface AppMenuFooterProps {
 	auth: ActionCreatorsMapObject;
-	setting: boolean;
+	monitor: boolean;
 }
 
 const Drawer = styled(MuiDrawer, {
@@ -100,24 +100,29 @@ const SlideListSubheader: FC<SlideListSubheaderProps> = ({
 	);
 };
 
-const AppMenuFooter: FC<AppMenuFooterProps> = ({ auth, setting }) => {
+const AppMenuFooter: FC<AppMenuFooterProps> = ({ auth, monitor }) => {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
-	const settingClick = () => {
+	const monitorClick = () => {
+		dispatch(changeTitle('Monitor'));
 		dispatch(menuSwitch(false));
-		dispatch(settingSwitch(true));
-		navigate('/setting');
+		dispatch(monitorSwitch(true));
+		navigate('/monitor');
 	};
 	const logoutClick = () => {
 		auth.logout();
 	};
 
-	const font: SxProps<Theme> = {
+	const monitorFont: SxProps<Theme> = {
+		fontSize: '1.9rem',
+	};
+	const logoutFont: SxProps<Theme> = {
 		fontSize: '1.7rem',
 	};
-	const settingButton: SxProps<Theme> = {
+	const monitorButton: SxProps<Theme> = {
 		p: 1,
+		mt: -0.3,
 		'&:hover': { color: 'secondary.main' },
 		'&:disabled': { color: 'active.disabled' },
 	};
@@ -135,16 +140,16 @@ const AppMenuFooter: FC<AppMenuFooterProps> = ({ auth, setting }) => {
 				<Grid container sx={{ justifyContent: 'space-between' }}>
 					<Grid item>
 						<IconButton
-							sx={settingButton}
-							onClick={settingClick}
-							disabled={setting}
+							sx={monitorButton}
+							onClick={monitorClick}
+							disabled={monitor}
 						>
-							<SettingsIcon fontSize="large" sx={font} />
+							<DisplaySettingsSharpIcon fontSize="large" sx={monitorFont} />
 						</IconButton>
 					</Grid>
 					<Grid item>
 						<IconButton sx={logoutButton} onClick={logoutClick}>
-							<LogoutIcon fontSize="large" sx={font} />
+							<LogoutIcon fontSize="large" sx={logoutFont} />
 						</IconButton>
 					</Grid>
 				</Grid>
@@ -155,7 +160,7 @@ const AppMenuFooter: FC<AppMenuFooterProps> = ({ auth, setting }) => {
 
 const AppMenu: FC<AppMenuProps> = ({
 	auth,
-	setting,
+	monitor,
 	open,
 	setOpen,
 	width,
@@ -226,13 +231,13 @@ const AppMenu: FC<AppMenuProps> = ({
 					<DownloadBar branch={!branch} />
 				)}
 			</List>
-			{branch && <AppMenuFooter auth={auth} setting={setting} />}
+			{branch && <AppMenuFooter auth={auth} monitor={monitor} />}
 		</Drawer>
 	);
 };
 
 const mapStateToProps = (state: any) => ({
-	setting: (state.setting as SettingState).isActive,
+	monitor: (state.monitor as MonitorState).isActive,
 });
 
 const mapDispatchToProps = (dispatch: DispatchAction) => ({

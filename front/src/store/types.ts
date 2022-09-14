@@ -46,8 +46,14 @@ interface PathState {
 	fileType: string; // enum → (all / video / photo)
 }
 
-interface FolderInfo {
-	path: string;
+interface FolderPathInfo {
+	folderPath: string;
+	subPath?: string;
+	count: number;
+}
+
+interface FilePathInfo {
+	filePath: string;
 	count: number;
 }
 
@@ -60,8 +66,10 @@ interface UserInfo {
 
 interface FileInfo extends SearchInfo {
 	id: number;
+	transactionId: number;
 	filename: string;
 	fileSize: number;
+	mimeType: string;
 	description?: string;
 	path: string;
 	isLike?: boolean;
@@ -75,22 +83,14 @@ interface FileState {
 	size: number;
 }
 
-// 6. Setting 관련 State
-interface SettingInfo {
-	id: number;
-	host: string;
-	port: number;
-	size: number;
-	limit?: number;
-}
-
-interface SettingState {
+// 6. Monitor 관련 State
+interface MonitorState {
 	isActive: boolean;
 }
 
 // 7. Paging 관련 State
 interface PageState {
-	results: Array<FileInfo | FolderInfo | UserInfo>;
+	results: Array<FileInfo | FolderPathInfo | UserInfo>;
 	take: number;
 	total: number;
 }
@@ -109,12 +109,12 @@ export type {
 	SearchInfo,
 	PreviewState,
 	PathState,
-	FolderInfo,
+	FolderPathInfo,
+	FilePathInfo,
 	UserInfo,
 	FileInfo,
 	FileState,
-	SettingInfo,
-	SettingState,
+	MonitorState,
 	PageState,
 	DataState,
 };

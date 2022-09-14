@@ -5,181 +5,34 @@ import {
 	getTokenKeySignature,
 } from './crypto';
 import { TokenData } from '../services/types';
+import { SearchInfo } from '../store/types';
 import {
-	FileInfo,
-	FolderInfo,
-	PageState,
-	SearchInfo,
-	SettingInfo,
-} from '../store/types';
-
-const fileinfo: FileInfo = {
-	id: 1,
-	fileId: 'test1',
-	filename: 'test1.png',
-	fileSize: 1000000,
-	description: 'the file is sample',
-	path: '/',
-	isLike: false,
-	downIPFS: true,
-	createdAt: '2022-01-23',
-	shared: [
-		{
-			userId: 1,
-			username: 'bbj',
-			email: 'bbj@naver.com',
-		},
-		{
-			userId: 2,
-			username: 'test',
-			email: 'test@naver.com',
-		},
-	],
-};
-
-const filelist: PageState = {
-	results: [
-		{
-			id: 1,
-			fileId: 'test1',
-			filename: 'test1.png',
-			fileSize: 100000,
-			path: '/',
-			isLike: true,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 2,
-			fileId: 'test2',
-			filename: 'test2.png',
-			fileSize: 2000000,
-			path: '/',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 3,
-			fileId: 'test3',
-			filename: 'test3.png',
-			fileSize: 3000000,
-			path: '/test/test',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-		{
-			id: 4,
-			fileId: 'test4',
-			filename: 'test4.png',
-			fileSize: 4000000,
-			path: '/aaaa',
-			isLike: false,
-			downIPFS: false,
-			createdAt: '2022-01-23',
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const folderlist: PageState = {
-	results: [
-		{
-			path: '/',
-			count: 2,
-		},
-		{
-			path: '/data/data1',
-			count: 10,
-		},
-		{
-			path: '/test1/folder',
-			count: 23,
-		},
-		{
-			path: '/test2',
-			count: 4,
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const folderTablist: Array<FolderInfo> = [
-	{
-		path: '/',
-		count: 2,
-	},
-	{
-		path: '/data/data1',
-		count: 10,
-	},
-	{
-		path: '/test1/folder',
-		count: 23,
-	},
-	{
-		path: '/test2',
-		count: 4,
-	},
-];
-
-const sharedlist: PageState = {
-	results: [
-		{
-			userId: 1,
-			username: 'bbj',
-			email: 'bbj@naver.com',
-		},
-		{
-			userId: 2,
-			username: 'test',
-			email: 'codequwdn@naver.com',
-		},
-	],
-	take: 10,
-	total: 4,
-};
-
-const settinginfo: SettingInfo = {
-	id: 1,
-	host: 'https://docs.ipfs.tech/',
-	port: 4001,
-	size: 10000000,
-	limit: 100000000,
-};
-
-const settinglist: Array<SettingInfo> = [
-	{
-		id: 1,
-		host: '127.0.0.1',
-		port: 4001,
-		size: 10000000,
-	},
-	{
-		id: 2,
-		host: 'https://docs.ipfs.tech/',
-		port: 4002,
-		size: 10000000,
-	},
-	{
-		id: 3,
-		host: '192.168.0.11',
-		port: 4003,
-		size: 10000000,
-	},
-];
+	fileinfo,
+	filelist,
+	folderlist,
+	folderPathTablist,
+	filePathTablist,
+	sharedlist,
+	categorylist,
+	daliylist,
+	indicatorData,
+	ipfsData,
+	chainData,
+	blockData,
+	transactionData,
+	statData,
+} from './data';
 
 const secret = 'S-dV7@1SS#AGd#%^';
 const csrfToken = {
 	csrfToken: 'Z2xKbR8k-wUeOvO_K0GiJqG7q3O1jjjCJ2Vs',
 };
 
+const prifix = '/api';
+
 export const handlers = [
 	// 로그인
-	rest.post('/api/auth/login', (req, res, ctx) => {
+	rest.post(prifix + '/auth/login', (req, res, ctx) => {
 		const username = 'test';
 		const accessToken = getTokenKeyHeader() + '.' + getTokenKeyData(60 * 30); // 30분
 		const refreshToken = getTokenKeyHeader() + '.' + getTokenKeyData(60 * 60); // 60분
@@ -195,22 +48,22 @@ export const handlers = [
 	}),
 
 	// 회원가입
-	rest.post('/api/auth/signup', (req, res, ctx) => {
+	rest.post(prifix + '/auth/signup', (req, res, ctx) => {
 		return res(ctx.status(201));
 	}),
 
 	// 토큰 재생성
-	rest.patch('/api/auth/refresh', (req, res, ctx) => {
+	rest.patch(prifix + '/auth/refresh', (req, res, ctx) => {
 		return res(ctx.status(201));
 	}),
 
 	// 토큰 재생성
-	rest.get('/api/auth/csrf-token', (req, res, ctx) => {
+	rest.get(prifix + '/auth/csrf-token', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(csrfToken));
 	}),
 
 	// 파일 세부정보
-	rest.get('/api/file/info/:fileId', (req, res, ctx) => {
+	rest.get(prifix + '/file/info/:fileId', (req, res, ctx) => {
 		const { fileId } = req.params;
 		const searchData: SearchInfo = {
 			fileId: String(fileId),
@@ -219,12 +72,12 @@ export const handlers = [
 	}),
 
 	// 파일 공유된 사용자 리스트
-	rest.get('/api/file/shared/:fileId', (req, res, ctx) => {
+	rest.get(prifix + '/file/shared/:fileId', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(sharedlist));
 	}),
 
 	// 특정경로 파일 ↔ 폴더 리스트 검색
-	rest.get('/api/file/list', (req, res, ctx) => {
+	rest.get(prifix + '/file/list', (req, res, ctx) => {
 		const file = req.url.searchParams.get('file');
 		const identifier = file ? 'file' : 'folder';
 		if (identifier === 'file') return res(ctx.status(200), ctx.json(filelist));
@@ -232,27 +85,72 @@ export const handlers = [
 	}),
 
 	// 파일 세부정보
-	rest.get('/api/file/search', (req, res, ctx) => {
+	rest.get(prifix + '/file/search', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json(filelist));
 	}),
 
 	// 현재 확인된 다운로드 갯수 확인
-	rest.get('/api/status/download', (req, res, ctx) => {
+	rest.get(prifix + '/status/download', (req, res, ctx) => {
 		return res(ctx.status(200), ctx.json({ count: 4 }));
 	}),
 
-	// 현재 확인된 폴더 리스트 확인
-	rest.get('/api/status/folder', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(folderTablist));
+	// 현재 확인된 폴더 경로 리스트 확인
+	rest.get(prifix + '/status/folder', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(folderPathTablist));
 	}),
 
-	// Setting 세부정보
-	rest.get('/api/setting/info', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(settinginfo));
+	// 현재 확인된 파일 경로 리스트 확인
+	rest.get(prifix + '/status/file', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(filePathTablist));
 	}),
 
-	// Setting 리스트
-	rest.get('/api/setting/list/:page', (req, res, ctx) => {
-		return res(ctx.status(200), ctx.json(settinglist));
+	// 현재 확인된 파일 카테고리 갯수 확인
+	rest.get(prifix + '/status/category', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(categorylist));
+	}),
+
+	// 현재 확인된 파일 일일 갯수 확인
+	rest.get(prifix + '/status/daliy', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(daliylist));
+	}),
+
+	// 전체 파일 개수 대비 사용자가 소유한 파일 갯수 확인
+	rest.get(prifix + '/status/indicator', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(indicatorData));
+	}),
+
+	// IPFS 파일 업로드
+	rest.post('/ipfs/add', (req, res, ctx) => {
+		return res(ctx.status(201), ctx.json(ipfsData));
+	}),
+
+	// IPFS 파일 다운로드
+	rest.post('/ipfs/cat', (req, res, ctx) => {
+		return res(ctx.status(201));
+	}),
+
+	// OffChain 트랜젝션 추가
+	rest.post('/offchain/transaction/publish', (req, res, ctx) => {
+		return res(ctx.status(201));
+	}),
+
+	// OffChain 최근 블록 조회
+	rest.get('/offchain/chain/:depth', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(chainData));
+	}),
+
+	// OffChain 블록 정보 조회
+	rest.get('/offchain/block/:hash', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(blockData));
+	}),
+
+	// OffChain 트랜젝션 정보 조회
+	rest.get('/offchain/transaction/:id', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(transactionData));
+	}),
+
+	// OffChain 블록 및 트랜젝션 Count 정보 조회
+	rest.get('/offchain/stat', (req, res, ctx) => {
+		return res(ctx.status(200), ctx.json(statData));
 	}),
 ];

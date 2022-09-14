@@ -9,7 +9,7 @@ import {
 	Video,
 	Photo,
 	Recent,
-	Setting,
+	Motitor,
 	NotFound,
 } from '../pages/index';
 import PrivateRoute from './auth';
@@ -50,7 +50,7 @@ const MainRoutes: FC = (): JSX.Element => {
 					<Route path="/video" element={<Video />} />
 					<Route path="/photo" element={<Photo />} />
 					<Route path="/recent" element={<Recent />} />
-					<Route path="/setting" element={<Setting />} />
+					<Route path="/monitor" element={<Motitor />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</CSSTransition>

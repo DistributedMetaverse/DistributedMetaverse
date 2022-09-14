@@ -9,4 +9,6 @@ const jwtConstants = {
   jwtRefreshtokenValidationSecond: 60 * 60,  // 1h or 7d
 };
 
-export { bcryptConstant, jwtConstants }
+const indicatorType = ['text', 'image', 'audio', 'video', 'application'];
+
+export { bcryptConstant, jwtConstants, indicatorType }

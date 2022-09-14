@@ -1,20 +1,22 @@
 import React, { FC } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
+import useTransactionID from '../../../hooks/useTransactionID';
 import { Box, Paper, Typography } from '@mui/material';
 import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual';
 
 interface PhotoViewProps {
 	file: ActionCreatorsMapObject;
+	block: ActionCreatorsMapObject;
 	fileId: string;
 	time: number;
 }
 
 interface UsePhotoProps {
-	filename: string;
+	url: string;
 }
 
-const UsePhoto: FC<UsePhotoProps> = ({ filename }): JSX.Element => {
+const UsePhoto: FC<UsePhotoProps> = ({ url }): JSX.Element => {
 	return (
 		<Box>
 			<Typography
@@ -22,7 +24,7 @@ const UsePhoto: FC<UsePhotoProps> = ({ filename }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				{filename}
+				<img src={url} />
 			</Typography>
 		</Box>
 	);
@@ -58,12 +60,20 @@ const NoPhoto: FC = (): JSX.Element => {
 	);
 };
 
-const PhotoView: FC<PhotoViewProps> = ({ file, fileId, time }): JSX.Element => {
+const PhotoView: FC<PhotoViewProps> = ({
+	file,
+	block,
+	fileId,
+	time,
+}): JSX.Element => {
 	const data = useFileInfoDetails({ file, fileId, time });
-	const filename = data.filename;
+	const transaction = useTransactionID({
+		block,
+		transactionId: data.transactionId,
+	});
 	return (
 		<Paper sx={{ pt: 2, pb: 2 }}>
-			{fileId === '' ? <NoPhoto /> : <UsePhoto filename={filename} />}
+			{fileId === '' ? <NoPhoto /> : <UsePhoto url={transaction.url ?? ''} />}
 		</Paper>
 	);
 };

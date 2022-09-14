@@ -1,6 +1,6 @@
 import React, { FC, ChangeEvent } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
-import { FolderInfo } from '../../../store/types';
+import { FolderPathInfo } from '../../../store/types';
 import useFolderPathPageList from '../../../hooks/useFolderPathPageList';
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
@@ -29,9 +29,10 @@ const FolderContent: FC<FolderContentProps> = ({
 		if (value && value === String(page)) setPage(page);
 	};
 
-	const endOfSplit = (path: string) => {
-		const name = path.split('/').pop();
+	const endOfSplit = (folderPath: string) => {
+		const name = folderPath.replace(path, '');
 		if (name === '') return '.';
+		else if (name[0] === '/') return name.slice(1);
 		else return name;
 	};
 
@@ -39,8 +40,8 @@ const FolderContent: FC<FolderContentProps> = ({
 		<Box sx={{ mt: 2, mb: 2 }}>
 			<Grid container spacing={3}>
 				{data &&
-					data.map((data: FolderInfo) => (
-						<Grid item key={data.path} xs={4} md={2} lg={2}>
+					data.map((data: FolderPathInfo) => (
+						<Grid item key={data.folderPath} xs={4} md={2} lg={2}>
 							<Paper
 								sx={{
 									p: 2,
@@ -50,7 +51,7 @@ const FolderContent: FC<FolderContentProps> = ({
 							>
 								<FolderIcon />
 								<Typography variant="subtitle2" sx={{ wordBreak: 'break-all' }}>
-									{endOfSplit(data.path)}
+									{endOfSplit(data.folderPath)}
 								</Typography>
 								<Typography variant="subtitle2" sx={{ color: '#626274' }}>
 									{data.count} files
