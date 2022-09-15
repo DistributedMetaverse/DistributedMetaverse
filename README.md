@@ -13,9 +13,9 @@ See Demo: https://youtu.be/ch0By7mrloc
 - This team has prepared a system that is perfect as an industrial blockchain through blockchain tailored to this limited purpose.
 
 ## Environment
-- **blockchain** is Echo v4
+- **blockchain** is Echo v4 https://github.com/DistributedMetaverse/distributed-metaverse-offchain
 - **front** is React v18.2.x, TypeScript v18.0.x
-- **back** is NestJS v9.0.x
+- **back** is NestJS v9.0.x, 10.6.4-MariaDB
 
 ## System Configuration & Architecture
 ![System Architecture](./diagram.png)
