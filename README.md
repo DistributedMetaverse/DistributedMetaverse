@@ -1,6 +1,9 @@
 # DistributedMetaverse
 2022 공개 SW 개발자대회 (탈중앙화를 활용하는 보안 분산 레포지토리 플랫폼 구현)
 
+## Screenshot
+![Screenshot](./image.png)
+
 ## Background & Purpose
 - In general, **Bitcoin** or **Etherium** consists of On-Chain with transaction functions, but off-Chain with a set purpose of use was selected by focusing on the blockchain data structure without a coin system with transaction functions.
 - The reason for choosing Off-Chain is that it usually uses Bitcoin or Ethereum to activate financial transaction functions, such as NFT. IPFS is widely used as a means of storing the original data, and IPFS refers to the hash (HASH) that users have as a basis for withdrawing files. If you lose the hash, you can't find the file forever.
@@ -13,7 +16,7 @@
 - **back** is NestJS v9.0.x
 
 ## System Configuration & Architecture
-
+![System Architecture](./diagram.png)
 
 ## Key features of the project
 1. Distributed storage of hash values implemented as Off-Chain (special purpose blockchain)
