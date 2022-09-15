@@ -181,20 +181,22 @@ const UploadModal: FC<UploadModalProps> = ({
 			//formData.append('path', path);	// → Disabled
 			formData.append('file', fileinfo);
 			//await file.upload(formData, csrfData);	// → Disabled
-			const data = await infra.upload(formData, csrfData);
+			const upload = await infra.upload(formData, csrfData);
 			const publishData = {
-				qmhash: data.Hash,
+				qmhash: upload.Hash,
 				mimetype: fileinfo.type,
 				filename: fileinfo.name,
 			};
+			const publish = await block.publish(publishData, csrfData);
+			await block.transaction(publish.id);
 			const submitData = {
-				fileId: data.Hash,
+				fileId: upload.Hash,
 				filename: fileinfo.name,
 				fileSize: fileinfo.size,
 				mimeType: fileinfo.type,
+				transactionId: publish.id,
 				path: path,
 			};
-			await block.publish(publishData, csrfData);
 			await file.submit(submitData, csrfData);
 			dispatch(dataSuccess(Date.now())); // → filelist 새로고침
 		}

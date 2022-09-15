@@ -2,8 +2,10 @@ import React, { FC } from 'react';
 import { ActionCreatorsMapObject } from 'redux';
 import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
 import useTransactionID from '../../../hooks/useTransactionID';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, CardMedia, Typography } from '@mui/material';
+import DownloadingOutlinedIcon from '@mui/icons-material/DownloadingOutlined';
 import PhotoSizeSelectActualIcon from '@mui/icons-material/PhotoSizeSelectActual';
+import { downloadCheck } from '../../../utils/check';
 
 interface PhotoViewProps {
 	file: ActionCreatorsMapObject;
@@ -16,6 +18,36 @@ interface UsePhotoProps {
 	url: string;
 }
 
+const DownloadPhoto: FC = (): JSX.Element => {
+	return (
+		<Box sx={{ pt: 8, pb: 8 }}>
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}
+			>
+				<DownloadingOutlinedIcon fontSize="large" sx={{ fontSize: '5rem' }} />
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 2, fontSize: '1rem' }}
+				>
+					이미지 파일을 다운로드 중입니다.
+				</Typography>
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
+				>
+					잠시만 기다려 주세요
+				</Typography>
+			</Box>
+		</Box>
+	);
+};
+
 const UsePhoto: FC<UsePhotoProps> = ({ url }): JSX.Element => {
 	return (
 		<Box>
@@ -24,7 +56,11 @@ const UsePhoto: FC<UsePhotoProps> = ({ url }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				<img src={url} />
+				{downloadCheck(url) ? (
+					<DownloadPhoto />
+				) : (
+					<CardMedia component="img" image={url} alt="Image" />
+				)}
 			</Typography>
 		</Box>
 	);

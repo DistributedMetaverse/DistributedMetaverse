@@ -15,4 +15,7 @@ export class UploadSubmitFileDto {
 
     @IsString()
     path: string;
+
+    @IsNumber()
+    transactionId: number;
 }

@@ -8,6 +8,8 @@ import { RedirectFilter } from './common/filter/redirect.filter';
 import { join } from 'path';
 import * as csrf from 'csurf';
 import * as cookieParser from 'cookie-parser';
+// import { urlencoded, json } from 'body-parser';
+// import * as express from 'express';
 
 async function bootstrap() {
   const logger = new Logger('main');
@@ -31,6 +33,8 @@ async function bootstrap() {
   }))
   app.use(cookieParser());
   app.use('/', csrf({cookie: true}));
+  //app.use(express.json({ limit: '500mb' }));
+  //app.use(express.urlencoded({ limit: '500mb', extended: true }));
 
   // Proxy endpoints
   app.enableCors({

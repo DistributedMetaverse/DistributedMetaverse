@@ -61,7 +61,9 @@ export class FileService {
     newFile.filename = file.filename;
     newFile.fileSize = file.fileSize;
     newFile.mimeType = file.mimeType;
-    newFile.path = file.path;
+    //newFile.path = file.path; // → X
+    newFile.path = '/'; // → O
+    newFile.transactionId = file.transactionId;
     newFile.downIPFS = true;  // → IPFS에서 해시값 확인
     return await this.fileRepository.save(newFile);
   }
@@ -99,6 +101,7 @@ export class FileService {
     newFile.fileSize = uploadSubmitFileDto.fileSize;
     newFile.mimeType = uploadSubmitFileDto.mimeType;
     newFile.path = uploadSubmitFileDto.path;
+    newFile.transactionId = uploadSubmitFileDto.transactionId;
     return await this.fileRepository.save(newFile);
   }
 

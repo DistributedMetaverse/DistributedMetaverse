@@ -14,5 +14,8 @@ export class DownloadFileDto {
     fileSize: number;
 
     @IsString()
+    mimeType: string;
+
+    @IsString()
     createdAt: string;
 }
