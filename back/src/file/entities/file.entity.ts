@@ -32,6 +32,9 @@ export class File {
     @Column()
     //@Index({ unique: true })
     fileId: string; // → nodeId
+
+    @Column()
+    transactionId: number;  // → transactionId
   
     @Column({ type: "text" })
     filename: string;

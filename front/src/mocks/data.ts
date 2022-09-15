@@ -224,7 +224,7 @@ const transactionData: TransactionResponseData = {
 		datetime: '2022-09-12 00:54:37.9252438 +0900 KST m=+99.276254501',
 	},
 	status: 'ok',
-	url: 'http://127.0.0.1:1323/downloads/QmVEL2JqkH1Gd58EuhfkdYJMLEdHLzqK6EJbFDz8RyNLvA',
+	url: 'http://154.12.242.48:1323/downloads/QmbubVhWdvej61H1kSPR9YxbKHFzzHnpzDNrz5PmpkrTN9',
 };
 
 const blockinfo: BlockData = {

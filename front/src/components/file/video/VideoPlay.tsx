@@ -3,8 +3,10 @@ import { ActionCreatorsMapObject } from 'redux';
 import useFileInfoDetails from '../../../hooks/useFileInfoDetails';
 import useTransactionID from '../../../hooks/useTransactionID';
 import { Box, Paper, Typography } from '@mui/material';
+import DownloadingOutlinedIcon from '@mui/icons-material/DownloadingOutlined';
 import NotStartedIcon from '@mui/icons-material/NotStarted';
 import ReactPlayer from 'react-player';
+import { downloadCheck } from '../../../utils/check';
 
 interface VideoPlayProps {
 	file: ActionCreatorsMapObject;
@@ -17,6 +19,36 @@ interface UseVideoProps {
 	url: string;
 }
 
+const DownloadVideo: FC = (): JSX.Element => {
+	return (
+		<Box sx={{ pt: 8, pb: 8 }}>
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+				}}
+			>
+				<DownloadingOutlinedIcon fontSize="large" sx={{ fontSize: '5rem' }} />
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 2, fontSize: '1rem' }}
+				>
+					동영상 파일을 다운로드 중입니다.
+				</Typography>
+				<Typography
+					component="span"
+					variant="h6"
+					sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
+				>
+					잠시만 기다려 주세요
+				</Typography>
+			</Box>
+		</Box>
+	);
+};
+
 const UseVideo: FC<UseVideoProps> = ({ url }): JSX.Element => {
 	return (
 		<Box>
@@ -25,7 +57,11 @@ const UseVideo: FC<UseVideoProps> = ({ url }): JSX.Element => {
 				variant="h6"
 				sx={{ pt: 2, fontSize: '0.7rem', color: '#626274' }}
 			>
-				<ReactPlayer url={url} width="100%" height="100%" controls={true} />
+				{downloadCheck(url) ? (
+					<DownloadVideo />
+				) : (
+					<ReactPlayer url={url} width="100%" height="100%" controls={true} />
+				)}
 			</Typography>
 		</Box>
 	);
